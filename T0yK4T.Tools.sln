@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkeinFish", "skeinfish\Skei
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "protobuf-net", "protobuf-net\protobuf-net.csproj", "{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Code", "External Code", "{67FC117E-C7EC-4B7C-B105-D76E11435E06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.Driver", "mongodb\Driver\MongoDB.Driver.csproj", "{AE5166CD-76B0-4911-BD80-CED9521F37A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.Bson", "mongodb\Bson\MongoDB.Bson.csproj", "{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,8 +31,22 @@ Global
 		{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5166CD-76B0-4911-BD80-CED9521F37A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5166CD-76B0-4911-BD80-CED9521F37A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5166CD-76B0-4911-BD80-CED9521F37A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5166CD-76B0-4911-BD80-CED9521F37A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2A9344F0-9E8B-416F-A604-C975F2E7BE5B} = {67FC117E-C7EC-4B7C-B105-D76E11435E06}
+		{447C6CB4-75D4-4E42-96CB-A4ABF2739805} = {67FC117E-C7EC-4B7C-B105-D76E11435E06}
+		{AE5166CD-76B0-4911-BD80-CED9521F37A1} = {67FC117E-C7EC-4B7C-B105-D76E11435E06}
+		{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6} = {67FC117E-C7EC-4B7C-B105-D76E11435E06}
 	EndGlobalSection
 EndGlobal
