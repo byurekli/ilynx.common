@@ -56,6 +56,9 @@ namespace T0yK4T.Tools.Cryptography
 
         private static System.Security.Cryptography.RandomNumberGenerator prng = System.Security.Cryptography.RandomNumberGenerator.Create();
 
+        /// <summary>
+        /// Default instance of a <see cref="System.Security.Cryptography.RandomNumberGenerator"/>
+        /// </summary>
         public static System.Security.Cryptography.RandomNumberGenerator Prng
         {
             get { return prng; }
