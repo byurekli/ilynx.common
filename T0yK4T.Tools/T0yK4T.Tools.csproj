@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D510E0B-912C-4D24-9446-E96AE74F3C27}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>T0yK4T.Tools</RootNamespace>
+    <AssemblyName>T0yK4T.Tools</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentBase.cs" />
+    <Compile Include="Configuration\ConfigurableValue.cs" />
+    <Compile Include="Configuration\SafeConfigManager.cs" />
+    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="Cryptography\CryptoCommon.cs" />
+    <Compile Include="Cryptography\CryptoStreamWriter.cs" />
+    <Compile Include="Cryptography\EncryptionProvider.cs" />
+    <Compile Include="Cryptography\HashHelper.cs" />
+    <Compile Include="Cryptography\RSAHelper.cs" />
+    <Compile Include="Data\DataSerializer.cs" />
+    <Compile Include="Data\IDataAdapter.cs" />
+    <Compile Include="Data\IDataSerializer.cs" />
+    <Compile Include="Data\Mongo\MongoDBAdapter.cs" />
+    <Compile Include="Delegates\Delegates.cs" />
+    <Compile Include="General\PriorityQueue.cs" />
+    <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
+    <Compile Include="IO\CopyDirectory.cs" />
+    <Compile Include="IO\CryptoConnection.cs" />
+    <Compile Include="IO\Handshaker.cs" />
+    <Compile Include="IO\LockingSerializer.cs" />
+    <Compile Include="IO\PacketFactory.cs" />
+    <Compile Include="IO\ToyPacket.cs" />
+    <Compile Include="IToyLogger.cs" />
+    <Compile Include="IToyValidatable.cs" />
+    <Compile Include="LoggingType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\skeinfish\SkeinFish.csproj">
+      <Project>{F7C81EDE-7E55-4EAA-93FE-72885698E138}</Project>
+      <Name>SkeinFish</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
