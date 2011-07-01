@@ -23,7 +23,8 @@ namespace T0yK4T.Tools.Configuration
         /// </summary>
         /// <param name="name">The name of the value to look for (Key)</param>
         /// <param name="converter">The <see cref="IValueConverter{TValue}"/> to use for string to <typeparamref name="TValue"/> conversion</param>
-        public ConfigurableValue(string name, IValueConverter<TValue> converter)
+        /// <param name="defaultValue">The default value to use if the value could not be retrieved from the configuration file</param>
+        public ConfigurableValue(string name, IValueConverter<TValue> converter, TValue defaultValue)
         {
             this.name = name;
             this.converter = converter;
@@ -32,7 +33,7 @@ namespace T0yK4T.Tools.Configuration
                 string sVal = ConfigurationManager.AppSettings[this.name];
                 this.value = converter.Convert(sVal);
             }
-            catch { }
+            catch { this.value = defaultValue; }
         }
 
         /// <summary>
@@ -40,7 +41,8 @@ namespace T0yK4T.Tools.Configuration
         /// </summary>
         /// <param name="name">The name of the value (Key)</param>
         /// <param name="value">The actual value</param>
-        public ConfigurableValue(string name, TValue value)
+        /// <param name="converter">The converter to use when saving / retrieving the value from file</param>
+        public ConfigurableValue(string name, TValue value, IValueConverter<TValue> converter)
         {
             this.name = name;
             this.value = value;
@@ -55,6 +57,21 @@ namespace T0yK4T.Tools.Configuration
                 ConfigurationManager.AppSettings.Add(this.name, this.converter.ToString(this.value));
             else
                 ConfigurationManager.AppSettings[this.name] = this.converter.ToString(this.value);
+        }
+
+        /// <summary>
+        /// Attempts to load this value from file (returns true if succesful, otherwise false)
+        /// </summary>
+        /// <returns></returns>
+        public bool TryLoad()
+        {
+            try
+            {
+                string sVal = ConfigurationManager.AppSettings[this.name];
+                this.value = this.converter.Convert(sVal);
+            }
+            catch { return false; }
+            return true;
         }
 
         /// <summary>
