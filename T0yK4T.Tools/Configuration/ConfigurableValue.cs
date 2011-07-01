@@ -7,6 +7,26 @@ using System.Configuration;
 namespace T0yK4T.Tools.Configuration
 {
     /// <summary>
+    /// Simple helper class that contains a <see cref="System.Configuration.Configuration"/> object for the entry assembly
+    /// </summary>
+    public static class Config
+    {
+        private static System.Configuration.Configuration configuration;
+
+        /// <summary>
+        /// Gets a <see cref="System.Configuration.Configuration"/> object for the entry assembly
+        /// </summary>
+        public static System.Configuration.Configuration Configuration
+        {
+            get
+            {
+                if (configuration == null)
+                    configuration = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
+                return configuration;
+            }
+        }
+    }
+    /// <summary>
     /// A simple configurable value (Uses the builtin ConfigurationManager (<see cref="System.Configuration.ConfigurationManager"/>)
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
@@ -30,33 +50,43 @@ namespace T0yK4T.Tools.Configuration
             this.converter = converter;
             try
             {
-                string sVal = ConfigurationManager.AppSettings[this.name];
-                this.value = converter.Convert(sVal);
+                if (Config.Configuration.AppSettings.Settings.AllKeys.Contains(name))
+                {
+                    string sVal = Config.Configuration.AppSettings.Settings[this.name].Value;
+                    this.value = converter.Convert(sVal);
+                }
+                else
+                {
+                    this.value = defaultValue;
+                    this.Store();
+                }
             }
-            catch { this.value = defaultValue; }
+            catch { this.value = defaultValue; try { this.Store(); } catch { } }
         }
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="ConfigurableValue{TValue}"/> and sets the name and value components to the specified values
-        /// </summary>
-        /// <param name="name">The name of the value (Key)</param>
-        /// <param name="value">The actual value</param>
-        /// <param name="converter">The converter to use when saving / retrieving the value from file</param>
-        public ConfigurableValue(string name, TValue value, IValueConverter<TValue> converter)
-        {
-            this.name = name;
-            this.value = value;
-        }
+        ///// <summary>
+        ///// Initializes a new instance of <see cref="ConfigurableValue{TValue}"/> and sets the name and value components to the specified values
+        ///// </summary>
+        ///// <param name="name">The name of the value (Key)</param>
+        ///// <param name="value">The actual value</param>
+        ///// <param name="converter">The converter to use when saving / retrieving the value from file</param>
+        //public ConfigurableValue(string name, TValue value, IValueConverter<TValue> converter)
+        //{
+        //    this.name = name;
+        //    this.value = value;
+        //}
 
         /// <summary>
         /// Attempts to store this value in the configuration file
         /// </summary>
         public void Store()
         {
-            if (!ConfigurationManager.AppSettings.AllKeys.Contains(this.name))
-                ConfigurationManager.AppSettings.Add(this.name, this.converter.ToString(this.value));
+            
+            if (!Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.name))
+                Config.Configuration.AppSettings.Settings.Add(this.name, this.converter.ToString(this.value));
             else
-                ConfigurationManager.AppSettings[this.name] = this.converter.ToString(this.value);
+                Config.Configuration.AppSettings.Settings[this.name].Value = this.converter.ToString(this.value);
+            Config.Configuration.Save(ConfigurationSaveMode.Modified);
         }
 
         /// <summary>
@@ -67,7 +97,7 @@ namespace T0yK4T.Tools.Configuration
         {
             try
             {
-                string sVal = ConfigurationManager.AppSettings[this.name];
+                string sVal = Config.Configuration.AppSettings.Settings[this.name].Value;
                 this.value = this.converter.Convert(sVal);
             }
             catch { return false; }
@@ -120,7 +150,22 @@ namespace T0yK4T.Tools.Configuration
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0}:{1}", this.name, this.converter.ToString(this.value));
+            return this.converter.ToString(this.value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether or not the value of this <see cref="ConfigurableValue{TValue}"/> has been saved to disk
+        /// </summary>
+        public bool IsStored
+        {
+            get
+            {
+                bool exists = Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.name);
+                if (!exists)
+                    return false;
+                else
+                    return Config.Configuration.AppSettings.Settings[this.name].Value == this.converter.ToString(this.value);
+            }
         }
     }
 
@@ -144,4 +189,95 @@ namespace T0yK4T.Tools.Configuration
         /// <returns></returns>
         string ToString(TValue value);
     }
+
+
+    /// <summary>
+    /// Basic String Converter (Well, no conversion is actuall performed in this case...
+    /// </summary>
+    public class StringConverter : IValueConverter<string>
+    {
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string Convert(string value)
+        {
+            return value;
+        }
+
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string ToString(string value)
+        {
+            return value;
+        }
+    }
+
+    /// <summary>
+    /// Basic boolean converter
+    /// </summary>
+    public class BooleanConverter : IValueConverter<bool>
+    {
+        /// <summary>
+        /// Returns the output of <see cref="bool.TryParse"/> (if succesful)
+        /// <para/>
+        /// otherwise throws a <see cref="System.FormatException"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool Convert(string value)
+        {
+            bool val;
+            if (bool.TryParse(value, out val))
+                return val;
+            else
+                throw new FormatException("the given string value was in an incorrect format");
+        }
+
+        /// <summary>
+        /// Returns <see cref="bool.ToString()"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string ToString(bool value)
+        {
+            return value.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Basic int32 converter
+    /// </summary>
+    public class Int32Converter : IValueConverter<int>
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public int Convert(string value)
+        {
+            int val;
+            if (int.TryParse(value, out val))
+                return val;
+            else
+                throw new FormatException("the given string value was in an incorrect format");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string ToString(int value)
+        {
+            return value.ToString();
+        }
+    }
+
 }

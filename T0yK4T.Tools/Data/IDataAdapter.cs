@@ -35,7 +35,13 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        T FindOne(IEnumerable<DataProperty<T>> properties);
+        T FindOne(params DataProperty<T>[] properties);
+
+        /// <summary>
+        /// Attempts to update the specified value in the underlying datastore
+        /// </summary>
+        /// <param name="value"></param>
+        void Update(T value);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore that have the specified <see cref="DataProperty{T}"/>

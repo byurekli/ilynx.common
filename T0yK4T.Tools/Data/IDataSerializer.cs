@@ -27,7 +27,17 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="val">The value to get a filter from</param>
         /// <returns></returns>
-        IEnumerable<DataProperty<T>> GetUsableFilter(T val);
+        DataProperty<T>[] GetUsableFilter(T val);
+
+        /// <summary>
+        /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> objects that can be used to search a <see cref="IDataAdapter{T}"/>
+        /// <para/>
+        /// - Any properties who's name is contained in <paramref name="excludeProperties"/> will not be returned in the filter array
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="excludeProperties"></param>
+        /// <returns></returns>
+        DataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties);
 
         /// <summary>
         /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> that can be used to store the specified value

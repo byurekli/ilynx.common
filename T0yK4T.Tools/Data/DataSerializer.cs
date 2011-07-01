@@ -81,16 +81,42 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="val">The value to get a filter for</param>
         /// <returns></returns>
-        public IEnumerable<DataProperty<T>> GetUsableFilter(T val)
+        public DataProperty<T>[] GetUsableFilter(T val)
+        {
+            return this.GetUsableFilter(val, null);
+            //List<DataProperty<T>> filter = new List<DataProperty<T>>();
+            //foreach (KeyValuePair<string, PropertyInfo> kvp in this.serializedFields)
+            //{
+            //    object propertyValue = kvp.Value.GetValue(val, null);
+            //    if (propertyValue != GetDefaultValue(kvp.Value.PropertyType))
+            //        filter.Add(new DataProperty<T>(kvp.Key, propertyValue, kvp.Value.PropertyType));
+            //}
+            //return filter.ToArray();
+        }
+
+        /// <summary>
+        /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> objects that can be used to search a <see cref="IDataAdapter{T}"/>
+        /// <para/>
+        /// - Any properties who's name is contained in <paramref name="excludeProperties"/> will not be returned in the filter array
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="excludeProperties"></param>
+        /// <returns></returns>
+        public DataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties)
         {
             List<DataProperty<T>> filter = new List<DataProperty<T>>();
+            if (excludeProperties == null)
+                excludeProperties = new string[0];
+
             foreach (KeyValuePair<string, PropertyInfo> kvp in this.serializedFields)
             {
+                if (excludeProperties.Contains(kvp.Key))
+                    continue;
                 object propertyValue = kvp.Value.GetValue(val, null);
                 if (propertyValue != GetDefaultValue(kvp.Value.PropertyType))
                     filter.Add(new DataProperty<T>(kvp.Key, propertyValue, kvp.Value.PropertyType));
             }
-            return filter;
+            return filter.ToArray();
         }
 
         /// <summary>
@@ -169,6 +195,8 @@ namespace T0yK4T.Tools.Data
 
         /// <summary>
         /// Initializes a new instance of <see cref="DataProperty{T}"/> and sets the <see cref="DataProperty{T}.Value"/> and <see cref="DataProperty{T}.PropertyName"/> to the specified values
+        /// <para/>
+        /// The <see cref="DataProperty{T}.DataType"/> property is set to the <paramref name="dataType"/> argument
         /// </summary>
         /// <param name="name">The name of the property</param>
         /// <param name="value">The value of the property</param>
@@ -178,6 +206,24 @@ namespace T0yK4T.Tools.Data
             this.value = value;
             this.name = name;
             this.dataType = dataType;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="DataProperty{T}"/> and sets the <see cref="DataProperty{T}.Value"/> and <see cref="DataProperty{T}.PropertyName"/> to the specified values
+        /// <para/>
+        /// The <see cref="DataProperty{T}.DataType"/> property is set to the result of value.GetType
+        /// <para/>
+        /// Please note that value cannot be null for this to work
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <param name="value">The value of the property</param>
+        public DataProperty(string name, object value)
+        {
+            this.value = value;
+            this.name = name;
+            if (value == null)
+                throw new ArgumentNullException("value");
+            this.dataType = value.GetType();
         }
 
         /// <summary>
