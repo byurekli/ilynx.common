@@ -104,6 +104,7 @@
       <HintPath>lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -118,6 +119,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurableValue.cs" />
     <Compile Include="Configuration\SafeConfigManager.cs" />
     <Compile Include="Data\DataSerializer.cs" />
     <Compile Include="Data\IDataAdapter.cs" />
