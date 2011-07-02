@@ -174,10 +174,32 @@ namespace T0yK4T.Tools.Threading
             public double Progress;
         }
 
+        private void DoWork(object args)
+        {
+            try { this.DoWork((TArgs)args); }
+            catch (ThreadAbortException) { }
+            catch { throw; }
+        }
+
+        /// <summary>
+        /// Aborts the current worker thread
+        /// </summary>
+        public void Abort()
+        {
+            if (this.worker != null &&
+                //this.worker.ThreadState != ThreadState.Stopped &&
+                //this.worker.ThreadState != ThreadState.StopRequested &&
+                this.worker.ThreadState != ThreadState.Aborted &&
+                this.worker.ThreadState != ThreadState.AbortRequested &&
+                this.worker.ThreadState != ThreadState.Unstarted)
+                try { this.worker.Abort(); }
+                catch { }
+        }
+
         /// <summary>
         /// This method is the entry point of the worker thread
         /// </summary>
         /// <param name="args">Will contain a <typeparamref name="TArgs"/> object as an object</param>
-        protected abstract void DoWork(object args);
+        protected abstract void DoWork(TArgs args);
     }
 }

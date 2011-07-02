@@ -128,11 +128,11 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public IEnumerable<T> Find(DataProperty<T> property)
+        public T[] Find(DataProperty<T> property)
         {
             try
             {
-                return this.collection.Find(this.BuildQuery(property));
+                return this.collection.Find(this.BuildQuery(property)).ToArray();
             }
             catch { return null; }
         }
@@ -143,13 +143,40 @@ namespace T0yK4T.Tools.Data.Mongo
         /// <param name="key"></param>
         /// <param name="regex"></param>
         /// <returns></returns>
-        public IEnumerable<T> Find(string key, Regex regex)
+        public T[] Find(string key, Regex regex)
         {
             try
             {
-                return this.collection.Find(Query.Matches(key, BsonRegularExpression.Create(regex)));
+                return this.collection.Find(Query.Matches(key, BsonRegularExpression.Create(regex))).ToArray();
             }
             catch { return null; }
+        }
+
+        /// <summary>
+        /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
+        /// </summary>
+        /// <param name="matchFields"></param>
+        /// <returns></returns>
+        public T[] Find(IDictionary<string, Regex> matchFields)
+        {
+            try
+            {
+                return this.collection.Find(this.BuildQuery(matchFields)).ToArray();
+            }
+            catch { return null; }
+        }
+
+        private QueryComplete BuildQuery(IDictionary<string, Regex> fields)
+        {
+            List<QueryComplete> subQueries = new List<QueryComplete>();
+            foreach (KeyValuePair<string, Regex> field in fields)
+                subQueries.Add(this.BuildQuery(field.Key, field.Value));
+            return Query.Or(subQueries.ToArray());
+        }
+
+        private QueryComplete BuildQuery(string key, Regex value)
+        {
+            return Query.Matches(key, new BsonRegularExpression(value));
         }
 
         /// <summary>
@@ -157,11 +184,11 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties)
+        public T[] Find(IEnumerable<DataProperty<T>> properties)
         {
             try
             {
-                return this.collection.Find(this.BuildQuery(properties));
+                return this.collection.Find(this.BuildQuery(properties)).ToArray();
             }
             catch { return null; }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,13 +49,30 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        IEnumerable<T> Find(DataProperty<T> property);
+        T[] Find(DataProperty<T> property);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore using the specified <see cref="DataProperty{T}"/> as a filter
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties);
+        T[] Find(IEnumerable<DataProperty<T>> properties);
+
+        /// <summary>
+        /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore who's <paramref name="KeyName"/> property match the specified <paramref name="searchPattern"/>
+        /// <para/>
+        /// (Please note that this may only be possible on string types!
+        /// </summary>
+        /// <param name="KeyName"></param>
+        /// <param name="searchPattern"></param>
+        /// <returns></returns>
+        T[] Find(string KeyName, Regex searchPattern);
+
+        /// <summary>
+        /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
+        /// </summary>
+        /// <param name="matchFields"></param>
+        /// <returns></returns>
+        T[] Find(IDictionary<string, Regex> matchFields);
     }
 }
