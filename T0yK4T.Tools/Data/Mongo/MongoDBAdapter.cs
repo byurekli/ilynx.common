@@ -124,6 +124,15 @@ namespace T0yK4T.Tools.Data.Mongo
         }
 
         /// <summary>
+        /// Executes <see cref="MongoDB.Driver.MongoCollection{T}.FindAll()"/>.ToArray()
+        /// </summary>
+        /// <returns></returns>
+        public T[] GetAll()
+        {
+            return this.collection.FindAll().ToArray();
+        }
+
+        /// <summary>
         /// Attempts to find a list of <typeparamref name="T"/>s in the underlying collection, using the specified <see cref="DataProperty{T}"/> as a filter
         /// </summary>
         /// <param name="property"></param>

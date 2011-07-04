@@ -25,6 +25,12 @@ namespace T0yK4T.Tools.Data
         T GetFirst();
 
         /// <summary>
+        /// Attempts to get all instances of <typeparamref name="T"/>
+        /// </summary>
+        /// <returns></returns>
+        T[] GetAll();
+
+        /// <summary>
         /// Attempts to find a single element in the underlying datastore with the specified <paramref name="property"/> set
         /// </summary>
         /// <param name="property"></param>

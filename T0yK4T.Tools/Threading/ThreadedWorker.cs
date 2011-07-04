@@ -37,7 +37,20 @@ namespace T0yK4T.Tools.Threading
         /// Used to set the title of the progress display
         /// </summary>
         /// <param name="title"></param>
-        void SetTitle(string title);
+        /// <param name="source"></param>
+        void SetTitle(Guid source, string title);
+
+        /// <summary>
+        /// Called from a <see cref="ThreadedWorker{T1,T2}"/> when it has started
+        /// </summary>
+        /// <param name="workerID">The ID of the worker</param>
+        void WorkStarted(Guid workerID);
+
+        /// <summary>
+        /// Called from a <see cref="ThreadedWorker{T1,T2}"/> when it has completed
+        /// </summary>
+        /// <param name="workerID"></param>
+        void WorkComplete(Guid workerID);
     }
 
     /// <summary>
@@ -109,6 +122,8 @@ namespace T0yK4T.Tools.Threading
             {
                 if (this.workCompleteCallback != null)
                     this.workCompleteCallback.Invoke((TCompletedArgs)o);
+                if (this.progressDisplay != null)
+                    this.progressDisplay.WorkComplete(this.id);
             }), args);
         }
 
@@ -134,7 +149,7 @@ namespace T0yK4T.Tools.Threading
             this.context.Post(new SendOrPostCallback((o) =>
             {
                 if (this.progressDisplay != null)
-                    this.progressDisplay.SetTitle((string)o);
+                    this.progressDisplay.SetTitle(this.id, (string)o);
             }), title);
         }
 
@@ -176,6 +191,8 @@ namespace T0yK4T.Tools.Threading
 
         private void DoWork(object args)
         {
+            if (this.progressDisplay != null)
+                this.progressDisplay.WorkStarted(this.id);
             try { this.DoWork((TArgs)args); }
             catch (ThreadAbortException) { }
             catch { throw; }
