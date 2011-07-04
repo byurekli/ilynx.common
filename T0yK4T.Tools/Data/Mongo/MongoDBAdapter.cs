@@ -78,13 +78,23 @@ namespace T0yK4T.Tools.Data.Mongo
         }
 
         /// <summary>
+        /// Attempts to find every unique value of <paramref name="key"/>
+        /// </summary>
+        /// <param name="key">The key to look for</param>
+        /// <returns></returns>
+        public IEnumerable<T2> Distinct<T2>(string key)
+        {
+            return this.collection.Distinct(key).Cast<T2>();
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
         public T FindOne(params DataProperty<T>[] properties)
         {
-            return this.collection.FindOne(this.BuildQuery(properties));
+            return this.collection.FindOne(this.BuildQuery(properties, BooleanOperator.AND));
         }
 
         /// <summary>
@@ -113,23 +123,31 @@ namespace T0yK4T.Tools.Data.Mongo
             return Query.EQ(property.PropertyName, MongoDB.Bson.BsonValue.Create(property.Value));
         }
 
-        private QueryComplete BuildQuery(IEnumerable<DataProperty<T>> properties)
+        private QueryComplete BuildQuery(IEnumerable<DataProperty<T>> properties, BooleanOperator op)
         {
             List<QueryComplete> subQueries = new List<QueryComplete>();
 
             foreach (DataProperty<T> property in properties)
                 subQueries.Add(this.BuildQuery(property)); //Query.EQ(property.PropertyName, MongoDB.Bson.BsonValue.Create(property.Value)));
 
-            return Query.And(subQueries.ToArray());
+            switch (op)
+            {
+                case BooleanOperator.AND:
+                    return Query.And(subQueries.ToArray());
+                case BooleanOperator.OR:
+                    return Query.Or(subQueries.ToArray());
+                default:
+                    return Query.Or(subQueries.ToArray());
+            }
         }
 
         /// <summary>
         /// Executes <see cref="MongoDB.Driver.MongoCollection{T}.FindAll()"/>.ToArray()
         /// </summary>
         /// <returns></returns>
-        public T[] GetAll()
+        public IEnumerable<T> GetAll()
         {
-            return this.collection.FindAll().ToArray();
+            return this.collection.FindAll();
         }
 
         /// <summary>
@@ -137,11 +155,11 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public T[] Find(DataProperty<T> property)
+        public IEnumerable<T> Find(DataProperty<T> property)
         {
             try
             {
-                return this.collection.Find(this.BuildQuery(property)).ToArray();
+                return this.collection.Find(this.BuildQuery(property));
             }
             catch { return null; }
         }
@@ -152,11 +170,11 @@ namespace T0yK4T.Tools.Data.Mongo
         /// <param name="key"></param>
         /// <param name="regex"></param>
         /// <returns></returns>
-        public T[] Find(string key, Regex regex)
+        public IEnumerable<T> Find(string key, Regex regex)
         {
             try
             {
-                return this.collection.Find(Query.Matches(key, BsonRegularExpression.Create(regex))).ToArray();
+                return this.collection.Find(Query.Matches(key, BsonRegularExpression.Create(regex)));
             }
             catch { return null; }
         }
@@ -166,21 +184,29 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="matchFields"></param>
         /// <returns></returns>
-        public T[] Find(IDictionary<string, Regex> matchFields)
+        public IEnumerable<T> Find(IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op)
         {
             try
             {
-                return this.collection.Find(this.BuildQuery(matchFields)).ToArray();
+                return this.collection.Find(this.BuildQuery(matchFields, op));
             }
             catch { return null; }
         }
 
-        private QueryComplete BuildQuery(IDictionary<string, Regex> fields)
+        private QueryComplete BuildQuery(IEnumerable<KeyValuePair<string, Regex>> fields, BooleanOperator op)
         {
             List<QueryComplete> subQueries = new List<QueryComplete>();
             foreach (KeyValuePair<string, Regex> field in fields)
                 subQueries.Add(this.BuildQuery(field.Key, field.Value));
-            return Query.Or(subQueries.ToArray());
+            switch (op)
+            {
+                case BooleanOperator.AND:
+                    return Query.And(subQueries.ToArray());
+                case BooleanOperator.OR:
+                    return Query.Or(subQueries.ToArray());
+                default:
+                    return Query.And(subQueries.ToArray());
+            }
         }
 
         private QueryComplete BuildQuery(string key, Regex value)
@@ -193,13 +219,19 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public T[] Find(IEnumerable<DataProperty<T>> properties)
+        public IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op)
         {
             try
             {
-                return this.collection.Find(this.BuildQuery(properties)).ToArray();
+                return this.collection.Find(this.BuildQuery(properties, op));
             }
             catch { return null; }
+        }
+
+        public IEnumerable<T2> Distinct<T2>(string key, IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op)
+        {
+            QueryComplete q = this.BuildQuery(matchFields, op);
+            return this.collection.Distinct(key, q).Cast<T2>();
         }
     }
 }

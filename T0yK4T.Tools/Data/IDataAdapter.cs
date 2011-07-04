@@ -28,7 +28,7 @@ namespace T0yK4T.Tools.Data
         /// Attempts to get all instances of <typeparamref name="T"/>
         /// </summary>
         /// <returns></returns>
-        T[] GetAll();
+        IEnumerable<T> GetAll();
 
         /// <summary>
         /// Attempts to find a single element in the underlying datastore with the specified <paramref name="property"/> set
@@ -55,14 +55,14 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        T[] Find(DataProperty<T> property);
+        IEnumerable<T> Find(DataProperty<T> property);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore using the specified <see cref="DataProperty{T}"/> as a filter
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        T[] Find(IEnumerable<DataProperty<T>> properties);
+        IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore who's <paramref name="KeyName"/> property match the specified <paramref name="searchPattern"/>
@@ -72,13 +72,37 @@ namespace T0yK4T.Tools.Data
         /// <param name="KeyName"></param>
         /// <param name="searchPattern"></param>
         /// <returns></returns>
-        T[] Find(string KeyName, Regex searchPattern);
+        IEnumerable<T> Find(string KeyName, Regex searchPattern);
 
         /// <summary>
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
         /// </summary>
         /// <param name="matchFields"></param>
         /// <returns></returns>
-        T[] Find(IDictionary<string, Regex> matchFields);
+        IEnumerable<T> Find(IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op);
+
+        /// <summary>
+        /// Attempts to find every unique value of <paramref name="key"/>
+        /// <para/>
+        /// Possibly very volatile!
+        /// </summary>
+        /// <param name="key">The key to look for</param>
+        /// <returns></returns>
+        IEnumerable<T2> Distinct<T2>(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="matchFields"></param>
+        /// <returns></returns>
+        IEnumerable<T2> Distinct<T2>(string key, IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op);
+    }
+
+    public enum BooleanOperator
+    {
+        AND,
+        OR,
     }
 }
