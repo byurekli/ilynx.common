@@ -79,7 +79,7 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="matchFields"></param>
         /// <returns></returns>
-        IEnumerable<T> Find(IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op);
+        IEnumerable<T> Find(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
 
         /// <summary>
         /// Attempts to find every unique value of <paramref name="key"/>
@@ -97,9 +97,20 @@ namespace T0yK4T.Tools.Data
         /// <param name="key"></param>
         /// <param name="matchFields"></param>
         /// <returns></returns>
-        IEnumerable<T2> Distinct<T2>(string key, IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op);
+        IEnumerable<T2> Distinct<T2>(string key, BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="matchFields"></param>
+        /// <returns></returns>
+        int Count(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum BooleanOperator
     {
         AND,

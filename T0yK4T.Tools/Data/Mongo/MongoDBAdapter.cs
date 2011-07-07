@@ -184,7 +184,7 @@ namespace T0yK4T.Tools.Data.Mongo
         /// </summary>
         /// <param name="matchFields"></param>
         /// <returns></returns>
-        public IEnumerable<T> Find(IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op)
+        public IEnumerable<T> Find(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
         {
             try
             {
@@ -211,6 +211,8 @@ namespace T0yK4T.Tools.Data.Mongo
 
         private QueryComplete BuildQuery(string key, Regex value)
         {
+            if (string.IsNullOrEmpty(key) || value == null)
+                throw new ArgumentNullException();
             return Query.Matches(key, new BsonRegularExpression(value));
         }
 
@@ -228,10 +230,31 @@ namespace T0yK4T.Tools.Data.Mongo
             catch { return null; }
         }
 
-        public IEnumerable<T2> Distinct<T2>(string key, IEnumerable<KeyValuePair<string, Regex>> matchFields, BooleanOperator op)
+        /// <summary>
+        /// Attempts to find distinct values of <paramref name="T2"/> matching the field <paramref name="key"/> in the underlying collection
+        /// </summary>
+        /// <typeparam name="T2">The type of object to look for</typeparam>
+        /// <param name="key">The key / field name to retrieve</param>
+        /// <param name="op">The BooleanOperator to use for multiple "matchFields"</param>
+        /// <param name="matchFields">The fields to match</param>
+        /// <returns></returns>
+        public IEnumerable<T2> Distinct<T2>(string key, BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
         {
-            QueryComplete q = this.BuildQuery(matchFields, op);
-            return this.collection.Distinct(key, q).Cast<T2>();
+            if (matchFields == null)
+                return this.collection.Distinct(key).Cast<T2>();
+            else
+            {
+                QueryComplete q = this.BuildQuery(matchFields, op);
+                return this.collection.Distinct(key, q).Cast<T2>();
+            }
+        }
+
+        public int Count(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
+        {
+            if (matchFields == null)
+                return this.collection.Count();
+            else
+                return this.collection.Count(this.BuildQuery(matchFields, op));
         }
     }
 }

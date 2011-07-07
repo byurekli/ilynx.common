@@ -64,18 +64,6 @@ namespace T0yK4T.Tools.Configuration
             catch { this.value = defaultValue; try { this.Store(); } catch { } }
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of <see cref="ConfigurableValue{TValue}"/> and sets the name and value components to the specified values
-        ///// </summary>
-        ///// <param name="name">The name of the value (Key)</param>
-        ///// <param name="value">The actual value</param>
-        ///// <param name="converter">The converter to use when saving / retrieving the value from file</param>
-        //public ConfigurableValue(string name, TValue value, IValueConverter<TValue> converter)
-        //{
-        //    this.name = name;
-        //    this.value = value;
-        //}
-
         /// <summary>
         /// Attempts to store this value in the configuration file
         /// </summary>
@@ -167,6 +155,15 @@ namespace T0yK4T.Tools.Configuration
                     return Config.Configuration.AppSettings.Settings[this.name].Value == this.converter.ToString(this.value);
             }
         }
+    }
+
+    /// <summary>
+    /// Wrapper for <see cref="ConfigurableValue{T}"/> with T as string and the converter set to a new instance of <see cref="StringConverter"/>
+    /// </summary>
+    public class ConfigurableStringValue : ConfigurableValue<string>
+    {
+        public ConfigurableStringValue(string name, string defaultValue)
+            : base(name, new StringConverter(), defaultValue) { }
     }
 
     /// <summary>
