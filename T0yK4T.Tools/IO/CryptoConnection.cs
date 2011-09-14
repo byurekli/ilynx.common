@@ -75,7 +75,7 @@ namespace T0yK4T.Tools.IO
         
         private object readLock = new object();
         private object writeLock = new object();
-        private Dictionary<int, Action<ToyPacket>> definedTypes = new Dictionary<int, Action<ToyPacket>>();
+        private Dictionary<uint, Action<ToyPacket>> definedTypes = new Dictionary<uint, Action<ToyPacket>>();
         private SynchronizationContext context;
         private int readErrors = 0;
         private CryptoConnectionFlags setupFlags = CryptoConnectionFlags.ManualRead;
@@ -198,11 +198,11 @@ namespace T0yK4T.Tools.IO
             this.logger = logger;
             this.privRSA = new RSAHelper(this.logger);
             this.handshaker = new HandshakeHelper(this);
-            this.definedTypes.Add((int)PredefinedPacketType.HandshakeRequest, new Action<ToyPacket>(this.HandleHandshakeRequest));
-            this.definedTypes.Add((int)PredefinedPacketType.InitHandshake, new Action<ToyPacket>(this.HandleInitHandshake));
-            this.definedTypes.Add((int)PredefinedPacketType.InitPartialHandshake, new Action<ToyPacket>(this.HandleInitPartialHandshake));
-            this.definedTypes.Add((int)PredefinedPacketType.DisconnectNotification, new Action<ToyPacket>(this.HandleDisconnect));
-            this.definedTypes.Add((int)PredefinedPacketType.ConnectionIDExchange, new Action<ToyPacket>(this.HandleConnectionID));
+            this.definedTypes.Add((uint)PacketType.HandshakeRequest, new Action<ToyPacket>(this.HandleHandshakeRequest));
+            this.definedTypes.Add((uint)PacketType.InitHandshake, new Action<ToyPacket>(this.HandleInitHandshake));
+            this.definedTypes.Add((uint)PacketType.InitPartialHandshake, new Action<ToyPacket>(this.HandleInitPartialHandshake));
+            this.definedTypes.Add((uint)PacketType.DisconnectNotification, new Action<ToyPacket>(this.HandleDisconnect));
+            this.definedTypes.Add((uint)PacketType.ConnectionIDExchange, new Action<ToyPacket>(this.HandleConnectionID));
         }
 
         /// <summary>
@@ -351,7 +351,7 @@ namespace T0yK4T.Tools.IO
             {
                 readErrors = 0;
                 Action<ToyPacket> predefinedAction;
-                if (this.definedTypes.TryGetValue(packet.TypeID, out predefinedAction))
+                if (this.definedTypes.TryGetValue((uint)packet.TypeID, out predefinedAction))
                 {
                     predefinedAction(packet);
                     if ((this.setupFlags & CryptoConnectionFlags.PassOn) == CryptoConnectionFlags.PassOn)
@@ -376,7 +376,7 @@ namespace T0yK4T.Tools.IO
                 else if (!this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
                 {
                     this.AddRunFlag(RunFlags.LocalHandshakeRequested);
-                    ToyPacket hsRequest = new ToyPacket { TypeID = (int)PredefinedPacketType.HandshakeRequest };
+                    ToyPacket hsRequest = new ToyPacket { TypeID = (int)PacketType.HandshakeRequest };
                     this.WritePacket(hsRequest);
                 }
             }
@@ -424,7 +424,7 @@ namespace T0yK4T.Tools.IO
 
         private void SendConnectionID()
         {
-            ToyPacket packet = new ToyPacket { TypeID = (int)PredefinedPacketType.ConnectionIDExchange, Data = this.connectionID.ToByteArray() };
+            ToyPacket packet = new ToyPacket { TypeID = (int)PacketType.ConnectionIDExchange, Data = this.connectionID.ToByteArray() };
             this.WritePacket(packet);
         }
 
@@ -449,11 +449,11 @@ namespace T0yK4T.Tools.IO
                 this.AddRunFlag(RunFlags.IsBlocking);
                 lock (this.p_Lock)
                 {
-                    ToyPacket reply = new ToyPacket { TypeID = (int)PredefinedPacketType.InitHandshake };
+                    ToyPacket reply = new ToyPacket { TypeID = (int)PacketType.InitHandshake };
                     this.WritePacket(reply);
                     int size;
                     ToyPacket response = this.ReadLine(out size);
-                    if (response.TypeID == (int)PredefinedPacketType.InitHandshake)
+                    if (response.TypeID == (int)PacketType.InitHandshake)
                     {
                         this.handshaker.Handshake(this.netStream, this.socket, this.privRSA, out this.encryptor, out this.decryptor, ref this.readLock, ref this.writeLock);
                         this.lastHandshake = DateTime.Now;
@@ -471,11 +471,11 @@ namespace T0yK4T.Tools.IO
             this.AddRunFlag(RunFlags.IsBlocking);
             lock (this.p_Lock)
             {
-                ToyPacket reply = new ToyPacket { TypeID = (int)PredefinedPacketType.InitPartialHandshake };
+                ToyPacket reply = new ToyPacket { TypeID = (int)PacketType.InitPartialHandshake };
                 this.WritePacket(reply);
                 int size;
                 ToyPacket received = this.ReadLine(out size);
-                if (received.TypeID != (int)PredefinedPacketType.InitPartialHandshake) // This should never happen
+                if (received.TypeID != (int)PacketType.InitPartialHandshake) // This should never happen
                     base.LogError("Remote host did not respond to InitPartialHandshake in a manner that could be understood...");
                 else
                 {
@@ -484,10 +484,10 @@ namespace T0yK4T.Tools.IO
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubRSA);
                     string read = this.reader.ReadLine();
                     byte[] rsaDecryptedResponse = this.privRSA.DecryptBase64String(read);
-                    ToyPacket remoteKey = ToySerializer.Instance.Deserialize<ToyPacket>(rsaDecryptedResponse);
+                    ToyPacket remoteKey = ToySerializer.Deserialize<ToyPacket>(rsaDecryptedResponse);
                     this.decryptor = HandshakeHelper.GetDecryptor(this.privRSA, remoteKey);
 
-                    reply.TypeID = (int)PredefinedPacketType.EndPartialHandshake;
+                    reply.TypeID = (int)PacketType.EndPartialHandshake;
                     this.WritePacket(reply);
 
                     received = this.ReadLine(out size);
@@ -533,7 +533,7 @@ namespace T0yK4T.Tools.IO
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubKey);
                     this.encryptor = new EncryptionProvider();
                     ToyPacket sentPacket = HandshakeHelper.WriteEncryptor(remotePubKey, this.encryptor);
-                    byte[] serializedEncryptorPacket = ToySerializer.Instance.Serialize(sentPacket);
+                    byte[] serializedEncryptorPacket = ToySerializer.Serialize(sentPacket);
                     this.writer.WriteLine(remotePubKey.EncryptToBase64String(serializedEncryptorPacket));
                     this.writer.Flush();
 
@@ -569,7 +569,7 @@ namespace T0yK4T.Tools.IO
         
         private void NotifyDisconnect()
         {
-            ToyPacket packet = new ToyPacket { TypeID = (int)PredefinedPacketType.DisconnectNotification };
+            ToyPacket packet = new ToyPacket { TypeID = (int)PacketType.DisconnectNotification };
             this.WritePacket(packet);
         }
 
@@ -798,7 +798,7 @@ namespace T0yK4T.Tools.IO
         {
             lock (this.writeLock)
             {
-                byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
+                byte[] serializedPacket = packet.GetBytes();
                 serializedPacket = this.encryptor.EncryptArray(serializedPacket);
                 byte[] preWriteChunk = BitConverter.GetBytes(serializedPacket.Length);
                 this.netStream.Write(preWriteChunk, 0, preWriteChunk.Length);
@@ -814,16 +814,30 @@ namespace T0yK4T.Tools.IO
             {
                 byte[] preReadChunk = new byte[sizeof(int)];
                 int l = this.netStream.Read(preReadChunk, 0, preReadChunk.Length);
+                finalSize = l;
                 if (l != sizeof(int))
                     throw new IOException("Unexpected pre-read data length");
                 int length = BitConverter.ToInt32(preReadChunk, 0);
                 byte[] data = new byte[length];
-                l = this.netStream.Read(data, 0, data.Length);
-                if (l != length)
-                    throw new IOException("Unexpected data length");
-                data = this.decryptor.DecryptArray(data);
-                finalSize = preReadChunk.Length + length;
-                return ToySerializer.Instance.Deserialize<ToyPacket>(data);
+                int read = 0;
+                byte[] chunk;
+                if (length < CHUNK_SIZE)
+                    chunk = new byte[length];
+                else
+                    chunk = new byte[CHUNK_SIZE];
+                int s = 0;
+                while (read < length)
+                {
+                    read += (s = this.netStream.Read(chunk, 0, chunk.Length));
+                    Array.Copy(chunk, 0, data, read - chunk.Length, s);
+                    if (length - read < CHUNK_SIZE)
+                        chunk = new byte[length - read];
+                }
+                finalSize += read;
+                byte[] finalData = this.decryptor.DecryptArray(data);
+                ToyPacket packet = new ToyPacket();
+                packet.FromBytes(finalData);
+                return packet;
             }
         }
 

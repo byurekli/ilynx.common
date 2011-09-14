@@ -10,16 +10,10 @@ namespace T0yK4T.Tools.IO
     /// <summary>
     /// Used for accessing the ProtoBuf serializer
     /// </summary>
-    public class ToySerializer
+    public static class ToySerializer
     {
         private static readonly object serializerLock = new object();
         private static readonly object deserializerLock = new object();
-
-        /// <summary>
-        /// Provides a Threadstatic instance of <see cref="ToySerializer"/>
-        /// </summary>
-        [ThreadStatic]
-        public static readonly ToySerializer Instance = new ToySerializer();
 
         /// <summary>
         /// Locks the internal serializer object and serializes the specified type instance
@@ -27,7 +21,7 @@ namespace T0yK4T.Tools.IO
         /// <typeparam name="T">The type to serialize</typeparam>
         /// <param name="type">The instance of {T} to serialize</param>
         /// <returns></returns>
-        public byte[] Serialize<T>(T type) where T : class, new()
+        public static byte[] Serialize<T>(T type) where T : class, new()
         {
             if (type == null)
                 return new byte[0];
@@ -49,7 +43,7 @@ namespace T0yK4T.Tools.IO
         /// <typeparam name="T">The type to deserialize in to</typeparam>
         /// <param name="data">The byte array to deserialize</param>
         /// <returns></returns>
-        public T Deserialize<T>(byte[] data) where T : class, new()
+        public static T Deserialize<T>(byte[] data) where T : class, new()
         {
             try
             {

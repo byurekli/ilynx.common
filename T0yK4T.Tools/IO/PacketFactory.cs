@@ -21,7 +21,7 @@ namespace T0yK4T.Tools.IO
         /// <returns></returns>
         public static ToyPacket GenerateASCIIPacket(string message)
         {
-            ToyPacket pkt = new ToyPacket((int)PredefinedPacketType.ASCIIPacket);
+            ToyPacket pkt = new ToyPacket((uint)PacketType.ASCIIPacket);
             pkt.Data = ASCIIEncoding.ASCII.GetBytes(message);
             return pkt;
         }
@@ -37,7 +37,7 @@ namespace T0yK4T.Tools.IO
                 return string.Empty;
             else
             {
-                if (pkt.TypeID == (int)PredefinedPacketType.ASCIIPacket)
+                if (pkt.TypeID == (uint)PacketType.ASCIIPacket)
                     return ASCIIEncoding.ASCII.GetString(pkt.Data);
                 else
                     return string.Empty;
@@ -53,7 +53,7 @@ namespace T0yK4T.Tools.IO
         /// <returns></returns>
         public static ToyPacket GenerateUTF8Packet(string message)
         {
-            ToyPacket pkt = new ToyPacket((int)PredefinedPacketType.UnicodePacket);
+            ToyPacket pkt = new ToyPacket((uint)PacketType.UnicodePacket);
             pkt.Data = UnicodeEncoding.UTF8.GetBytes(message);
             return pkt;
             
@@ -70,7 +70,7 @@ namespace T0yK4T.Tools.IO
                 return string.Empty;
             else
             {
-                if (pkt.TypeID == (int)PredefinedPacketType.UnicodePacket)
+                if (pkt.TypeID == (uint)PacketType.UnicodePacket)
                     return UnicodeEncoding.UTF8.GetString(pkt.Data);
                 else
                     return string.Empty;

@@ -113,7 +113,7 @@ namespace T0yK4T.Tools.IO
 
             ToyPacket rec = new ToyPacket();
             rec.Data = new byte[1];
-            rec.TypeID = (int)PredefinedPacketType.Handshake;
+            rec.TypeID = (int)PacketType.Handshake;
             rec.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             rec.SecInt2 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
 
@@ -124,8 +124,8 @@ namespace T0yK4T.Tools.IO
 
             if (rec == null)
                 throw new Exception(string.Format("Unable to complete handshake, expected to read an encrypted packet from the input stream, got " + rec ?? "[nothing]"));
-            if (rec.TypeID != (int)PredefinedPacketType.Handshake)
-                throw new Exception(string.Format("Unable to complete handshake, Expected packet with TypeID {0}", PredefinedPacketType.Handshake));
+            if (rec.TypeID != (int)PacketType.Handshake)
+                throw new Exception(string.Format("Unable to complete handshake, Expected packet with TypeID {0}", PacketType.Handshake));
             else
                 return true;
         }
@@ -138,13 +138,13 @@ namespace T0yK4T.Tools.IO
             try
             {
                 ToyPacket packet = WriteEncryptor(pubRSA, encryptor);
-                byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
+                byte[] serializedPacket = ToySerializer.Serialize(packet);
                 string sendData = pubRSA.EncryptToBase64String(serializedPacket);
                 writer.WriteLine(sendData); // Writing the packet as a Base64 encoded string to the network stream in the current instance
                 writer.Flush();
 
                 string read = reader.ReadLine(); // Getting response
-                packet = ToySerializer.Instance.Deserialize<ToyPacket>(privRSA.DecryptBase64String(read));
+                packet = ToySerializer.Deserialize<ToyPacket>(privRSA.DecryptBase64String(read));
                 decryptor = GetDecryptor(privRSA, packet);
             }
             catch { decryptor = null; return false; }
@@ -170,7 +170,7 @@ namespace T0yK4T.Tools.IO
 
         private static int ActualWriteLine(StreamWriter dst, ToyPacket packet)
         {
-            byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
+            byte[] serializedPacket = ToySerializer.Serialize(packet);
             string sendData = Convert.ToBase64String(serializedPacket);
             dst.WriteLine(sendData);
             dst.Flush();
@@ -179,7 +179,7 @@ namespace T0yK4T.Tools.IO
 
         private int WriteLine(StreamWriter dst, ToyPacket packet, EncryptionProvider encryptor)
         {
-            byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
+            byte[] serializedPacket = ToySerializer.Serialize(packet);
             serializedPacket = encryptor.EncryptArray(serializedPacket);
             string sendData = Convert.ToBase64String(serializedPacket);
             dst.WriteLine(sendData);
@@ -193,7 +193,7 @@ namespace T0yK4T.Tools.IO
             if (read == null)
                 throw new NullReferenceException("Read null from StreamReader");
             finalSize = read.Length;
-            ToyPacket packet = ToySerializer.Instance.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            ToyPacket packet = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
             return packet;
         }
 
@@ -205,7 +205,7 @@ namespace T0yK4T.Tools.IO
             finalSize = read.Length;
             byte[] data = Convert.FromBase64String(read);
             data = decryptor.DecryptArray(data);
-            return ToySerializer.Instance.Deserialize<ToyPacket>(data);
+            return ToySerializer.Deserialize<ToyPacket>(data);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace T0yK4T.Tools.IO
             outputWriter.WriteLine(rsa.EncryptToBase64String(encryptor.Key));
             outputWriter.Flush();
 
-            pkt.TypeID = (int)PredefinedPacketType.Handshake;
+            pkt.TypeID = (int)PacketType.Handshake;
             pkt.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             pkt.SecInt2 = CryptoCommon.GetPrngInt();// Adding an element of randomness to our sent data
             pkt.Data = outputDataStream.GetBuffer();
@@ -256,8 +256,8 @@ namespace T0yK4T.Tools.IO
 
         private static void SendPubkey(StreamWriter dst, RSAHelper helper)
         {
-            ToyPacket packet = new ToyPacket((int)PredefinedPacketType.Handshake);
-            packet.TypeID = (int)PredefinedPacketType.Handshake;
+            ToyPacket packet = new ToyPacket((int)PacketType.Handshake);
+            packet.TypeID = (int)PacketType.Handshake;
             packet.SecInt2 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.Data = handshakeEncoding.GetBytes(helper.PublicKey);
@@ -268,7 +268,7 @@ namespace T0yK4T.Tools.IO
         private static RSAHelper ReceivePubkey(StreamReader src)
         {
             string read = src.ReadLine();
-            ToyPacket rec = ToySerializer.Instance.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            ToyPacket rec = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
             if (rec == null)
                 throw new Exception("Received data was not a Public Key Packet");
             try

@@ -73,7 +73,7 @@ namespace T0yK4T.Tools.Cryptography
             byte[] buffer = new byte[System.Runtime.InteropServices.Marshal.SizeOf(typeof(int))];
             byte[] buffer2 = new byte[buffer.Length];
             prng.GetNonZeroBytes(buffer);
-            prng.GetNonZeroBytes(buffer2);
+            prng.GetBytes(buffer2);
             for (int i = 0; i < buffer.Length; i++)
                 buffer[i] ^= buffer2[(buffer.Length - 1) - i];
             return System.BitConverter.ToInt32(buffer, 0);
