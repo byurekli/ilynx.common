@@ -484,7 +484,7 @@ namespace T0yK4T.Tools.IO
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubRSA);
                     string read = this.reader.ReadLine();
                     byte[] rsaDecryptedResponse = this.privRSA.DecryptBase64String(read);
-                    ToyPacket remoteKey = ToySerializer.Deserialize<ToyPacket>(rsaDecryptedResponse);
+                    ToyPacket remoteKey = ToySerializer.Instance.Deserialize<ToyPacket>(rsaDecryptedResponse);
                     this.decryptor = HandshakeHelper.GetDecryptor(this.privRSA, remoteKey);
 
                     reply.TypeID = (int)PredefinedPacketType.EndPartialHandshake;
@@ -533,7 +533,7 @@ namespace T0yK4T.Tools.IO
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubKey);
                     this.encryptor = new EncryptionProvider();
                     ToyPacket sentPacket = HandshakeHelper.WriteEncryptor(remotePubKey, this.encryptor);
-                    byte[] serializedEncryptorPacket = ToySerializer.Serialize(sentPacket);
+                    byte[] serializedEncryptorPacket = ToySerializer.Instance.Serialize(sentPacket);
                     this.writer.WriteLine(remotePubKey.EncryptToBase64String(serializedEncryptorPacket));
                     this.writer.Flush();
 
@@ -798,7 +798,7 @@ namespace T0yK4T.Tools.IO
         {
             lock (this.writeLock)
             {
-                byte[] serializedPacket = ToySerializer.Serialize(packet);
+                byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
                 serializedPacket = this.encryptor.EncryptArray(serializedPacket);
                 byte[] preWriteChunk = BitConverter.GetBytes(serializedPacket.Length);
                 this.netStream.Write(preWriteChunk, 0, preWriteChunk.Length);
@@ -823,7 +823,7 @@ namespace T0yK4T.Tools.IO
                     throw new IOException("Unexpected data length");
                 data = this.decryptor.DecryptArray(data);
                 finalSize = preReadChunk.Length + length;
-                return ToySerializer.Deserialize<ToyPacket>(data);
+                return ToySerializer.Instance.Deserialize<ToyPacket>(data);
             }
         }
 

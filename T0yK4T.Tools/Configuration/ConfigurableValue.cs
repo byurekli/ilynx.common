@@ -162,6 +162,11 @@ namespace T0yK4T.Tools.Configuration
     /// </summary>
     public class ConfigurableStringValue : ConfigurableValue<string>
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConfigurableStringValue"/>
+        /// </summary>
+        /// <param name="name">The name of the key for the value</param>
+        /// <param name="defaultValue">The default value (if no value was found in the configuration file)</param>
         public ConfigurableStringValue(string name, string defaultValue)
             : base(name, new StringConverter(), defaultValue) { }
     }

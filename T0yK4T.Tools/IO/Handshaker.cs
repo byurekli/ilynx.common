@@ -138,13 +138,13 @@ namespace T0yK4T.Tools.IO
             try
             {
                 ToyPacket packet = WriteEncryptor(pubRSA, encryptor);
-                byte[] serializedPacket = ToySerializer.Serialize(packet);
+                byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
                 string sendData = pubRSA.EncryptToBase64String(serializedPacket);
                 writer.WriteLine(sendData); // Writing the packet as a Base64 encoded string to the network stream in the current instance
                 writer.Flush();
 
                 string read = reader.ReadLine(); // Getting response
-                packet = ToySerializer.Deserialize<ToyPacket>(privRSA.DecryptBase64String(read));
+                packet = ToySerializer.Instance.Deserialize<ToyPacket>(privRSA.DecryptBase64String(read));
                 decryptor = GetDecryptor(privRSA, packet);
             }
             catch { decryptor = null; return false; }
@@ -170,7 +170,7 @@ namespace T0yK4T.Tools.IO
 
         private static int ActualWriteLine(StreamWriter dst, ToyPacket packet)
         {
-            byte[] serializedPacket = ToySerializer.Serialize(packet);
+            byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
             string sendData = Convert.ToBase64String(serializedPacket);
             dst.WriteLine(sendData);
             dst.Flush();
@@ -179,7 +179,7 @@ namespace T0yK4T.Tools.IO
 
         private int WriteLine(StreamWriter dst, ToyPacket packet, EncryptionProvider encryptor)
         {
-            byte[] serializedPacket = ToySerializer.Serialize(packet);
+            byte[] serializedPacket = ToySerializer.Instance.Serialize(packet);
             serializedPacket = encryptor.EncryptArray(serializedPacket);
             string sendData = Convert.ToBase64String(serializedPacket);
             dst.WriteLine(sendData);
@@ -193,7 +193,7 @@ namespace T0yK4T.Tools.IO
             if (read == null)
                 throw new NullReferenceException("Read null from StreamReader");
             finalSize = read.Length;
-            ToyPacket packet = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            ToyPacket packet = ToySerializer.Instance.Deserialize<ToyPacket>(Convert.FromBase64String(read));
             return packet;
         }
 
@@ -205,7 +205,7 @@ namespace T0yK4T.Tools.IO
             finalSize = read.Length;
             byte[] data = Convert.FromBase64String(read);
             data = decryptor.DecryptArray(data);
-            return ToySerializer.Deserialize<ToyPacket>(data);
+            return ToySerializer.Instance.Deserialize<ToyPacket>(data);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace T0yK4T.Tools.IO
         private static RSAHelper ReceivePubkey(StreamReader src)
         {
             string read = src.ReadLine();
-            ToyPacket rec = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            ToyPacket rec = ToySerializer.Instance.Deserialize<ToyPacket>(Convert.FromBase64String(read));
             if (rec == null)
                 throw new Exception("Received data was not a Public Key Packet");
             try

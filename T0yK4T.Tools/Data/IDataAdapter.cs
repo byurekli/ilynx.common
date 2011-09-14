@@ -61,6 +61,7 @@ namespace T0yK4T.Tools.Data
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore using the specified <see cref="DataProperty{T}"/> as a filter
         /// </summary>
         /// <param name="properties"></param>
+        /// <param name="op"></param>
         /// <returns></returns>
         IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
 
@@ -78,6 +79,7 @@ namespace T0yK4T.Tools.Data
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
         /// </summary>
         /// <param name="matchFields"></param>
+        /// <param name="op"></param>
         /// <returns></returns>
         IEnumerable<T> Find(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
 
@@ -91,11 +93,12 @@ namespace T0yK4T.Tools.Data
         IEnumerable<T2> Distinct<T2>(string key);
 
         /// <summary>
-        /// 
+        /// Attempts to find every unique value in the database using the specified filters
         /// </summary>
         /// <typeparam name="T2"></typeparam>
         /// <param name="key"></param>
         /// <param name="matchFields"></param>
+        /// <param name="op"></param>
         /// <returns></returns>
         IEnumerable<T2> Distinct<T2>(string key, BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
 
@@ -109,11 +112,18 @@ namespace T0yK4T.Tools.Data
     }
 
     /// <summary>
-    /// 
+    /// Used to define a boolean operator (And / Or)
     /// </summary>
     public enum BooleanOperator
     {
+        /// <summary>
+        /// ...
+        /// </summary>
         AND,
+
+        /// <summary>
+        /// ...
+        /// </summary>
         OR,
     }
 }

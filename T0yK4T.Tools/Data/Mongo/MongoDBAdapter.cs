@@ -183,6 +183,7 @@ namespace T0yK4T.Tools.Data.Mongo
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
         /// </summary>
         /// <param name="matchFields"></param>
+        /// <param name="op"></param>
         /// <returns></returns>
         public IEnumerable<T> Find(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
         {
@@ -220,6 +221,7 @@ namespace T0yK4T.Tools.Data.Mongo
         /// Attempts to find a list of <typeparamref name="T"/>s in the underlying collection using the specified list of <see cref="DataProperty{T}"/> as "filter"
         /// </summary>
         /// <param name="properties"></param>
+        /// <param name="op"></param>
         /// <returns></returns>
         public IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op)
         {
@@ -231,7 +233,7 @@ namespace T0yK4T.Tools.Data.Mongo
         }
 
         /// <summary>
-        /// Attempts to find distinct values of <paramref name="T2"/> matching the field <paramref name="key"/> in the underlying collection
+        /// Attempts to find distinct values of <typeparamref name="T2"/> matching the field <paramref name="key"/> in the underlying collection
         /// </summary>
         /// <typeparam name="T2">The type of object to look for</typeparam>
         /// <param name="key">The key / field name to retrieve</param>
@@ -249,6 +251,12 @@ namespace T0yK4T.Tools.Data.Mongo
             }
         }
 
+        /// <summary>
+        /// Attempts to count the values in the underlying database, optionally using the specified filter
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="matchFields"></param>
+        /// <returns></returns>
         public int Count(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
         {
             if (matchFields == null)
