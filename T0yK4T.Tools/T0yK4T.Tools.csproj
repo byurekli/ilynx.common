@@ -111,7 +111,6 @@
   <ItemGroup>
     <Compile Include="ComponentBase.cs" />
     <Compile Include="Configuration\ConfigurableValue.cs" />
-    <Compile Include="Configuration\SafeConfigManager.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="Cryptography\CryptoCommon.cs" />
     <Compile Include="Cryptography\CryptoStreamWriter.cs" />

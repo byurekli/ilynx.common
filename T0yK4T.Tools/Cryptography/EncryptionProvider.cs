@@ -14,7 +14,6 @@ namespace T0yK4T.Tools.Cryptography
 	public class EncryptionProvider : IDisposable
 	{
 		private MemoryStream dataStream;
-		private IFormatter bFormatter;
 		private object p_Lock = new object();
 		private SymmetricAlgorithm symAlg;
         private bool compress = false;
@@ -32,7 +31,6 @@ namespace T0yK4T.Tools.Cryptography
 		/// <param name="key">The Key to use in the encryption algorithm</param>
 		public EncryptionProvider(byte[] key, byte[] iv, IFormatter formatter, bool compress)
 		{
-            this.bFormatter = formatter;
             this.compress = compress;
 			this.Initialize(key, iv);
             prng.GetBytes(key);
@@ -50,35 +48,10 @@ namespace T0yK4T.Tools.Cryptography
         /// <param name="iv">The initlaization vector to use for the underlying encryption algorithm</param>
         public EncryptionProvider(byte[] key, byte[] iv)
         {
-            this.bFormatter = CryptoCommon.DEFAULT_FORMATTER;
             this.compress = CryptoCommon.COMPRESS;
             this.Initialize(key, iv);
             prng.GetBytes(key);
             prng.GetBytes(iv);
-        }
-
-		/// <summary>
-		/// Initializes a new instance of EncryptionProvider with all it's values set to the defaults (Key and IV will be RANDOM)
-		/// </summary>
-		/// <param name="formatter">The Serialization Formatter to use when serializing objects</param>
-		/// <param name="compress">Specifies whether or not Compression and Decompression should occur before Encryption and after Decryption</param>
-        public EncryptionProvider(IFormatter formatter, bool compress)
-        {
-            this.bFormatter = formatter;
-            this.compress = compress;
-            
-            byte[] pre = new byte[(CryptoCommon.KEY_SIZE / 8) * 2];
-            prng.GetBytes(pre);
-
-            byte[] key = new byte[CryptoCommon.KEY_SIZE / 8];
-            for (uint i = 0; i < key.Length; i++)
-                key[i] = pre[i];
-
-            byte[] iv = new byte[CryptoCommon.KEY_SIZE / 8];
-            for (uint i = CryptoCommon.KEY_SIZE / 8; i < pre.Length; i++)
-                iv[i - iv.Length] = pre[i];
-
-            this.Initialize(key, iv);
         }
 
 		/// <summary>
@@ -87,7 +60,6 @@ namespace T0yK4T.Tools.Cryptography
 		/// <param name="compress">Specifies wether or not compression / decompression should occur before encryption and after decryption</param>
 		public EncryptionProvider(bool compress)
 		{
-			this.bFormatter = CryptoCommon.DEFAULT_FORMATTER;
 			this.compress = compress;
             byte[] key = new byte[CryptoCommon.KEY_SIZE / 8];
             byte[] iv = new byte[CryptoCommon.KEY_SIZE / 8];
@@ -103,6 +75,22 @@ namespace T0yK4T.Tools.Cryptography
         public int BlockSize
         {
             get { return this.symAlg.BlockSize; }
+        }
+
+        /// <summary>
+        /// Gets an instance of <see cref="ICryptoTransform"/> that can be used to encrypt data
+        /// </summary>
+        public ICryptoTransform Encryptor
+        {
+            get { return this.encryptor; }
+        }
+
+        /// <summary>
+        /// Gets an instance of <see cref="ICryptoTransform"/> that can be used to decrypt data
+        /// </summary>
+        public ICryptoTransform Decryptor
+        {
+            get { return this.decryptor; }
         }
 
 		/// <summary>
@@ -155,70 +143,70 @@ namespace T0yK4T.Tools.Cryptography
 			symAlg.IV = iv.Take(256 / 8).ToArray();*/
 		}
 
-		/// <summary>
-		/// Serializes and Encrypts an object
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public byte[] Encrypt<T>(T data)
-		{
-			if (!data.GetType().IsDefined(typeof(SerializableAttribute), false))
-				return new byte[0];
-			return this.EncryptArray(this.Serialize<T>(data));
-		}
+        ///// <summary>
+        ///// Serializes and Encrypts an object
+        ///// </summary>
+        ///// <param name="data"></param>
+        ///// <returns></returns>
+        //public byte[] Encrypt<T>(T data)
+        //{
+        //    if (!data.GetType().IsDefined(typeof(SerializableAttribute), false))
+        //        return new byte[0];
+        //    return this.EncryptArray(this.Serialize<T>(data));
+        //}
 
-		/// <summary>
-		/// Decrypts an array of data using the Cryptographic Algorithm contained within this class and deserializes it in to an object
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public object Decrypt(byte[] data)
-		{
-			return this.Deserialize(this.DecryptArray(data));
-		}
+        ///// <summary>
+        ///// Decrypts an array of data using the Cryptographic Algorithm contained within this class and deserializes it in to an object
+        ///// </summary>
+        ///// <param name="data"></param>
+        ///// <returns></returns>
+        //public object Decrypt(byte[] data)
+        //{
+        //    return this.Deserialize(this.DecryptArray(data));
+        //}
 
-		/// <summary>
-		/// Serializes specified (payload) - T
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public byte[] Serialize<T>(T data)
-		{
-			if (!this.CanSerialize<T>())
-				return new byte[0];
-			byte[] iData;
-			lock (this.p_Lock)
-			{
-				try
-				{
-					this.dataStream = new MemoryStream();
-                    if (this.compress)
-                    {
-                        this.gStream = new GZipStream(dataStream, CompressionMode.Compress);
-                        this.bFormatter.Serialize(this.gStream, data);
-                        this.gStream.Flush();
-                    }
-                    else
-					    this.bFormatter.Serialize(dataStream, data);
-					//this.dataStream.Flush();
-					iData = this.dataStream.GetBuffer();
-					this.dataStream.Close();
-				}
-				catch
-				{
-					try
-					{
-						if (this.compress)
-							this.gStream.Close();
-						this.dataStream.Close();
-					}
-					catch { }
-					iData = new byte[0];
-				}
-			}
-			return iData;
-		}
+        ///// <summary>
+        ///// Serializes specified (payload) - T
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="data"></param>
+        ///// <returns></returns>
+        //public byte[] Serialize<T>(T data)
+        //{
+        //    if (!this.CanSerialize<T>())
+        //        return new byte[0];
+        //    byte[] iData;
+        //    lock (this.p_Lock)
+        //    {
+        //        try
+        //        {
+        //            this.dataStream = new MemoryStream();
+        //            if (this.compress)
+        //            {
+        //                this.gStream = new GZipStream(dataStream, CompressionMode.Compress);
+        //                this.bFormatter.Serialize(this.gStream, data);
+        //                this.gStream.Flush();
+        //            }
+        //            else
+        //                this.bFormatter.Serialize(dataStream, data);
+        //            //this.dataStream.Flush();
+        //            iData = this.dataStream.GetBuffer();
+        //            this.dataStream.Close();
+        //        }
+        //        catch
+        //        {
+        //            try
+        //            {
+        //                if (this.compress)
+        //                    this.gStream.Close();
+        //                this.dataStream.Close();
+        //            }
+        //            catch { }
+        //            iData = new byte[0];
+        //        }
+        //    }
+        //    return iData;
+        //}
 
 		/// <summary>
 		/// Compresses the specified array of data using the builtin GZip compression
@@ -259,94 +247,94 @@ namespace T0yK4T.Tools.Cryptography
             return res;
         }
 
-		/// <summary>
-		/// Deserializes the specified array of bytes into an object
-		/// if Compress is true, this method will decompress the data before deserialization!
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public object Deserialize(byte[] data)
-		{
-			object retVal = default(object);
-			try
-			{
-				lock (this.p_Lock)
-				{
-					this.dataStream = new MemoryStream(data);
-                    if (this.compress)
-                    {
-                        this.gStream = new GZipStream(this.dataStream, CompressionMode.Decompress);
-                        retVal = this.bFormatter.Deserialize(this.gStream);
-                        this.gStream.Close();
-                    }
-                    else
-					    retVal = this.bFormatter.Deserialize(this.dataStream);
-					this.dataStream.Close();
-				}
-			}
-			catch { this.dataStream.Close(); }
-			return retVal;
-		}
+        ///// <summary>
+        ///// Deserializes the specified array of bytes into an object
+        ///// if Compress is true, this method will decompress the data before deserialization!
+        ///// </summary>
+        ///// <param name="data"></param>
+        ///// <returns></returns>
+        //public object Deserialize(byte[] data)
+        //{
+        //    object retVal = default(object);
+        //    try
+        //    {
+        //        lock (this.p_Lock)
+        //        {
+        //            this.dataStream = new MemoryStream(data);
+        //            if (this.compress)
+        //            {
+        //                this.gStream = new GZipStream(this.dataStream, CompressionMode.Decompress);
+        //                retVal = this.bFormatter.Deserialize(this.gStream);
+        //                this.gStream.Close();
+        //            }
+        //            else
+        //                retVal = this.bFormatter.Deserialize(this.dataStream);
+        //            this.dataStream.Close();
+        //        }
+        //    }
+        //    catch { this.dataStream.Close(); }
+        //    return retVal;
+        //}
 
-		/// <summary>
-		/// Deserializes the specified stream and returns the resulting object, optionally closes the stream after reading is done
-		/// </summary>
-		/// <param name="s">The stream to deserialize data from</param>
-		/// <param name="closeStream">If true, will close the specified stream after deserialization, otherwise false</param>
-		/// <returns>Returns the resulting object</returns>
-		public object Deserialize(Stream s, bool closeStream)
-		{
-			object retVal = default(object);
-			try
-			{
-				lock (this.p_Lock)
-				{
-					retVal = this.bFormatter.Deserialize(s);
-					if (closeStream)
-						s.Close();
-				}
-			}
-			catch
-			{
-				if (closeStream)
-					s.Close();
-			}
-			return retVal;
-		}
+        ///// <summary>
+        ///// Deserializes the specified stream and returns the resulting object, optionally closes the stream after reading is done
+        ///// </summary>
+        ///// <param name="s">The stream to deserialize data from</param>
+        ///// <param name="closeStream">If true, will close the specified stream after deserialization, otherwise false</param>
+        ///// <returns>Returns the resulting object</returns>
+        //public object Deserialize(Stream s, bool closeStream)
+        //{
+        //    object retVal = default(object);
+        //    try
+        //    {
+        //        lock (this.p_Lock)
+        //        {
+        //            retVal = this.bFormatter.Deserialize(s);
+        //            if (closeStream)
+        //                s.Close();
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        if (closeStream)
+        //            s.Close();
+        //    }
+        //    return retVal;
+        //}
 
-		/// <summary>
-		/// Serializes the specified object onto the specified stream, and optionally closes the stream on completion
-		/// </summary>
-		/// <param name="o">The object to serialize</param>
-		/// <param name="s">The stream to use for serialization output</param>
-		/// <param name="closeStream">If set to true, will close the specified stream, otherwise won't</param>
-		public void Serialize(object o, Stream s, bool closeStream)
-		{
-			if (!this.CanSerialize(o))
-				throw new ArgumentException("Specified object is not serializable!");
-			try
-			{
-				this.bFormatter.Serialize(s, o);
-				s.Flush();
-				if (closeStream)
-					s.Close();
-			}
-			catch
-			{
-				if (closeStream)
-					s.Close();
-			}
-		}
+        ///// <summary>
+        ///// Serializes the specified object onto the specified stream, and optionally closes the stream on completion
+        ///// </summary>
+        ///// <param name="o">The object to serialize</param>
+        ///// <param name="s">The stream to use for serialization output</param>
+        ///// <param name="closeStream">If set to true, will close the specified stream, otherwise won't</param>
+        //public void Serialize(object o, Stream s, bool closeStream)
+        //{
+        //    if (!this.CanSerialize(o))
+        //        throw new ArgumentException("Specified object is not serializable!");
+        //    try
+        //    {
+        //        this.bFormatter.Serialize(s, o);
+        //        s.Flush();
+        //        if (closeStream)
+        //            s.Close();
+        //    }
+        //    catch
+        //    {
+        //        if (closeStream)
+        //            s.Close();
+        //    }
+        //}
 
-		private bool CanSerialize(object o)
-		{
-			return o.GetType().IsDefined(typeof(SerializableAttribute), false);
-		}
+        //private bool CanSerialize(object o)
+        //{
+        //    return o.GetType().IsDefined(typeof(SerializableAttribute), false);
+        //}
 
-		private bool CanSerialize<T>()
-		{
-			return typeof(T).IsDefined(typeof(SerializableAttribute), false);
-		}
+        //private bool CanSerialize<T>()
+        //{
+        //    return typeof(T).IsDefined(typeof(SerializableAttribute), false);
+        //}
 
 		/// <summary>
 		/// Decrypts and aray of data

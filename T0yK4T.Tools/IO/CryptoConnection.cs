@@ -82,6 +82,7 @@ namespace T0yK4T.Tools.IO
         //private EndPoint RemoteEndPoint;
         private Queue<PacketWithSize> packetQueue = new Queue<PacketWithSize>();
         private const int CHUNK_SIZE = 512;
+        private const int maxQueueSize = 20;
         
         private DateTime lastHandshake = DateTime.MinValue;
 
@@ -580,6 +581,8 @@ namespace T0yK4T.Tools.IO
             if ((this.ConnectionFlags & CryptoConnectionFlags.ManualRead) == CryptoConnectionFlags.ManualRead)
             {
                 PacketWithSize pws = new PacketWithSize { Packet = packet, Size = size };
+                while (packetQueue.Count >= maxQueueSize) // Choking
+                    Thread.Sleep(10);
                 this.packetQueue.Enqueue(pws);
             }
             else
@@ -594,7 +597,11 @@ namespace T0yK4T.Tools.IO
                     }), args);
                 }
                 else
+                {
+                    while (this.queuedEvents.Count >= maxQueueSize) // Choking
+                        Thread.Sleep(10);
                     this.queuedEvents.Enqueue(args);
+                }
             }
         }
 
@@ -853,7 +860,25 @@ namespace T0yK4T.Tools.IO
 
         private void RemoveRunFlag(RunFlags flag)
         {
-            this.runFlags ^= flag;
+            this.runFlags = (this.runFlags | flag) ^ flag;
+        }
+
+        /// <summary>
+        /// Adds the specified flag to the <see cref="CryptoConnectionFlags"/> (<see cref="CryptoConnection.ConnectionFlags"/>) of this instance
+        /// </summary>
+        /// <param name="flag"></param>
+        public void SetFlag(CryptoConnectionFlags flag)
+        {
+            this.ConnectionFlags |= flag;
+        }
+
+        /// <summary>
+        /// Removes the specified flag from the <see cref="CryptoConnectionFlags"/> (<see cref="CryptoConnection.ConnectionFlags"/>) of this instance
+        /// </summary>
+        /// <param name="flag"></param>
+        public void UnSetFlag(CryptoConnectionFlags flag)
+        {
+            this.ConnectionFlags = (this.ConnectionFlags | flag) ^ flag;
         }
 
         /// <summary>
