@@ -28,7 +28,7 @@ namespace T0yK4T.Tools.Cryptography
         /// <summary>
         /// The default cipher mode used in various classes
         /// </summary>
-        public static CipherMode CipherMode = CipherMode.OFB;
+        public static CipherMode CipherMode = CipherMode.CBC;
 
         /// <summary>
         /// The default Encoding used to convert strings to byte[] and vice versa (Will be used by EncryptionProvider as a default value)

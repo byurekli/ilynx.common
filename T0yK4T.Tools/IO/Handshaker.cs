@@ -76,7 +76,7 @@ namespace T0yK4T.Tools.IO
         /// <param name="readLock">The object used to lock read access to the stream to one thread</param>
         /// <param name="writeLock">The object used to lock write access to the stream to one thread</param>
         /// <returns></returns>
-        public bool Handshake(NetworkStream netStream, Socket s, RSAHelper privRSA, out EncryptionProvider encryptor, out EncryptionProvider decryptor, ref object readLock, ref object writeLock)
+        public bool Handshake(Stream netStream, Socket s, RSAHelper privRSA, out EncryptionProvider encryptor, out EncryptionProvider decryptor, ref object readLock, ref object writeLock)
         {
             RSAHelper pubRSA;
             encryptor = null; decryptor = null;
@@ -106,7 +106,7 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        private bool VerifySessionKeys(NetworkStream netStream, EncryptionProvider encryptor, EncryptionProvider decryptor)
+        private bool VerifySessionKeys(Stream netStream, EncryptionProvider encryptor, EncryptionProvider decryptor)
         {
             StreamReader reader = new StreamReader(netStream);
             StreamWriter writer = new StreamWriter(netStream);
@@ -114,8 +114,8 @@ namespace T0yK4T.Tools.IO
             ToyPacket rec = new ToyPacket();
             rec.Data = new byte[1];
             rec.TypeID = (int)PacketType.Handshake;
-            rec.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
-            rec.SecInt2 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            rec.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            rec.UserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
 
             WriteLine(writer, rec, encryptor);
 
@@ -130,7 +130,7 @@ namespace T0yK4T.Tools.IO
                 return true;
         }
 
-        private bool NegotiateSessionKeys(NetworkStream netStream, out EncryptionProvider decryptor, out EncryptionProvider encryptor, RSAHelper pubRSA, RSAHelper privRSA)
+        private bool NegotiateSessionKeys(Stream netStream, out EncryptionProvider decryptor, out EncryptionProvider encryptor, RSAHelper pubRSA, RSAHelper privRSA)
         {
             StreamReader reader = new StreamReader(netStream);
             StreamWriter writer = new StreamWriter(netStream);
@@ -159,7 +159,7 @@ namespace T0yK4T.Tools.IO
         /// <param name="netStream">The <see cref="NetworkStream"/> to use for exchanging public keys</param>
         /// <param name="privRSA">The RSAHelper for the local party</param>
         /// <param name="pubRSA">Will be set to a new instance of <see cref="RSAHelper"/> that can be used to encrypt data going towards the remote party</param>
-        public static void ExchangePubKey(NetworkStream netStream, RSAHelper privRSA, out RSAHelper pubRSA)
+        public static void ExchangePubKey(Stream netStream, RSAHelper privRSA, out RSAHelper pubRSA)
         {
             StreamReader src = new StreamReader(netStream);
             StreamWriter dst = new StreamWriter(netStream);
@@ -248,8 +248,8 @@ namespace T0yK4T.Tools.IO
             outputWriter.Flush();
 
             pkt.TypeID = (int)PacketType.Handshake;
-            pkt.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
-            pkt.SecInt2 = CryptoCommon.GetPrngInt();// Adding an element of randomness to our sent data
+            pkt.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            pkt.UserID = CryptoCommon.GetPrngInt();// Adding an element of randomness to our sent data
             pkt.Data = outputDataStream.GetBuffer();
             return pkt;
         }
@@ -258,8 +258,8 @@ namespace T0yK4T.Tools.IO
         {
             ToyPacket packet = new ToyPacket((int)PacketType.Handshake);
             packet.TypeID = (int)PacketType.Handshake;
-            packet.SecInt2 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
-            packet.SecInt1 = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            packet.UserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            packet.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.Data = handshakeEncoding.GetBytes(helper.PublicKey);
 
             ActualWriteLine(dst, packet);

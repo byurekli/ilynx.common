@@ -53,12 +53,12 @@ namespace T0yK4T.Tools.IO
         public uint TypeID { get; set; }
 
         /// <summary>
-        /// Random "padding data"
+        /// Gets or Sets a value indicating which channel this packet is destined for
         /// <para/>
-        /// (Generally only used in handshakes for additional protection)
+        /// NOTE: If this value is set to 0, IT WILL BE RANDOMIZED!
         /// </summary>
-        [ProtoMember(2, IsRequired = false)]
-        internal int SecInt1
+        [ProtoMember(2, IsRequired = true)]
+        public int ChannelID
         {
             get;
             set;
@@ -76,12 +76,12 @@ namespace T0yK4T.Tools.IO
         }
 
         /// <summary>
-        /// Random "padding" data
+        /// Gets or Sets a value indicating which user this packet is destined for
         /// <para/>
-        /// (Generally only used in handshakes for additional protection)
+        /// NOTE: If this value is set to 0, IT WILL BE RANDOMIZED!
         /// </summary>
-        [ProtoMember(4, IsRequired = false)]
-        internal int SecInt2
+        [ProtoMember(4, IsRequired = true)]
+        public int UserID
         {
             get;
             set;
@@ -95,15 +95,15 @@ namespace T0yK4T.Tools.IO
         {
             byte[] buffer = new byte[16 + this.data.Length];
             int offset = 0;
-            
-            if (this.SecInt1 == 0)
-                this.SecInt1 = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
-            if (this.SecInt2 == 0)
-                this.SecInt2 = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
+
+            if (this.ChannelID == 0)
+                this.ChannelID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
+            if (this.UserID == 0)
+                this.UserID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
 
             byte[] tmp = new byte[0];
             
-            tmp = BitConverter.GetBytes(this.SecInt1);
+            tmp = BitConverter.GetBytes(this.ChannelID);
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
@@ -111,7 +111,7 @@ namespace T0yK4T.Tools.IO
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
-            tmp = BitConverter.GetBytes(this.SecInt2);
+            tmp = BitConverter.GetBytes(this.UserID);
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
@@ -127,25 +127,27 @@ namespace T0yK4T.Tools.IO
         /// Fills this instance's fields with values contained in the specified byte array
         /// </summary>
         /// <param name="bytes"></param>
-        public void FromBytes(byte[] bytes)
+        public static ToyPacket FromBytes(byte[] bytes)
         {
+            ToyPacket ret = new ToyPacket();
             int offset = 0;
 
-            this.SecInt1 = BitConverter.ToInt32(bytes, offset);
+            ret.ChannelID = BitConverter.ToInt32(bytes, offset);
             offset += 4;
             
-            this.TypeID = BitConverter.ToUInt32(bytes, offset);
+            ret.TypeID = BitConverter.ToUInt32(bytes, offset);
             offset += 4;
             
-            this.SecInt2 = BitConverter.ToInt32(bytes, offset);
+            ret.UserID = BitConverter.ToInt32(bytes, offset);
             offset += 4;
 
             int dataLength = BitConverter.ToInt32(bytes, offset);
             offset += 4;
 
-            this.data = new byte[dataLength];
-            if (this.data.Length > 0)
-                Array.Copy(bytes, offset, this.data, 0, this.data.Length);
+            ret.data = new byte[dataLength];
+            if (ret.data.Length > 0)
+                Array.Copy(bytes, offset, ret.data, 0, ret.data.Length);
+            return ret;
         }
     }
 

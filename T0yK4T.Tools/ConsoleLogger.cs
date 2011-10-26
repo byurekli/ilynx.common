@@ -49,8 +49,11 @@ namespace T0yK4T.Tools
         {
             string line = string.Format("[{0}:{1}]: {2}", type.ToString()[0], sender.GetType().FullName, message);
             Console.WriteLine(line);
-            writer.WriteLine(line);
-            writer.Flush();
+            if (writer != null)
+            {
+                writer.WriteLine(line);
+                writer.Flush();
+            }
         }
 
         ~ConsoleLogger()

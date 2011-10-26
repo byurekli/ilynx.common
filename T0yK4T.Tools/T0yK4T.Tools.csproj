@@ -124,9 +124,10 @@
     <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="General\PriorityQueue.cs" />
     <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
+    <Compile Include="IO\CryptoConnection.cs" />
     <Compile Include="Threading\ThreadedWorker.cs" />
     <Compile Include="IO\CopyDirectory.cs" />
-    <Compile Include="IO\CryptoConnection.cs" />
+    <None Include="IO\CryptoConnection.old" />
     <Compile Include="IO\Handshaker.cs" />
     <Compile Include="IO\LockingSerializer.cs" />
     <Compile Include="IO\PacketFactory.cs" />

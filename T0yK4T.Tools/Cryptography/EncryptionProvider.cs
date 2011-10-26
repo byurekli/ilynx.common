@@ -24,6 +24,8 @@ namespace T0yK4T.Tools.Cryptography
 
 		/// <summary>
 		/// Initializes a new instance of EncryptionProvider with Key and IV set to the specified values
+        /// <para/>
+        /// NOTE: Key and IV will be randomized after this constructor has run
 		/// </summary>
 		/// <param name="formatter">The Serialization Formatter to use when serializing objects</param>
 		/// <param name="compress">Specifies whether or not Compression and Decompression should occur before Encryption and after Decryption</param>
@@ -43,6 +45,8 @@ namespace T0yK4T.Tools.Cryptography
         /// The internal dataformatter for serialization is set to <see cref="CryptoCommon.DEFAULT_FORMATTER"/>
         /// <para/>
         /// The "compress flag" is set to <see cref="CryptoCommon.COMPRESS"/>
+        /// <para/>
+        /// NOTE: Key and IV will be randomized after this constructor has run
         /// </summary>
         /// <param name="key">The key to use for the underlying symetric encryption algorithm</param>
         /// <param name="iv">The initlaization vector to use for the underlying encryption algorithm</param>
@@ -125,6 +129,7 @@ namespace T0yK4T.Tools.Cryptography
 			symAlg.KeySize = (int)CryptoCommon.KEY_SIZE;
 			symAlg.BlockSize = (int)CryptoCommon.KEY_SIZE;
 			symAlg.Mode = CryptoCommon.CipherMode;
+            symAlg.Padding = PaddingMode.None;
             if (key == null)
                 symAlg.GenerateKey();
             else
@@ -336,18 +341,6 @@ namespace T0yK4T.Tools.Cryptography
         //    return typeof(T).IsDefined(typeof(SerializableAttribute), false);
         //}
 
-		/// <summary>
-		/// Decrypts and aray of data
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns></returns>
-		public byte[] DecryptArray(byte[] data)
-		{
-            byte[] res = Transform(this.decryptor, data);
-            if (this.compress)
-                res = this.Decompress(res);
-            return res;
-		}
 
 		/// <summary>
 		/// "Transforms" the specified byte[] using the specified ICyptoTransform (This method can be used to encrypt and decrypt data easily)
@@ -370,7 +363,9 @@ namespace T0yK4T.Tools.Cryptography
         }
 
 		/// <summary>
-		/// Encrypts and array of data
+		/// Compresses (if enabled) and Encrypts an array of bytes using the internal <see cref="ICryptoTransform"/>
+        /// <para/>
+        /// this method will use the transform available through <see cref="EncryptionProvider.Encryptor"/>
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns></returns>
@@ -378,8 +373,77 @@ namespace T0yK4T.Tools.Cryptography
 		{
             if (this.compress)
                 data = this.Compress(data);
-			return Transform(this.encryptor, data);
+            return EncryptArray(data, this.encryptor);
 		}
+
+        /// <summary>
+        /// Decrypts and Decompresses (if enabled) an aray of bytes using the internal <see cref="ICryptoTransform"/>
+        /// <para/>
+        /// this method will use the transform available through <see cref="EncryptionProvider.Decryptor"/>
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public byte[] DecryptArray(byte[] data)
+        {
+            byte[] res = DecryptArray(data, this.decryptor);
+            if (this.compress)
+                res = this.Decompress(res);
+            return res;
+        }
+
+        /// <summary>
+        /// For internal use (this decrypts an array of data and outputs the correct length data)
+        /// </summary>
+        /// <param name="data">The data to encrypt</param>
+        /// <param name="transform"></param>
+        /// <returns></returns>
+        private static byte[] DecryptArray(byte[] data, ICryptoTransform transform)
+        {
+            using (MemoryStream memStream = new MemoryStream(data))
+            {
+                using (CryptoStream stream = new CryptoStream(memStream, transform, CryptoStreamMode.Read))
+                {
+                    byte[] lengthField = new byte[sizeof(int)];
+                    stream.Read(lengthField, 0, lengthField.Length);
+                    int length = BitConverter.ToInt32(lengthField, 0);
+                    byte[] actualData = new byte[length];
+                    int read = stream.Read(actualData, 0, actualData.Length);
+                    if (read != length)
+                        Console.WriteLine("Unexpected length");
+                    return actualData;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// For internal use (this pads (if necessary) and encrypts an array of data, and includes a length field in the final encrypted data (this field (4 bytes) is encrypted as well))
+        /// </summary>
+        /// <param name="data">The data to encrypt</param>
+        /// <param name="transform">The <see cref="ICryptoTransform"/> to use</param>
+        /// <returns></returns>
+        private static byte[] EncryptArray(byte[] data, ICryptoTransform transform)
+        {
+            using (MemoryStream memStream = new MemoryStream())
+            {
+                using (CryptoStream stream = new CryptoStream(memStream, transform, CryptoStreamMode.Write))
+                {
+                    int bytes = transform.InputBlockSize;
+                    long rem = (bytes - (data.Length % bytes)) - sizeof(int);
+                    byte[] newData = new byte[data.Length + rem + sizeof(int)];
+                    byte[] rnd = new byte[rem];
+                    CryptoCommon.Prng.GetBytes(rnd);
+                    Array.Copy(data, 0, newData, sizeof(int), data.Length);
+                    Array.Copy(rnd, 0, newData, data.Length + sizeof(int), rnd.Length);
+                    byte[] lengthField = BitConverter.GetBytes(data.Length);
+                    Array.Copy(lengthField, 0, newData, 0, lengthField.Length);
+                    stream.Write(newData, 0, newData.Length);
+                    memStream.Position = 0;
+                    byte[] result = memStream.GetBuffer();
+                    return result;
+                }
+            }
+        }
 
 		/// <summary>
 		/// Sets the password used to encrypt and decrypt data in this instance of EncryptionProvider
