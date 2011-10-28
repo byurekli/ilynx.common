@@ -124,6 +124,16 @@ namespace T0yK4T.Tools.IO
         }
 
         /// <summary>
+        /// Uses the <see cref="ToySerializer"/> to serialize the specified object in to this instance's data field
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        public void SerializeData<T>(T data) where T : class, new()
+        {
+            this.data = ToySerializer.Serialize(data);
+        }
+
+        /// <summary>
         /// Fills this instance's fields with values contained in the specified byte array
         /// </summary>
         /// <param name="bytes"></param>

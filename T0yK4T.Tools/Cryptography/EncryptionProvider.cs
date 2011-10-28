@@ -440,7 +440,9 @@ namespace T0yK4T.Tools.Cryptography
                     stream.Write(newData, 0, newData.Length);
                     memStream.Position = 0;
                     byte[] result = memStream.GetBuffer();
-                    return result;
+                    byte[] final = new byte[memStream.Length];
+                    Array.Copy(result, 0, final, 0, final.Length);
+                    return final;
                 }
             }
         }

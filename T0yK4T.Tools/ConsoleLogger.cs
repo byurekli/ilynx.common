@@ -14,7 +14,6 @@ namespace T0yK4T.Tools
     {
         private Stream os;
         private StreamWriter writer;
-        private bool dump;
 
         /// <summary>
         /// Empty Constructor
@@ -28,15 +27,15 @@ namespace T0yK4T.Tools
         /// <param name="dumpFile"></param>
         public ConsoleLogger(string dumpFile)
         {
-            //string ext = Path.GetExtension(dumpFile);
-            //if (string.IsNullOrEmpty(ext))
-            //    ext = "log";
+            string ext = Path.GetExtension(dumpFile);
+            if (string.IsNullOrEmpty(ext))
+                ext = "log";
 
-            //int p2 = 0;
-            //while (File.Exists(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", fname, p2, ext))))
-            //    p2++;
-            //os = File.Create(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", fname, p2, ext)));
-            //writer = new StreamWriter(os);
+            int p2 = 0;
+            while (File.Exists(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", dumpFile, p2, ext))))
+                p2++;
+            os = File.Create(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", dumpFile, p2, ext)));
+            writer = new StreamWriter(os);
         }
 
         /// <summary>
@@ -56,6 +55,9 @@ namespace T0yK4T.Tools
             }
         }
 
+        /// <summary>
+        /// Destructor
+        /// </summary>
         ~ConsoleLogger()
         {
             try

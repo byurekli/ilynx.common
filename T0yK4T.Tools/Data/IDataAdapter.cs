@@ -58,12 +58,25 @@ namespace T0yK4T.Tools.Data
         IEnumerable<T> Find(DataProperty<T> property);
 
         /// <summary>
+        /// Deletes all records containing the specified property with it's value
+        /// </summary>
+        /// <param name="property"></param>
+        void Delete(DataProperty<T> property);
+
+        /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore using the specified <see cref="DataProperty{T}"/> as a filter
         /// </summary>
         /// <param name="properties"></param>
         /// <param name="op"></param>
         /// <returns></returns>
         IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
+
+        /// <summary>
+        /// Deletes all records in the underlying datasource that match the specified properties, combining them with the specified boolean operator
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="op"></param>
+        void Delete(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore who's <paramref name="KeyName"/> property match the specified <paramref name="searchPattern"/>
@@ -76,12 +89,26 @@ namespace T0yK4T.Tools.Data
         IEnumerable<T> Find(string KeyName, Regex searchPattern);
 
         /// <summary>
+        /// Deletes all records that have key <paramref name="keyName"/> set to a value that matches <paramref name="searchPattern"/>
+        /// </summary>
+        /// <param name="keyName"></param>
+        /// <param name="searchPattern"></param>
+        void Delete(string keyName, Regex searchPattern);
+
+        /// <summary>
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
         /// </summary>
         /// <param name="matchFields"></param>
         /// <param name="op"></param>
         /// <returns></returns>
         IEnumerable<T> Find(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
+
+        /// <summary>
+        /// This method combines the funcionality of <see cref="Delete(string, Regex)"/> with <see cref="Find(BooleanOperator, KeyValuePair{string, Regex}[])"/>
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="matchFields"></param>
+        void Delete(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields);
 
         /// <summary>
         /// Attempts to find every unique value of <paramref name="key"/>

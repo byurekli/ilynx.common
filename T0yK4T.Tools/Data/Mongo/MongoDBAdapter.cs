@@ -165,6 +165,19 @@ namespace T0yK4T.Tools.Data.Mongo
         }
 
         /// <summary>
+        /// Deletes all records containing the specified property with it's value
+        /// </summary>
+        /// <param name="property"></param>
+        public void Delete(DataProperty<T> property)
+        {
+            try
+            {
+                this.collection.Remove(this.BuildQuery(property));
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection, using the <paramref name="regex"/> paramter as a regular expression and matching on the specified key (<paramref name="key"/>)
         /// </summary>
         /// <param name="key"></param>
@@ -180,6 +193,23 @@ namespace T0yK4T.Tools.Data.Mongo
         }
 
         /// <summary>
+        /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore who's <paramref name="key"/> property match the specified <paramref name="regex"/>
+        /// <para/>
+        /// (Please note that this may only be possible on string types!
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="regex"></param>
+        /// <returns></returns>
+        public void Delete(string key, Regex regex)
+        {
+            try
+            {
+                this.collection.Remove(Query.Matches(key, BsonRegularExpression.Create(regex)));
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// Attempts to find a collection of <typeparamref name="T"/>s in the underlying collection using the specified <paramref name="matchFields"/> to make matches
         /// </summary>
         /// <param name="matchFields"></param>
@@ -192,6 +222,20 @@ namespace T0yK4T.Tools.Data.Mongo
                 return this.collection.Find(this.BuildQuery(matchFields, op));
             }
             catch { return null; }
+        }
+
+        /// <summary>
+        /// This method combines the funcionality of <see cref="Delete(string, Regex)"/> with <see cref="Find(BooleanOperator, KeyValuePair{string, Regex}[])"/>
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="matchFields"></param>
+        public void Delete(BooleanOperator op, params KeyValuePair<string, Regex>[] matchFields)
+        {
+            try
+            {
+                this.collection.Remove(this.BuildQuery(matchFields, op));
+            }
+            catch { }
         }
 
         private QueryComplete BuildQuery(IEnumerable<KeyValuePair<string, Regex>> fields, BooleanOperator op)
@@ -230,6 +274,20 @@ namespace T0yK4T.Tools.Data.Mongo
                 return this.collection.Find(this.BuildQuery(properties, op));
             }
             catch { return null; }
+        }
+
+        /// <summary>
+        /// Deletes all records in the underlying datasource that match the specified properties, combining them with the specified boolean operator
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="op"></param>
+        public void Delete(IEnumerable<DataProperty<T>> properties, BooleanOperator op)
+        {
+            try
+            {
+                this.collection.Remove(this.BuildQuery(properties, op));
+            }
+            catch { }
         }
 
         /// <summary>

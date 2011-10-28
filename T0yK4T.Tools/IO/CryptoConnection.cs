@@ -50,8 +50,18 @@ namespace T0yK4T.Tools.IO
     /// </summary>
     public class CryptoConnection : ComponentBase
     {
-        private PacketReceivedDelegate prd;
-        private DisconnectedDelegate dcd;
+        //private PacketReceivedDelegate prd;
+        //private DisconnectedDelegate dcd;
+
+        /// <summary>
+        /// This event is fired whenever the -remote- party disconnects, or an unrecoverable error occurs
+        /// </summary>
+        public event DisconnectedDelegate Disconnected;
+
+        /// <summary>
+        /// Called when <see cref="CryptoConnectionFlags.ManualRead"/> is UNset, and a packet is received
+        /// </summary>
+        public event PacketReceivedDelegate PacketReceived;
 
         private Stream netStream;
         //private Stream comStream;
@@ -235,8 +245,6 @@ namespace T0yK4T.Tools.IO
                 }
                 else
                 {
-                    //this.socket.RemoteEndPoint = this.socket.RemoteEndPoint;
-
                     this.encryptor.Reset();
                     this.decryptor.Reset();
 
@@ -612,13 +620,13 @@ namespace T0yK4T.Tools.IO
             }
             else
             {
-                PacketReceivedArgs args = new PacketReceivedArgs { P = packet, S = size, D = this.prd };
-                if (this.prd != null)
+                PacketReceivedArgs args = new PacketReceivedArgs { P = packet, S = size, D = this.PacketReceived };
+                if (this.PacketReceived != null)
                 {
                     this.context.Post(new SendOrPostCallback((o) =>
                     {
                         PacketReceivedArgs a = (PacketReceivedArgs)o;
-                        a.D(a.P, a.S);
+                        a.D.Invoke(a.P, a.S);
                     }), args);
                 }
                 else
@@ -648,11 +656,11 @@ namespace T0yK4T.Tools.IO
 
         private void OnDisconnect(DisconnectReason reason)
         {
-            if (this.dcd != null)
+            if (this.Disconnected != null)
             {
                 this.context.Post(new SendOrPostCallback((o) =>
                     {
-                        this.dcd(this, (DisconnectReason)o);
+                        this.Disconnected.Invoke(this, (DisconnectReason)o);
                     }), reason);
             }
         }
@@ -690,9 +698,6 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         public void Close()
         {
-            //this.netStream.ReadTimeout = 100;
-            //this.netStream.WriteTimeout = 100;
-
             lock (this.p_Lock)
             {
                 if (this.CheckRunFlags(RunFlags.IsConnected) && this.socket.Connected)
@@ -727,39 +732,39 @@ namespace T0yK4T.Tools.IO
             public PacketReceivedDelegate D;
         }
 
-        /// <summary>
-        /// Sets the callback method used to notify user of received packet to the specified value
-        /// <para/>
-        /// Please note that the <see cref="PacketReceivedDelegate"/> is not necessarily called from the same thread as this method was called!
-        /// </summary>
-        /// <param name="prd"></param>
-        public void SetPacketReceivedCallback(PacketReceivedDelegate prd)
-        {
-            lock (this.p_Lock)
-            {
-                this.prd = prd;
-                if (prd != null)
-                {
-                    while (this.queuedEvents.Count > 0)
-                    {
-                        PacketReceivedArgs args = this.queuedEvents.Dequeue();
-                        this.prd.Invoke(args.P, args.S);
-                    }
-                }
-            }
-        }
+        ///// <summary>
+        ///// Sets the callback method used to notify user of received packet to the specified value
+        ///// <para/>
+        ///// Please note that the <see cref="PacketReceivedDelegate"/> is not necessarily called from the same thread as this method was called!
+        ///// </summary>
+        ///// <param name="prd"></param>
+        //public void SetPacketReceivedCallback(PacketReceivedDelegate prd)
+        //{
+        //    lock (this.p_Lock)
+        //    {
+        //        this.prd = prd;
+        //        if (prd != null)
+        //        {
+        //            while (this.queuedEvents.Count > 0)
+        //            {
+        //                PacketReceivedArgs args = this.queuedEvents.Dequeue();
+        //                this.prd.Invoke(args.P, args.S);
+        //            }
+        //        }
+        //    }
+        //}
 
-        /// <summary>
-        /// Sets the callback method used to notify user of a disconnect
-        /// <para/>
-        /// Please note that the <see cref="DisconnectedDelegate"/> is not necessarily called from the same thread as this method was called!
-        /// </summary>
-        /// <param name="dcd"></param>
-        public void SetDiconnectedCallback(DisconnectedDelegate dcd)
-        {
-            lock (this.p_Lock)
-                this.dcd = dcd;
-        }
+        ///// <summary>
+        ///// Sets the callback method used to notify user of a disconnect
+        ///// <para/>
+        ///// Please note that the <see cref="DisconnectedDelegate"/> is not necessarily called from the same thread as this method was called!
+        ///// </summary>
+        ///// <param name="dcd"></param>
+        //public void SetDiconnectedCallback(DisconnectedDelegate dcd)
+        //{
+        //    lock (this.p_Lock)
+        //        this.dcd = dcd;
+        //}
 
         /// <summary>
         /// Attempts to connect to the specified <see cref="IPEndPoint"/>
