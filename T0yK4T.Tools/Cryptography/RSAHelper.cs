@@ -24,7 +24,7 @@ namespace T0yK4T.Tools.Cryptography
         private RSAParameters rsaParams;
         private IFormatter bFormatter;
         private MemoryStream mStream;
-        private IToyLogger logger;
+        private ILogger logger;
         private int MAX_INPUT_BYTES = 0;
         private RSACryptoServiceProvider provider;
         static Timer t;
@@ -151,7 +151,7 @@ namespace T0yK4T.Tools.Cryptography
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="pubKey"></param>
-        public RSAHelper(IToyLogger logger, string pubKey)
+        public RSAHelper(ILogger logger, string pubKey)
         {
             this.logger = logger;
             this.InitPubOnly(pubKey);
@@ -184,7 +184,7 @@ namespace T0yK4T.Tools.Cryptography
 		/// <summary>
 		/// Initializes a new instance of RSAHelper with it's values set to the defaults
 		/// </summary>
-        public RSAHelper(IToyLogger logger)
+        public RSAHelper(ILogger logger)
         {
             this.logger = logger;
             this.InitNew();
@@ -333,7 +333,7 @@ namespace T0yK4T.Tools.Cryptography
         /// <summary>
         /// Gets and Sets the logger used by this instance of RSAHelper
         /// </summary>
-        protected override IToyLogger Logger
+        protected override ILogger Logger
         {
             get
             {

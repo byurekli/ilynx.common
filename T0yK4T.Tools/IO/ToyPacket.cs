@@ -11,14 +11,14 @@ namespace T0yK4T.Tools.IO
     /// The base class for all packets sent and received by ToyChat
     /// </summary>
     [ProtoContract(Name = "ToyPacket")]
-    public sealed class ToyPacket
+    public sealed class Packet
     {
         /// <summary>
         /// Initializes a new (EMPTY) instance of ToyPacket
         /// <para/>
         /// Please note that the data property of the newly created packet is set to "new byte[0]"
         /// </summary>
-        public ToyPacket()
+        public Packet()
         {
             this.data = new byte[0];
         }
@@ -29,18 +29,18 @@ namespace T0yK4T.Tools.IO
         /// The data property is set to "new byte[0]"
         /// </summary>
         /// <param name="typeID"></param>
-        public ToyPacket(uint typeID)
+        public Packet(uint typeID)
         {
             this.TypeID = typeID;
             this.data = new byte[0];
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ToyPacket"/> and sets the TypeID and Data properties to the specified values
+        /// Initializes a new instance of <see cref="Packet"/> and sets the TypeID and Data properties to the specified values
         /// </summary>
         /// <param name="typeID"></param>
         /// <param name="data"></param>
-        public ToyPacket(uint typeID, byte[] data)
+        public Packet(uint typeID, byte[] data)
         {
             this.TypeID = typeID;
             this.data = data;
@@ -137,9 +137,9 @@ namespace T0yK4T.Tools.IO
         /// Fills this instance's fields with values contained in the specified byte array
         /// </summary>
         /// <param name="bytes"></param>
-        public static ToyPacket FromBytes(byte[] bytes)
+        public static Packet FromBytes(byte[] bytes)
         {
-            ToyPacket ret = new ToyPacket();
+            Packet ret = new Packet();
             int offset = 0;
 
             ret.ChannelID = BitConverter.ToInt32(bytes, offset);

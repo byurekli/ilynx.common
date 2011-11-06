@@ -111,7 +111,7 @@ namespace T0yK4T.Tools.IO
             StreamReader reader = new StreamReader(netStream);
             StreamWriter writer = new StreamWriter(netStream);
 
-            ToyPacket rec = new ToyPacket();
+            Packet rec = new Packet();
             rec.Data = new byte[1];
             rec.TypeID = (int)PacketType.Handshake;
             rec.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
@@ -137,14 +137,14 @@ namespace T0yK4T.Tools.IO
             encryptor = new EncryptionProvider();
             try
             {
-                ToyPacket packet = WriteEncryptor(pubRSA, encryptor);
+                Packet packet = WriteEncryptor(pubRSA, encryptor);
                 byte[] serializedPacket = ToySerializer.Serialize(packet);
                 string sendData = pubRSA.EncryptToBase64String(serializedPacket);
                 writer.WriteLine(sendData); // Writing the packet as a Base64 encoded string to the network stream in the current instance
                 writer.Flush();
 
                 string read = reader.ReadLine(); // Getting response
-                packet = ToySerializer.Deserialize<ToyPacket>(privRSA.DecryptBase64String(read));
+                packet = ToySerializer.Deserialize<Packet>(privRSA.DecryptBase64String(read));
                 decryptor = GetDecryptor(privRSA, packet);
             }
             catch { decryptor = null; return false; }
@@ -168,7 +168,7 @@ namespace T0yK4T.Tools.IO
             pubRSA = ReceivePubkey(src);
         }
 
-        private static int ActualWriteLine(StreamWriter dst, ToyPacket packet)
+        private static int ActualWriteLine(StreamWriter dst, Packet packet)
         {
             byte[] serializedPacket = ToySerializer.Serialize(packet);
             string sendData = Convert.ToBase64String(serializedPacket);
@@ -177,7 +177,7 @@ namespace T0yK4T.Tools.IO
             return sendData.Length;
         }
 
-        private int WriteLine(StreamWriter dst, ToyPacket packet, EncryptionProvider encryptor)
+        private int WriteLine(StreamWriter dst, Packet packet, EncryptionProvider encryptor)
         {
             byte[] serializedPacket = ToySerializer.Serialize(packet);
             serializedPacket = encryptor.EncryptArray(serializedPacket);
@@ -187,17 +187,17 @@ namespace T0yK4T.Tools.IO
             return sendData.Length;
         }
 
-        private ToyPacket ActualReadLine(StreamReader src, out int finalSize)
+        private Packet ActualReadLine(StreamReader src, out int finalSize)
         {
             string read = src.ReadLine();
             if (read == null)
                 throw new NullReferenceException("Read null from StreamReader");
             finalSize = read.Length;
-            ToyPacket packet = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            Packet packet = ToySerializer.Deserialize<Packet>(Convert.FromBase64String(read));
             return packet;
         }
 
-        private ToyPacket ReadLine(StreamReader src, EncryptionProvider decryptor, out int finalSize)
+        private Packet ReadLine(StreamReader src, EncryptionProvider decryptor, out int finalSize)
         {
             string read = src.ReadLine();
             if (read == null)
@@ -205,7 +205,7 @@ namespace T0yK4T.Tools.IO
             finalSize = read.Length;
             byte[] data = Convert.FromBase64String(read);
             data = decryptor.DecryptArray(data);
-            return ToySerializer.Deserialize<ToyPacket>(data);
+            return ToySerializer.Deserialize<Packet>(data);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace T0yK4T.Tools.IO
         /// <param name="rsa">The "local" <see cref="RSAHelper"/> to use for decrypting the Key and IV</param>
         /// <param name="pkt">The received packet</param>
         /// <returns></returns>
-        public static EncryptionProvider GetDecryptor(RSAHelper rsa, ToyPacket pkt)
+        public static EncryptionProvider GetDecryptor(RSAHelper rsa, Packet pkt)
         {
             MemoryStream dataStream = new MemoryStream(pkt.Data); // Creating a stream around the packet data for reading
             StreamReader dataReader = new StreamReader(dataStream);
@@ -230,16 +230,16 @@ namespace T0yK4T.Tools.IO
         /// <summary>
         /// Writes the Key and IV from the specified <see cref="EncryptionProvider"/>
         /// <para/>
-        /// to a new <see cref="ToyPacket"/> using the specified <see cref="RSAHelper"/> to encrypt the values
+        /// to a new <see cref="Packet"/> using the specified <see cref="RSAHelper"/> to encrypt the values
         /// <para/>
-        /// this method is the counterpart to <see cref="HandshakeHelper.GetDecryptor(RSAHelper, ToyPacket)"/>
+        /// this method is the counterpart to <see cref="HandshakeHelper.GetDecryptor(RSAHelper, Packet)"/>
         /// </summary>
         /// <param name="rsa">The <see cref="RSAHelper"/> to use for encrypting the Key and IV</param>
         /// <param name="encryptor">The actual Encryptor to take the Key and IV from</param>
         /// <returns></returns>
-        public static ToyPacket WriteEncryptor(RSAHelper rsa, EncryptionProvider encryptor)
+        public static Packet WriteEncryptor(RSAHelper rsa, EncryptionProvider encryptor)
         {
-            ToyPacket pkt = new ToyPacket();
+            Packet pkt = new Packet();
             MemoryStream outputDataStream = new MemoryStream();
             StreamWriter outputWriter = new StreamWriter(outputDataStream);
 
@@ -256,7 +256,7 @@ namespace T0yK4T.Tools.IO
 
         private static void SendPubkey(StreamWriter dst, RSAHelper helper)
         {
-            ToyPacket packet = new ToyPacket((int)PacketType.Handshake);
+            Packet packet = new Packet((int)PacketType.Handshake);
             packet.TypeID = (int)PacketType.Handshake;
             packet.UserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
@@ -268,7 +268,7 @@ namespace T0yK4T.Tools.IO
         private static RSAHelper ReceivePubkey(StreamReader src)
         {
             string read = src.ReadLine();
-            ToyPacket rec = ToySerializer.Deserialize<ToyPacket>(Convert.FromBase64String(read));
+            Packet rec = ToySerializer.Deserialize<Packet>(Convert.FromBase64String(read));
             if (rec == null)
                 throw new Exception("Received data was not a Public Key Packet");
             try

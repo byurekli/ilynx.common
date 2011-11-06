@@ -19,19 +19,19 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         /// <param name="message">The message to use</param>
         /// <returns></returns>
-        public static ToyPacket GenerateASCIIPacket(string message)
+        public static Packet GenerateASCIIPacket(string message)
         {
-            ToyPacket pkt = new ToyPacket((uint)PacketType.ASCIIPacket);
+            Packet pkt = new Packet((uint)PacketType.ASCIIPacket);
             pkt.Data = ASCIIEncoding.ASCII.GetBytes(message);
             return pkt;
         }
 
         /// <summary>
-        /// Reads the ASCII string embedded in the <see cref="ToyPacket.Data"/> field in the specified packet
+        /// Reads the ASCII string embedded in the <see cref="Packet.Data"/> field in the specified packet
         /// </summary>
         /// <param name="pkt">The packet to "read"</param>
         /// <returns></returns>
-        public static string DeGenerateASCIIPacket(ToyPacket pkt)
+        public static string DeGenerateASCIIPacket(Packet pkt)
         {
             if (pkt == null)
                 return string.Empty;
@@ -51,20 +51,20 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static ToyPacket GenerateUTF8Packet(string message)
+        public static Packet GenerateUTF8Packet(string message)
         {
-            ToyPacket pkt = new ToyPacket((uint)PacketType.UnicodePacket);
+            Packet pkt = new Packet((uint)PacketType.UnicodePacket);
             pkt.Data = UnicodeEncoding.UTF8.GetBytes(message);
             return pkt;
             
         }
 
         /// <summary>
-        /// Reads the UTF-8 string embedded in the <see cref="ToyPacket.Data"/> field in the specified packet
+        /// Reads the UTF-8 string embedded in the <see cref="Packet.Data"/> field in the specified packet
         /// </summary>
         /// <param name="pkt">The packet to "read"</param>
         /// <returns></returns>
-        public static string DeGenerateUTF8Packet(ToyPacket pkt)
+        public static string DeGenerateUTF8Packet(Packet pkt)
         {
             if (pkt == null)
                 return string.Empty;

@@ -8,7 +8,7 @@ namespace T0yK4T.Tools
 	/// <summary>
 	/// an Interface that should be used for logging purposes
 	/// </summary>
-	public interface IToyLogger
+	public interface ILogger
 	{
 		/// <summary>
 		/// Writes a line to the log (Whichever that would be)

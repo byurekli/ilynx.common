@@ -10,7 +10,7 @@ namespace T0yK4T.Tools
     /// <summary>
     /// Simple Console Logger - will dump anything to console
     /// </summary>
-    public class ConsoleLogger : IToyLogger
+    public class ConsoleLogger : ILogger
     {
         private Stream os;
         private StreamWriter writer;

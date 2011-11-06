@@ -19,7 +19,7 @@ namespace T0yK4T.Tools
         /// <para/>
         /// Will attempt to write to the debug "console" - last resort is stdout (IE. Console.WriteLine)
 		/// </summary>
-		protected virtual IToyLogger Logger { get; set; }
+		protected virtual ILogger Logger { get; set; }
 		#region Logging Methods
 
 		/// <summary>

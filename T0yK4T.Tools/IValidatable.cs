@@ -4,7 +4,7 @@ namespace T0yK4T.Tools
 	/// <summary>
 	/// Simple Interface that can be implemented to "validate" settings or other values
 	/// </summary>
-    public interface IToyValidatable
+    public interface IValidatable
     {
 		/// <summary>
 		/// Validates whatever the implementor chose to validate

@@ -120,7 +120,6 @@
     <Compile Include="Data\DataSerializer.cs" />
     <Compile Include="Data\IDataAdapter.cs" />
     <Compile Include="Data\IDataSerializer.cs" />
-    <Compile Include="Data\Mongo\MongoDBAdapter.cs" />
     <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="General\PriorityQueue.cs" />
     <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
@@ -132,8 +131,8 @@
     <Compile Include="IO\LockingSerializer.cs" />
     <Compile Include="IO\PacketFactory.cs" />
     <Compile Include="IO\ToyPacket.cs" />
-    <Compile Include="IToyLogger.cs" />
-    <Compile Include="IToyValidatable.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="IValidatable.cs" />
     <Compile Include="LoggingType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

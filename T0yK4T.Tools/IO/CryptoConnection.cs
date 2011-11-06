@@ -20,7 +20,7 @@ namespace T0yK4T.Tools.IO
     /// </summary>
     /// <param name="packet">Will contain the read packet</param>
     /// <param name="wireLength">Will contain the total length of the received data (Note, due to encryption and encoding, this value may differ from the size of the packet "in memory")</param>
-    public delegate void PacketReceivedDelegate(ToyPacket packet, int wireLength);
+    public delegate void PacketReceivedDelegate(Packet packet, int wireLength);
 
     /// <summary>
     /// A delegate used in <see cref="CryptoConnection"/> to notify of a closed connection
@@ -68,7 +68,7 @@ namespace T0yK4T.Tools.IO
         private StreamReader reader;
         private StreamWriter writer;
         private Socket socket;
-        private IToyLogger logger;
+        private ILogger logger;
 
         private EncryptionProvider decryptor;
         private CryptoStream inputStream;
@@ -92,7 +92,7 @@ namespace T0yK4T.Tools.IO
         
         private object readLock = new object();
         private object writeLock = new object();
-        private Dictionary<uint, Action<ToyPacket>> definedTypes = new Dictionary<uint, Action<ToyPacket>>();
+        private Dictionary<uint, Action<Packet>> definedTypes = new Dictionary<uint, Action<Packet>>();
         private SynchronizationContext context;
         private int readErrors = 0;
         private CryptoConnectionFlags setupFlags = CryptoConnectionFlags.ManualRead;
@@ -105,7 +105,7 @@ namespace T0yK4T.Tools.IO
 
         private struct PacketWithSize
         {
-            public ToyPacket Packet;
+            public Packet Packet;
             public int Size;
         }
         /// <summary>
@@ -159,7 +159,7 @@ namespace T0yK4T.Tools.IO
         /// Please note that this constructor will also initialize a new <see cref="RSAHelper"/> which may take a while, depending on the setup
         /// </summary>
         /// <param name="logger"></param>
-        public CryptoConnection(IToyLogger logger)
+        public CryptoConnection(ILogger logger)
         {
             this.Init(logger);
         }
@@ -169,7 +169,7 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         /// <param name="logger">The logger to use for logging</param>
         /// <param name="flags">The <see cref="CryptoConnectionFlags"/> butmask to set</param>
-        public CryptoConnection(IToyLogger logger, CryptoConnectionFlags flags)
+        public CryptoConnection(ILogger logger, CryptoConnectionFlags flags)
         {
             this.Init(logger);
             this.setupFlags = flags;
@@ -183,7 +183,7 @@ namespace T0yK4T.Tools.IO
         /// <param name="logger"></param>
         /// <param name="s"></param>
         /// <param name="flags"></param>
-        public CryptoConnection(IToyLogger logger, Socket s, CryptoConnectionFlags flags)
+        public CryptoConnection(ILogger logger, Socket s, CryptoConnectionFlags flags)
         {
             this.Init(logger);
             this.setupFlags = flags;
@@ -201,7 +201,7 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         /// <param name="logger">The logger to use...</param>
         /// <param name="s">The socket to wrap</param>
-        public CryptoConnection(IToyLogger logger, Socket s)
+        public CryptoConnection(ILogger logger, Socket s)
         {
             this.Init(logger);
             if (s == null)
@@ -209,18 +209,18 @@ namespace T0yK4T.Tools.IO
             this.WrapSocket(s);
         }
 
-        private void Init(IToyLogger logger)
+        private void Init(ILogger logger)
         {
             if (logger == null)
                 throw new ArgumentNullException("logger");
             this.logger = logger;
             this.privRSA = new RSAHelper(this.logger);
             this.handshaker = new HandshakeHelper(this);
-            this.definedTypes.Add((uint)PacketType.HandshakeRequest, new Action<ToyPacket>(this.HandleHandshakeRequest));
-            this.definedTypes.Add((uint)PacketType.InitHandshake, new Action<ToyPacket>(this.HandleInitHandshake));
-            this.definedTypes.Add((uint)PacketType.InitPartialHandshake, new Action<ToyPacket>(this.HandleInitPartialHandshake));
-            this.definedTypes.Add((uint)PacketType.DisconnectNotification, new Action<ToyPacket>(this.HandleDisconnect));
-            this.definedTypes.Add((uint)PacketType.ConnectionIDExchange, new Action<ToyPacket>(this.HandleConnectionID));
+            this.definedTypes.Add((uint)PacketType.HandshakeRequest, new Action<Packet>(this.HandleHandshakeRequest));
+            this.definedTypes.Add((uint)PacketType.InitHandshake, new Action<Packet>(this.HandleInitHandshake));
+            this.definedTypes.Add((uint)PacketType.InitPartialHandshake, new Action<Packet>(this.HandleInitPartialHandshake));
+            this.definedTypes.Add((uint)PacketType.DisconnectNotification, new Action<Packet>(this.HandleDisconnect));
+            this.definedTypes.Add((uint)PacketType.ConnectionIDExchange, new Action<Packet>(this.HandleConnectionID));
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace T0yK4T.Tools.IO
                     try
                     {
                         int size;
-                        ToyPacket packet = this.Read(out size);
+                        Packet packet = this.Read(out size);
                         cont = this.HandlePacket(packet, size);
                     }
                     catch (IOException e) { this.HandleException(e); }
@@ -361,7 +361,7 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        private bool HandlePacket(ToyPacket packet, int size)
+        private bool HandlePacket(Packet packet, int size)
         {
             if (packet == null)
             {
@@ -375,7 +375,7 @@ namespace T0yK4T.Tools.IO
             else
             {
                 readErrors = 0;
-                Action<ToyPacket> predefinedAction;
+                Action<Packet> predefinedAction;
                 if (this.definedTypes.TryGetValue((uint)packet.TypeID, out predefinedAction))
                 {
                     predefinedAction(packet);
@@ -401,14 +401,14 @@ namespace T0yK4T.Tools.IO
                 else if (!this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
                 {
                     this.AddRunFlag(RunFlags.LocalHandshakeRequested);
-                    ToyPacket hsRequest = new ToyPacket { TypeID = (int)PacketType.HandshakeRequest };
+                    Packet hsRequest = new Packet { TypeID = (int)PacketType.HandshakeRequest };
                     this.WritePacket(hsRequest);
                 }
             }
             return true;
         }
 
-        private void HandleDisconnect(ToyPacket packet)
+        private void HandleDisconnect(Packet packet)
         {
             if (!this.CheckRunFlags(RunFlags.DisconnectReceived))
             {
@@ -419,7 +419,7 @@ namespace T0yK4T.Tools.IO
                     try
                     {
                         int size = 0;
-                        ToyPacket pkt = this.Read(out size);
+                        Packet pkt = this.Read(out size);
                         this.HandlePacket(pkt, size);
                     }
                     catch
@@ -437,7 +437,7 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        private void HandleConnectionID(ToyPacket packet)
+        private void HandleConnectionID(Packet packet)
         {
             Guid remoteID = new Guid(packet.Data);
             if (remoteID == this.connectionID)
@@ -449,7 +449,7 @@ namespace T0yK4T.Tools.IO
 
         private void SendConnectionID()
         {
-            ToyPacket packet = new ToyPacket { TypeID = (int)PacketType.ConnectionIDExchange, Data = this.connectionID.ToByteArray() };
+            Packet packet = new Packet { TypeID = (int)PacketType.ConnectionIDExchange, Data = this.connectionID.ToByteArray() };
             this.WritePacket(packet);
         }
 
@@ -458,10 +458,10 @@ namespace T0yK4T.Tools.IO
             this.AddRunFlag(RunFlags.IsBlocking);
             lock (this.p_Lock)
             {
-                ToyPacket reply = new ToyPacket { TypeID = (int)PacketType.InitPartialHandshake };
+                Packet reply = new Packet { TypeID = (int)PacketType.InitPartialHandshake };
                 this.WritePacket(reply);
                 int size;
-                ToyPacket received = this.Read(out size);
+                Packet received = this.Read(out size);
                 if (received.TypeID != (int)PacketType.InitPartialHandshake) // This should never happen
                     base.LogError("Remote host did not respond to InitPartialHandshake in a manner that could be understood...");
                 else
@@ -471,7 +471,7 @@ namespace T0yK4T.Tools.IO
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubRSA);
                     string read = this.reader.ReadLine();
                     byte[] rsaDecryptedResponse = this.privRSA.DecryptBase64String(read);
-                    ToyPacket remoteKey = ToySerializer.Deserialize<ToyPacket>(rsaDecryptedResponse);
+                    Packet remoteKey = ToySerializer.Deserialize<Packet>(rsaDecryptedResponse);
                     this.decryptor = HandshakeHelper.GetDecryptor(this.privRSA, remoteKey);
 
                     reply.TypeID = (int)PacketType.EndPartialHandshake;
@@ -493,7 +493,7 @@ namespace T0yK4T.Tools.IO
             this.RemoveRunFlag(RunFlags.IsBlocking);
         }
 
-        private void HandleInitHandshake(ToyPacket packet)
+        private void HandleInitHandshake(Packet packet)
         {
             if (this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
             {
@@ -509,7 +509,7 @@ namespace T0yK4T.Tools.IO
                 base.LogError("FIXME! Got InitHandshake from remote without any indicating of a handshake having been requested!");
         }
 
-        private void HandleHandshakeRequest(ToyPacket packet)
+        private void HandleHandshakeRequest(Packet packet)
         {
             base.LogDebug("Got HandshakeRequest from {0}", this.socket.RemoteEndPoint);
             if ((DateTime.Now - this.lastHandshake) < maxKeyAge - maxAgeSkew && !this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
@@ -530,10 +530,10 @@ namespace T0yK4T.Tools.IO
                 this.AddRunFlag(RunFlags.IsBlocking);
                 lock (this.p_Lock)
                 {
-                    ToyPacket reply = new ToyPacket { TypeID = (int)PacketType.InitHandshake };
+                    Packet reply = new Packet { TypeID = (int)PacketType.InitHandshake };
                     this.WritePacket(reply);
                     int size;
-                    ToyPacket response = this.Read(out size);
+                    Packet response = this.Read(out size);
                     if (response.TypeID == (uint)PacketType.InitHandshake)
                         this.FullHandshake();
                     else // This should never happen
@@ -552,7 +552,7 @@ namespace T0yK4T.Tools.IO
             this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
         }
 
-        private void HandleInitPartialHandshake(ToyPacket packet)
+        private void HandleInitPartialHandshake(Packet packet)
         {
             if (this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
             {
@@ -563,7 +563,7 @@ namespace T0yK4T.Tools.IO
                     RSAHelper remotePubKey;
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubKey);
                     this.encryptor = new EncryptionProvider();
-                    ToyPacket sentPacket = HandshakeHelper.WriteEncryptor(remotePubKey, this.encryptor);
+                    Packet sentPacket = HandshakeHelper.WriteEncryptor(remotePubKey, this.encryptor);
                     byte[] serializedEncryptorPacket = ToySerializer.Serialize(sentPacket);
                     this.writer.WriteLine(remotePubKey.EncryptToBase64String(serializedEncryptorPacket));
                     this.writer.Flush();
@@ -572,7 +572,7 @@ namespace T0yK4T.Tools.IO
                     this.outputStream = new CryptoStream(this.netStream, this.encryptor.Encryptor, CryptoStreamMode.Write);
                     
                     int size;
-                    ToyPacket remoteResponse = this.Read(out size);
+                    Packet remoteResponse = this.Read(out size);
                     if (remoteResponse == null)
                     {
                         base.LogCritical("Partial SessionKey renegotiation has failed for remote endpoint {0}, connection closed", this.socket.RemoteEndPoint);
@@ -590,7 +590,7 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        private void HandleCancelHandshake(ToyPacket packet)
+        private void HandleCancelHandshake(Packet packet)
         {
             if (this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
             {
@@ -603,13 +603,13 @@ namespace T0yK4T.Tools.IO
         
         private void NotifyDisconnect()
         {
-            ToyPacket packet = new ToyPacket { TypeID = (int)PacketType.DisconnectNotification };
+            Packet packet = new Packet { TypeID = (int)PacketType.DisconnectNotification };
             this.WritePacket(packet);
         }
 
         private Queue<PacketReceivedArgs> queuedEvents = new Queue<PacketReceivedArgs>();
 
-        private void OnPacketReceived(ToyPacket packet, int size)
+        private void OnPacketReceived(Packet packet, int size)
         {
             if ((this.ConnectionFlags & CryptoConnectionFlags.ManualRead) == CryptoConnectionFlags.ManualRead)
             {
@@ -645,7 +645,7 @@ namespace T0yK4T.Tools.IO
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
-        public ToyPacket ReadPacket(out int size)
+        public Packet ReadPacket(out int size)
         {
             while (this.packetQueue.Count < 1)
                 Thread.Sleep(1);
@@ -674,11 +674,11 @@ namespace T0yK4T.Tools.IO
         }
 
         /// <summary>
-        /// Sends the specified <see cref="ToyPacket"/> to the remote host
+        /// Sends the specified <see cref="Packet"/> to the remote host
         /// </summary>
         /// <param name="packet"></param>
         /// <returns></returns>
-        public int SendPacket(ToyPacket packet)
+        public int SendPacket(Packet packet)
         {
             if (packet == null)
                 throw new ArgumentNullException("packet");
@@ -727,7 +727,7 @@ namespace T0yK4T.Tools.IO
 
         private struct PacketReceivedArgs
         {
-            public ToyPacket P;
+            public Packet P;
             public int S;
             public PacketReceivedDelegate D;
         }
@@ -792,7 +792,7 @@ namespace T0yK4T.Tools.IO
         /// <summary>
         /// Gets and Sets the logger used when logging data
         /// </summary>
-        protected override IToyLogger Logger
+        protected override ILogger Logger
         {
             get { return this.logger; }
             set { this.logger = value; }
@@ -834,7 +834,7 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        private int WritePacket(ToyPacket packet)
+        private int WritePacket(Packet packet)
         {
             int finalSize;
             lock (this.writeLock)
@@ -842,7 +842,7 @@ namespace T0yK4T.Tools.IO
             return finalSize;
         }
 
-        private ToyPacket Read(out int finalSize)
+        private Packet Read(out int finalSize)
         {
             byte[] received;
             lock (this.readLock)
@@ -875,7 +875,7 @@ namespace T0yK4T.Tools.IO
                 //ToyPacket packet = ToyPacket.FromBytes(finalData);
                 //return packet;
             }
-            return ToyPacket.FromBytes(received);
+            return Packet.FromBytes(received);
         }
 
         private static byte[] ReadBlocks(CryptoStream inputStream, int blockSize, out int finalSize)
@@ -988,7 +988,7 @@ namespace T0yK4T.Tools.IO
         /// <summary>
         /// If this bit is set, the connection will pass on internally handled packets
         /// <para/>
-        /// See <see cref="ToyPacket"/>
+        /// See <see cref="Packet"/>
         /// </summary>
         PassOn = 0x01,
 
