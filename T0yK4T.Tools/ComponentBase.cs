@@ -20,7 +20,19 @@ namespace T0yK4T.Tools
         /// Will attempt to write to the debug "console" - last resort is stdout (IE. Console.WriteLine)
 		/// </summary>
 		protected virtual ILogger Logger { get; set; }
-		#region Logging Methods
+
+        /// <summary>
+        /// Initializes the logger of a new instance of <see cref="ComponentBase"/>
+        /// </summary>
+        /// <param name="logger">The logger to use</param>
+        public ComponentBase(ILogger logger) { this.Logger = logger; }
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public ComponentBase() { }
+
+        #region Logging Methods
 
 		/// <summary>
 		/// Writes an error entry to the log
@@ -96,7 +108,7 @@ namespace T0yK4T.Tools
 		/// <param name="method">The method the exception occured in</param>
         public void LogException(Exception er, MethodBase method)
 		{
-			this.LogError("Error in {4} - {1}{0}  Message: {2}{0}  StackTrace:  {3}", Environment.NewLine, er.ToString(), er.Message, er.StackTrace, method.Name);
+			this.LogError("{4} Caught Exception: {1}{0}Message: {2}{0}StackTrace: {3}", Environment.NewLine, er.ToString(), er.Message, er.StackTrace, method.Name);
 		}
 
 		#endregion Logging Methods

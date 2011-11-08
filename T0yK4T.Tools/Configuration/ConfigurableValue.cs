@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using System.Net;
 
 namespace T0yK4T.Tools.Configuration
 {
@@ -243,8 +244,8 @@ namespace T0yK4T.Tools.Configuration
         /// <summary>
         /// Returns <see cref="bool.ToString()"/>
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">The value to get a string representation of</param>
+        /// <returns><see cref="bool.ToString()"/></returns>
         public string ToString(bool value)
         {
             return value.ToString();
@@ -258,10 +259,11 @@ namespace T0yK4T.Tools.Configuration
     {
 
         /// <summary>
-        /// 
+        /// Attempts to convert the specified value to an integer
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">The value to convert</param>
+        /// <returns>The integer value represented in <paramref name="value"/> if succesful</returns>
+        /// <exception cref="FormatException">Throw if the value cannot be converted</exception>
         public int Convert(string value)
         {
             int val;
@@ -272,13 +274,43 @@ namespace T0yK4T.Tools.Configuration
         }
 
         /// <summary>
-        /// 
+        /// Returns <see cref="int.ToString()"/>
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">The integer value to get a string representation of</param>
+        /// <returns>A string representation of the specified value</returns>
         public string ToString(int value)
         {
             return value.ToString();
+        }
+    }
+
+    /// <summary>
+    /// A basic IPAddress converter
+    /// </summary>
+    public class IPAddressConverter : IValueConverter<IPAddress>
+    {
+        /// <summary>
+        /// Attempts to convert the specified string to an IPAddress
+        /// </summary>
+        /// <param name="value">The string to convert</param>
+        /// <returns>The IPAddress represented by <paramref name="value"/></returns>
+        public IPAddress Convert(string value)
+        {
+            IPAddress val = IPAddress.None;
+            if (IPAddress.TryParse(value, out val))
+                return val;
+            else
+                throw new FormatException("the given string value was in an incorrect format");
+        }
+
+        /// <summary>
+        /// Returns <see cref="IPAddress.ToString()"/>
+        /// </summary>
+        /// <param name="value">The value to convert to a string</param>
+        /// <returns>The string representation of <paramref name="value"/></returns>
+        public string ToString(IPAddress value)
+        {
+            return (value ?? IPAddress.Any).ToString();
         }
     }
 
