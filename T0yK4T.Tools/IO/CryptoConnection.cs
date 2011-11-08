@@ -64,7 +64,6 @@ namespace T0yK4T.Tools.IO
         public event PacketReceivedDelegate PacketReceived;
 
         private Stream netStream;
-        //private Stream comStream;
         private StreamReader reader;
         private StreamWriter writer;
         private Socket socket;
