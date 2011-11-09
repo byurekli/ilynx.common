@@ -130,7 +130,7 @@
     <Compile Include="IO\Handshaker.cs" />
     <Compile Include="IO\LockingSerializer.cs" />
     <Compile Include="IO\PacketFactory.cs" />
-    <Compile Include="IO\ToyPacket.cs" />
+    <Compile Include="IO\Packet.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="LoggingType.cs" />

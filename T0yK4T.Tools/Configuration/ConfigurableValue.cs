@@ -314,4 +314,34 @@ namespace T0yK4T.Tools.Configuration
         }
     }
 
+    /// <summary>
+    /// Basic UInt16 converter...
+    /// </summary>
+    public class UInt16Converter : IValueConverter<ushort>
+    {
+        /// <summary>
+        /// Attempts to convert the specified string value to an unsigned 16 bit integer
+        /// </summary>
+        /// <param name="value">The string representation to convert (parse)</param>
+        /// <returns>The value represented by the string specified, otherwise throws a <see cref="FormatException"/></returns>
+        /// <exception cref="FormatException">Thrown if <paramref name="value"/> is not a recognizable ushort (unsigned 16 bit integer)</exception>
+        public ushort Convert(string value)
+        {
+            ushort val;
+            if (ushort.TryParse(value, out val))
+                return val;
+            throw new FormatException("the given string value was in an incorrect format");
+        }
+
+        /// <summary>
+        /// Returns a basic string representation of the specified value
+        /// </summary>
+        /// <param name="value">The value to convert</param>
+        /// <returns><see cref="ushort.ToString()"/></returns>
+        public string ToString(ushort value)
+        {
+            return value.ToString();
+        }
+    }
+
 }

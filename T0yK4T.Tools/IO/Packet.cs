@@ -10,7 +10,7 @@ namespace T0yK4T.Tools.IO
     /// <summary>
     /// The base class for all packets sent and received by ToyChat
     /// </summary>
-    [ProtoContract(Name = "ToyPacket")]
+    [ProtoContract(Name = "Packet")]
     public sealed class Packet
     {
         /// <summary>
@@ -126,11 +126,22 @@ namespace T0yK4T.Tools.IO
         /// <summary>
         /// Uses the <see cref="ToySerializer"/> to serialize the specified object in to this instance's data field
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
+        /// <typeparam name="T">The type to serialize</typeparam>
+        /// <param name="data">The instance of <typeparamref name="T"/> that should be serialized</param>
         public void SerializeData<T>(T data) where T : class, new()
         {
             this.data = ToySerializer.Serialize(data);
+        }
+
+        /// <summary>
+        /// Attempts to deserialize the data contained in this instance using the <see cref="ToySerializer"/>
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize to</typeparam>
+        /// <returns>An instance of <typeparamref name="T"/> created from the data field of this packet</returns>
+        public T DeserializeData<T>() where T : class, new()
+        {
+            try { return ToySerializer.Deserialize<T>(this.data); }
+            catch { return null; }
         }
 
         /// <summary>
