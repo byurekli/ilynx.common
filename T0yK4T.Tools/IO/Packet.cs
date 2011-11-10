@@ -46,10 +46,17 @@ namespace T0yK4T.Tools.IO
             this.data = data;
         }
 
+        [ProtoMember(1, IsRequired = true)]
+        public int SourceUserID
+        {
+            get;
+            set;
+        }
+        
         /// <summary>
         /// Gets or Sets the TypeID contained in this packet
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public uint TypeID { get; set; }
 
         /// <summary>
@@ -57,7 +64,7 @@ namespace T0yK4T.Tools.IO
         /// <para/>
         /// NOTE: If this value is set to 0, IT WILL BE RANDOMIZED!
         /// </summary>
-        [ProtoMember(2, IsRequired = true)]
+        [ProtoMember(3, IsRequired = true)]
         public int ChannelID
         {
             get;
@@ -68,7 +75,7 @@ namespace T0yK4T.Tools.IO
         /// <summary>
         /// Gets and Sets the data contained in this packet
         /// </summary>
-        [ProtoMember(3)]
+        [ProtoMember(4)]
         public byte[] Data
         {
             get { return this.data ?? new byte[0]; }
@@ -80,8 +87,8 @@ namespace T0yK4T.Tools.IO
         /// <para/>
         /// NOTE: If this value is set to 0, IT WILL BE RANDOMIZED!
         /// </summary>
-        [ProtoMember(4, IsRequired = true)]
-        public int UserID
+        [ProtoMember(5, IsRequired = true)]
+        public int DestinationUserID
         {
             get;
             set;
@@ -93,17 +100,19 @@ namespace T0yK4T.Tools.IO
         /// <returns></returns>
         public byte[] GetBytes()
         {
-            byte[] buffer = new byte[16 + this.data.Length];
+            byte[] buffer = new byte[24 + this.data.Length];
             int offset = 0;
 
             if (this.ChannelID == 0)
                 this.ChannelID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
-            if (this.UserID == 0)
-                this.UserID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
+            if (this.DestinationUserID == 0)
+                this.DestinationUserID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
+            if (this.SourceUserID == 0)
+                this.SourceUserID = T0yK4T.Tools.Cryptography.CryptoCommon.GetPrngInt();
 
             byte[] tmp = new byte[0];
-            
-            tmp = BitConverter.GetBytes(this.ChannelID);
+
+            tmp = BitConverter.GetBytes(this.SourceUserID);
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
@@ -111,7 +120,7 @@ namespace T0yK4T.Tools.IO
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
-            tmp = BitConverter.GetBytes(this.UserID);
+            tmp = BitConverter.GetBytes(this.DestinationUserID);
             Array.Copy(tmp, 0, buffer, offset, tmp.Length);
             offset += tmp.Length;
 
@@ -120,6 +129,12 @@ namespace T0yK4T.Tools.IO
             offset += tmp.Length;
 
             Array.Copy(this.data, 0, buffer, offset, this.data.Length);
+            offset += this.data.Length;
+
+            tmp = BitConverter.GetBytes(this.ChannelID);
+            Array.Copy(tmp, 0, buffer, offset, tmp.Length);
+            offset += tmp.Length;
+
             return buffer;
         }
 
@@ -153,13 +168,13 @@ namespace T0yK4T.Tools.IO
             Packet ret = new Packet();
             int offset = 0;
 
-            ret.ChannelID = BitConverter.ToInt32(bytes, offset);
+            ret.SourceUserID = BitConverter.ToInt32(bytes, offset);
             offset += 4;
-            
+
             ret.TypeID = BitConverter.ToUInt32(bytes, offset);
             offset += 4;
             
-            ret.UserID = BitConverter.ToInt32(bytes, offset);
+            ret.DestinationUserID = BitConverter.ToInt32(bytes, offset);
             offset += 4;
 
             int dataLength = BitConverter.ToInt32(bytes, offset);
@@ -168,6 +183,11 @@ namespace T0yK4T.Tools.IO
             ret.data = new byte[dataLength];
             if (ret.data.Length > 0)
                 Array.Copy(bytes, offset, ret.data, 0, ret.data.Length);
+            offset += dataLength;
+
+            ret.ChannelID = BitConverter.ToInt32(bytes, offset);
+            offset += 4;
+
             return ret;
         }
     }

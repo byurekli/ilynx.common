@@ -115,7 +115,7 @@ namespace T0yK4T.Tools.IO
             rec.Data = new byte[1];
             rec.TypeID = (int)PacketType.Handshake;
             rec.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
-            rec.UserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            rec.DestinationUserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
 
             WriteLine(writer, rec, encryptor);
 
@@ -249,7 +249,7 @@ namespace T0yK4T.Tools.IO
 
             pkt.TypeID = (int)PacketType.Handshake;
             pkt.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
-            pkt.UserID = CryptoCommon.GetPrngInt();// Adding an element of randomness to our sent data
+            pkt.DestinationUserID = CryptoCommon.GetPrngInt();// Adding an element of randomness to our sent data
             pkt.Data = outputDataStream.GetBuffer();
             return pkt;
         }
@@ -258,7 +258,7 @@ namespace T0yK4T.Tools.IO
         {
             Packet packet = new Packet((int)PacketType.Handshake);
             packet.TypeID = (int)PacketType.Handshake;
-            packet.UserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
+            packet.DestinationUserID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.ChannelID = CryptoCommon.GetPrngInt(); // Adding an element of randomness to our sent data
             packet.Data = handshakeEncoding.GetBytes(helper.PublicKey);
 
