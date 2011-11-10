@@ -24,7 +24,7 @@ namespace MongoDB.Linq.Translators
         /// <summary>
         /// 
         /// </summary>
-        private class SubtreeEvaluator : ExpressionVisitor
+        private class SubtreeEvaluator : MongoDB.Linq.Expressions.ExpressionVisitor
         {
             private readonly HashSet<Expression> _candidates;
 

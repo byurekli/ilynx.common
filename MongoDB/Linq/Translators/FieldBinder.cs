@@ -8,7 +8,7 @@ using MongoDB.Util;
 
 namespace MongoDB.Linq.Translators
 {
-    internal class FieldBinder : ExpressionVisitor
+    internal class FieldBinder : MongoDB.Linq.Expressions.ExpressionVisitor
     {
         private static readonly HashSet<Type> CollectionTypes = new HashSet<Type>
         {
@@ -47,7 +47,7 @@ namespace MongoDB.Linq.Translators
             return base.VisitParameter(p);
         }
 
-        private class FieldFinder : ExpressionVisitor
+        private class FieldFinder : MongoDB.Linq.Expressions.ExpressionVisitor
         {
             private Stack<string> _fieldParts;
             private bool _isBlocked;

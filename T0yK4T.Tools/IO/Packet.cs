@@ -71,8 +71,8 @@ namespace T0yK4T.Tools.IO
         [ProtoMember(3)]
         public byte[] Data
         {
-            get { return this.data ?? new byte[1]; }
-            set { this.data = value ?? new byte[1]; }
+            get { return this.data ?? new byte[0]; }
+            set { this.data = value ?? new byte[0]; }
         }
 
         /// <summary>

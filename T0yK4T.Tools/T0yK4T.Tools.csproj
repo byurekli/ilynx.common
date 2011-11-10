@@ -137,14 +137,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mongodb\Bson\MongoDB.Bson.csproj">
-      <Project>{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}</Project>
-      <Name>MongoDB.Bson</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\mongodb\Driver\MongoDB.Driver.csproj">
-      <Project>{AE5166CD-76B0-4911-BD80-CED9521F37A1}</Project>
-      <Name>MongoDB.Driver</Name>
-    </ProjectReference>
     <ProjectReference Include="..\protobuf-net\protobuf-net.csproj">
       <Project>{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}</Project>
       <Name>protobuf-net</Name>
