@@ -19,7 +19,10 @@ namespace T0yK4T.Tools
         /// Empty Constructor
         /// </summary>
         public ConsoleLogger()
-        { }
+        {
+            if (Console.LargestWindowHeight > 50 && Console.LargestWindowWidth > 50)
+                Console.SetWindowSize((int)(Console.LargestWindowWidth / 1.5), (int)(Console.LargestWindowHeight / 1.5));
+        }
 
         /// <summary>
         /// Initializes a new instance of <see cref="ConsoleLogger"/> and optionally logs to a file
