@@ -400,8 +400,9 @@ namespace T0yK4T.Tools.IO
                 else if (!this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
                 {
                     this.AddRunFlag(RunFlags.LocalHandshakeRequested);
+                    this.AddRunFlag(RunFlags.IsBlocking);
                     Packet hsRequest = new Packet { TypeID = (int)PacketType.HandshakeRequest };
-                    this.WritePacket(hsRequest);
+                    this.WritePacketInternal(hsRequest);
                 }
             }
             return true;
@@ -449,7 +450,7 @@ namespace T0yK4T.Tools.IO
         private void SendConnectionID()
         {
             Packet packet = new Packet { TypeID = (int)PacketType.ConnectionIDExchange, Data = this.connectionID.ToByteArray() };
-            this.WritePacket(packet);
+            this.WritePacketInternal(packet);
         }
 
         private void PartialHandshake()
@@ -458,7 +459,7 @@ namespace T0yK4T.Tools.IO
             lock (this.p_Lock)
             {
                 Packet reply = new Packet { TypeID = (int)PacketType.InitPartialHandshake };
-                this.WritePacket(reply);
+                this.WritePacketInternal(reply);
                 int size;
                 Packet received = this.Read(out size);
                 if (received.TypeID != (int)PacketType.InitPartialHandshake) // This should never happen
@@ -474,7 +475,7 @@ namespace T0yK4T.Tools.IO
                     this.decryptor = HandshakeHelper.GetDecryptor(this.privRSA, remoteKey);
 
                     reply.TypeID = (int)PacketType.EndPartialHandshake;
-                    this.WritePacket(reply);
+                    this.WritePacketInternal(reply);
 
                     //Recreate input stream
                     this.inputStream = new CryptoStream(this.netStream, this.decryptor.Decryptor, CryptoStreamMode.Read);
@@ -499,7 +500,7 @@ namespace T0yK4T.Tools.IO
                 this.AddRunFlag(RunFlags.IsBlocking);
                 lock (this.p_Lock)
                 {
-                    this.WritePacket(packet);
+                    this.WritePacketInternal(packet);
                     this.FullHandshake();
                 }
                 this.RemoveRunFlag(RunFlags.IsBlocking);
@@ -511,6 +512,8 @@ namespace T0yK4T.Tools.IO
         private void HandleHandshakeRequest(Packet packet)
         {
             base.LogDebug("Got HandshakeRequest from {0}", this.socket.RemoteEndPoint);
+            while (this.CheckRunFlags(RunFlags.IsBlocking))
+                Thread.Sleep(10);
             if ((DateTime.Now - this.lastHandshake) < maxKeyAge - maxAgeSkew && !this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
                 this.PartialHandshake();
             else
@@ -530,7 +533,7 @@ namespace T0yK4T.Tools.IO
                 lock (this.p_Lock)
                 {
                     Packet reply = new Packet { TypeID = (int)PacketType.InitHandshake };
-                    this.WritePacket(reply);
+                    this.WritePacketInternal(reply);
                     int size;
                     Packet response = this.Read(out size);
                     if (response.TypeID == (uint)PacketType.InitHandshake)
@@ -544,11 +547,20 @@ namespace T0yK4T.Tools.IO
 
         private void FullHandshake()
         {
-            this.handshaker.Handshake(this.netStream, this.socket, this.privRSA, out this.encryptor, out this.decryptor, ref this.readLock, ref this.writeLock);
-            this.outputStream = new CryptoStream(this.netStream, this.encryptor.Encryptor, CryptoStreamMode.Write);
-            this.inputStream = new CryptoStream(this.netStream, this.decryptor.Decryptor, CryptoStreamMode.Read);
-            this.lastHandshake = DateTime.Now;
-            this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
+            if (this.handshaker.Handshake(this.netStream, this.socket, this.privRSA, out this.encryptor, out this.decryptor, ref this.readLock, ref this.writeLock))
+            {
+                this.outputStream = new CryptoStream(this.netStream, this.encryptor.Encryptor, CryptoStreamMode.Write);
+                this.inputStream = new CryptoStream(this.netStream, this.decryptor.Decryptor, CryptoStreamMode.Read);
+                this.lastHandshake = DateTime.Now;
+                this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
+                this.RemoveRunFlag(RunFlags.IsBlocking);
+            }
+            else
+            {
+                base.LogCritical("Unable to complete handshake - unrecoverable");
+                this.Close();
+            }
+
         }
 
         private void HandleInitPartialHandshake(Packet packet)
@@ -558,7 +570,7 @@ namespace T0yK4T.Tools.IO
                 this.AddRunFlag(RunFlags.IsBlocking);
                 lock (this.p_Lock)
                 {
-                    this.WritePacket(packet);
+                    this.WritePacketInternal(packet);
                     RSAHelper remotePubKey;
                     HandshakeHelper.ExchangePubKey(this.netStream, this.privRSA, out remotePubKey);
                     this.encryptor = new EncryptionProvider();
@@ -579,7 +591,7 @@ namespace T0yK4T.Tools.IO
                     }
                     else
                     {
-                        this.WritePacket(remoteResponse);
+                        this.WritePacketInternal(remoteResponse);
                         base.LogInformation("Partial SessionID renegotiation succeded for remote host {0}", this.socket.RemoteEndPoint);
                         this.lastHandshake = DateTime.Now;
                         this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
@@ -598,12 +610,13 @@ namespace T0yK4T.Tools.IO
             }
             else
                 base.LogWarning("Got CancelHandshake from remote endpoint {0}, Local has NOT requested handshake, this should never happen - Is this intended behaviour?", this.socket.RemoteEndPoint);
+            this.RemoveRunFlag(RunFlags.IsBlocking);
         }
         
         private void NotifyDisconnect()
         {
             Packet packet = new Packet { TypeID = (int)PacketType.DisconnectNotification };
-            this.WritePacket(packet);
+            this.WritePacketInternal(packet);
         }
 
         private Queue<PacketReceivedArgs> queuedEvents = new Queue<PacketReceivedArgs>();
@@ -684,8 +697,7 @@ namespace T0yK4T.Tools.IO
             else if (this.CheckRunFlags(RunFlags.IsConnected))
             {
                 int ret;
-                lock (this.p_Lock)
-                    ret = this.WritePacket(packet);
+                ret = this.WritePacket(packet);
                 return ret;
             }
             else
@@ -702,8 +714,7 @@ namespace T0yK4T.Tools.IO
                 if (this.CheckRunFlags(RunFlags.IsConnected) && this.socket.Connected)
                     this.NotifyDisconnect();
 
-                this.RemoveRunFlag(RunFlags.Run);
-                this.RemoveRunFlag(RunFlags.IsConnected);
+                this.RemoveRunFlag(RunFlags.All);
                 if (this.socket != null)
                 {
                     if (this.socket.Connected)
@@ -713,7 +724,7 @@ namespace T0yK4T.Tools.IO
         }
 
         [Flags]
-        private enum RunFlags
+        private enum RunFlags : byte
         {
             Run = 0x01,
             LocalHandshakeRequested = 0x02,
@@ -722,6 +733,7 @@ namespace T0yK4T.Tools.IO
             IsBlocking = 0x10,
             DontThrowOnAborted = 0x20,
             DisconnectReceived = 0x30,
+            All = 0xff,
         }
 
         private struct PacketReceivedArgs
@@ -836,6 +848,16 @@ namespace T0yK4T.Tools.IO
         private int WritePacket(Packet packet)
         {
             int finalSize;
+            while (this.CheckRunFlags(RunFlags.IsBlocking))
+                Thread.Sleep(10);
+            lock (this.writeLock)
+                WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.BlockSize, out finalSize);
+            return finalSize;
+        }
+
+        private int WritePacketInternal(Packet packet)
+        {
+            int finalSize;
             lock (this.writeLock)
                 WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.BlockSize, out finalSize);
             return finalSize;
@@ -845,35 +867,7 @@ namespace T0yK4T.Tools.IO
         {
             byte[] received;
             lock (this.readLock)
-            {
                 received = ReadBlocks(this.inputStream, this.decryptor.BlockSize, out finalSize);
-                //byte[] preReadChunk = new byte[sizeof(int)];
-                //int l = this.netStream.Read(preReadChunk, 0, preReadChunk.Length);
-                //finalSize = l;
-                //if (l != sizeof(int))
-                //    throw new IOException("Unexpected pre-read data length");
-                //int length = BitConverter.ToInt32(preReadChunk, 0);
-                //byte[] data = new byte[length];
-                //int read = 0;
-                //byte[] chunk;
-                //if (length < CHUNK_SIZE)
-                //    chunk = new byte[length];
-                //else
-                //    chunk = new byte[CHUNK_SIZE];
-                //int s = 0;
-                //while (read < length)
-                //{
-                //    read += (s = this.netStream.Read(chunk, 0, chunk.Length));
-
-                //    Array.Copy(chunk, 0, data, read - s, s);
-                //    if (length - read < CHUNK_SIZE)
-                //        chunk = new byte[length - read];
-                //}
-                //finalSize += read;
-                //byte[] finalData = this.decryptor.DecryptArray(data);
-                //ToyPacket packet = ToyPacket.FromBytes(finalData);
-                //return packet;
-            }
             return Packet.FromBytes(received);
         }
 
