@@ -116,7 +116,7 @@ namespace T0yK4T.Tools.IO
         }
 
 #if DEBUG
-        private TimeSpan maxKeyAge = TimeSpan.FromSeconds(5);
+        private TimeSpan maxKeyAge = TimeSpan.FromSeconds(60);
 #else
         private TimeSpan maxKeyAge = TimeSpan.FromHours(1);
 #endif
@@ -512,8 +512,6 @@ namespace T0yK4T.Tools.IO
         private void HandleHandshakeRequest(Packet packet)
         {
             base.LogDebug("Got HandshakeRequest from {0}", this.socket.RemoteEndPoint);
-            while (this.CheckRunFlags(RunFlags.IsBlocking))
-                Thread.Sleep(10);
             if ((DateTime.Now - this.lastHandshake) < maxKeyAge - maxAgeSkew && !this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
                 this.PartialHandshake();
             else
