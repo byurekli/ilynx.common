@@ -46,6 +46,11 @@ namespace T0yK4T.Tools.IO
             this.data = data;
         }
 
+        /// <summary>
+        /// Gets or Sets the ID of the user that sent this packet
+        /// <para/>
+        /// NOTE: If this value is set to 0, IT WILL BE RANDOMIZED!
+        /// </summary>
         [ProtoMember(1, IsRequired = true)]
         public int SourceUserID
         {
