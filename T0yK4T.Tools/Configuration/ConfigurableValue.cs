@@ -75,7 +75,8 @@ namespace T0yK4T.Tools.Configuration
                 Config.Configuration.AppSettings.Settings.Add(this.name, this.converter.ToString(this.value));
             else
                 Config.Configuration.AppSettings.Settings[this.name].Value = this.converter.ToString(this.value);
-            Config.Configuration.Save(ConfigurationSaveMode.Modified);
+            try { Config.Configuration.Save(ConfigurationSaveMode.Modified); }
+            catch { }
         }
 
         /// <summary>
