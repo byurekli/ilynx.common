@@ -648,17 +648,45 @@ namespace T0yK4T.Tools.IO
             }
         }
 
-        /// <summary>
+        ///<summary>
         /// Manually reads a packet from the underlying networkstream
         /// <para/>
         /// Please note that this will only return anything if <see cref="CryptoConnection.ConnectionFlags"/> has the <see cref="CryptoConnectionFlags.ManualRead"/> bitfield set
         /// </summary>
-        /// <param name="size"></param>
-        /// <returns></returns>
+        /// <param name="timeout">The timeout (in milliseconds) to wait before throwing a TimeoutException</param>
+        /// <param name="size">The final size of the packet</param>
+        /// <returns>The packet that was read</returns>
+        public Packet ReadPacket(int timeout, out int size)
+        {
+            DateTime opStart = DateTime.Now;
+            while (this.packetQueue.Count < 1)
+            {
+                Thread.Sleep(1);
+                if ((DateTime.Now - opStart).TotalMilliseconds >= timeout)
+                    throw new TimeoutException("Operation timed out");
+                else if (!this.Connected)
+                    throw new InvalidOperationException("Disconnected");
+            }
+            PacketWithSize pws = this.packetQueue.Dequeue();
+            size = pws.Size;
+            return pws.Packet;
+        }
+        
+        ///<summary>
+        /// Manually reads a packet from the underlying networkstream
+        /// <para/>
+        /// Please note that this will only return anything if <see cref="CryptoConnection.ConnectionFlags"/> has the <see cref="CryptoConnectionFlags.ManualRead"/> bitfield set
+        /// </summary>
+        /// <param name="size">The final size of the packet that was read</param>
+        /// <returns>The packet that was read</returns>
         public Packet ReadPacket(out int size)
         {
             while (this.packetQueue.Count < 1)
+            {
                 Thread.Sleep(1);
+                if (!this.Connected)
+                    throw new InvalidOperationException("Disconnected");
+            }
             PacketWithSize pws = this.packetQueue.Dequeue();
             size = pws.Size;
             return pws.Packet;
@@ -740,40 +768,6 @@ namespace T0yK4T.Tools.IO
             public int S;
             public PacketReceivedDelegate D;
         }
-
-        ///// <summary>
-        ///// Sets the callback method used to notify user of received packet to the specified value
-        ///// <para/>
-        ///// Please note that the <see cref="PacketReceivedDelegate"/> is not necessarily called from the same thread as this method was called!
-        ///// </summary>
-        ///// <param name="prd"></param>
-        //public void SetPacketReceivedCallback(PacketReceivedDelegate prd)
-        //{
-        //    lock (this.p_Lock)
-        //    {
-        //        this.prd = prd;
-        //        if (prd != null)
-        //        {
-        //            while (this.queuedEvents.Count > 0)
-        //            {
-        //                PacketReceivedArgs args = this.queuedEvents.Dequeue();
-        //                this.prd.Invoke(args.P, args.S);
-        //            }
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Sets the callback method used to notify user of a disconnect
-        ///// <para/>
-        ///// Please note that the <see cref="DisconnectedDelegate"/> is not necessarily called from the same thread as this method was called!
-        ///// </summary>
-        ///// <param name="dcd"></param>
-        //public void SetDiconnectedCallback(DisconnectedDelegate dcd)
-        //{
-        //    lock (this.p_Lock)
-        //        this.dcd = dcd;
-        //}
 
         /// <summary>
         /// Attempts to connect to the specified <see cref="IPEndPoint"/>
