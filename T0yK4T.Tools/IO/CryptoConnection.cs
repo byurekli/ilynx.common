@@ -12,6 +12,7 @@ using System.Security;
 using System.Security.Cryptography;
 using T0yK4T.Tools.Cryptography;
 using System.Threading;
+using System.Reflection;
 
 namespace T0yK4T.Tools.IO
 {
@@ -82,7 +83,7 @@ namespace T0yK4T.Tools.IO
         private HandshakeHelper handshaker;
         
 #if DEBUG
-        private int timeout = 10000;
+        private int timeout = 1000;
 #else
         private int timeout = 500;
 #endif
@@ -116,7 +117,7 @@ namespace T0yK4T.Tools.IO
         }
 
 #if DEBUG
-        private TimeSpan maxKeyAge = TimeSpan.FromSeconds(60);
+        private TimeSpan maxKeyAge = TimeSpan.FromSeconds(5);
 #else
         private TimeSpan maxKeyAge = TimeSpan.FromHours(1);
 #endif
@@ -497,6 +498,7 @@ namespace T0yK4T.Tools.IO
         {
             if (this.CheckRunFlags(RunFlags.LocalHandshakeRequested))
             {
+                this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
                 this.AddRunFlag(RunFlags.IsBlocking);
                 lock (this.p_Lock)
                 {
@@ -506,7 +508,7 @@ namespace T0yK4T.Tools.IO
                 this.RemoveRunFlag(RunFlags.IsBlocking);
             }
             else // This should never happen
-                base.LogError("FIXME! Got InitHandshake from remote without any indicating of a handshake having been requested!");
+                base.LogError("FIXME! Got InitHandshake from remote without any indications of a handshake having been requested!");
         }
 
         private void HandleHandshakeRequest(Packet packet)
@@ -539,6 +541,7 @@ namespace T0yK4T.Tools.IO
                     else // This should never happen
                         base.LogError("Got last-second CancelHandshake from remote, is this intended behaviour?");
                 }
+                this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
                 this.RemoveRunFlag(RunFlags.IsBlocking);
             }
         }
@@ -550,8 +553,6 @@ namespace T0yK4T.Tools.IO
                 this.outputStream = new CryptoStream(this.netStream, this.encryptor.Encryptor, CryptoStreamMode.Write);
                 this.inputStream = new CryptoStream(this.netStream, this.decryptor.Decryptor, CryptoStreamMode.Read);
                 this.lastHandshake = DateTime.Now;
-                this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
-                this.RemoveRunFlag(RunFlags.IsBlocking);
             }
             else
             {
@@ -592,9 +593,9 @@ namespace T0yK4T.Tools.IO
                         this.WritePacketInternal(remoteResponse);
                         base.LogInformation("Partial SessionID renegotiation succeded for remote host {0}", this.socket.RemoteEndPoint);
                         this.lastHandshake = DateTime.Now;
-                        this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
                     }
                 }
+                this.RemoveRunFlag(RunFlags.LocalHandshakeRequested);
                 this.RemoveRunFlag(RunFlags.IsBlocking);
             }
         }
@@ -779,6 +780,7 @@ namespace T0yK4T.Tools.IO
         /// returns true if connected, otherwise false
         /// </summary>
         /// <param name="ep">The remote <see cref="IPEndPoint"/> to attempt to connect to</param>
+        /// <returns>True if succesful, otherwise false</returns>
         public bool ConnectTo(IPEndPoint ep)
         {
             try
@@ -789,6 +791,25 @@ namespace T0yK4T.Tools.IO
                     this.WrapSocket(client.Client);
             }
             catch (Exception e) { base.LogException(e, System.Reflection.MethodBase.GetCurrentMethod()); }
+            return this.CheckRunFlags(RunFlags.IsConnected);
+        }
+
+        /// <summary>
+        /// Attempts to connect to the specified host on the specified port
+        /// </summary>
+        /// <param name="hostname">The hostname of the host to connect to</param>
+        /// <param name="port">The port to connect to</param>
+        /// <returns>True if succesful, otherwise false</returns>
+        public bool ConnectTo(string hostname, ushort port)
+        {
+            try
+            {
+                TcpClient client = new TcpClient();
+                client.Connect(hostname, port);
+                if (client.Connected)
+                    this.WrapSocket(client.Client);
+            }
+            catch (Exception e) { base.LogException(e, MethodBase.GetCurrentMethod()); }
             return this.CheckRunFlags(RunFlags.IsConnected);
         }
 
@@ -841,7 +862,11 @@ namespace T0yK4T.Tools.IO
         {
             int finalSize;
             while (this.CheckRunFlags(RunFlags.IsBlocking))
-                Thread.Sleep(10);
+            {
+                Thread.Sleep(1);
+                if (!this.Connected)
+                    throw new InvalidOperationException("The connection has been closed");
+            }
             lock (this.writeLock)
                 WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.BlockSize, out finalSize);
             return finalSize;
