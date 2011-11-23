@@ -1,0 +1,10 @@
+Please note that the latest versions of the code in this project
+can always be found on http://code.google.com/p/t0yk4t-tools
+
+
+I take no credit for code in the followin sub-folders / projects:
+
+MongoDB: http://www.mongodb.org
+    (Primarily the CSharp Driver): https://github.com/mongodb/mongo-csharp-driver
+Protobuf-net: http://code.google.com/p/protobuf-net/
+Skeinfish: http://code.google.com/p/skeinfish/
