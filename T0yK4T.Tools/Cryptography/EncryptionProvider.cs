@@ -76,9 +76,9 @@ namespace T0yK4T.Tools.Cryptography
         /// <summary>
         /// Gets the BlockSize of the current encryption algorithm
         /// </summary>
-        public int BlockSize
+        public int WriteBlockSize
         {
-            get { return this.symAlg.BlockSize; }
+            get { return this.symAlg.BlockSize / 8; }
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace T0yK4T.Tools.Cryptography
 		private void Initialize(byte[] key, byte[] iv)
 		{
 			symAlg = new Threefish();
-			symAlg.KeySize = (int)CryptoCommon.KEY_SIZE;
-			symAlg.BlockSize = (int)CryptoCommon.KEY_SIZE;
+			symAlg.KeySize = key.Length * 8;
+			symAlg.BlockSize = key.Length * 8;
 			symAlg.Mode = CryptoCommon.CipherMode;
             symAlg.Padding = PaddingMode.None;
             if (key == null)

@@ -868,7 +868,7 @@ namespace T0yK4T.Tools.IO
                     throw new InvalidOperationException("The connection has been closed");
             }
             lock (this.writeLock)
-                WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.BlockSize, out finalSize);
+                WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.WriteBlockSize, out finalSize);
             return finalSize;
         }
 
@@ -876,7 +876,7 @@ namespace T0yK4T.Tools.IO
         {
             int finalSize;
             lock (this.writeLock)
-                WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.BlockSize, out finalSize);
+                WriteBlocks(packet.GetBytes(), this.outputStream, this.encryptor.WriteBlockSize, out finalSize);
             return finalSize;
         }
 
@@ -884,7 +884,7 @@ namespace T0yK4T.Tools.IO
         {
             byte[] received;
             lock (this.readLock)
-                received = ReadBlocks(this.inputStream, this.decryptor.BlockSize, out finalSize);
+                received = ReadBlocks(this.inputStream, this.decryptor.WriteBlockSize, out finalSize);
             return Packet.FromBytes(received);
         }
 

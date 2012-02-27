@@ -177,6 +177,13 @@ namespace T0yK4T.Tools.IO
             return sendData.Length;
         }
 
+        /// <summary>
+        /// Hello World
+        /// </summary>
+        /// <param name="dst"></param>
+        /// <param name="packet"></param>
+        /// <param name="encryptor"></param>
+        /// <returns></returns>
         private int WriteLine(StreamWriter dst, Packet packet, EncryptionProvider encryptor)
         {
             byte[] serializedPacket = ToySerializer.Serialize(packet);
