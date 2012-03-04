@@ -119,6 +119,7 @@
     <Compile Include="Cryptography\RSAHelper.cs" />
     <Compile Include="Data\DataSerializer.cs" />
     <Compile Include="Data\IDataAdapter.cs" />
+    <Compile Include="Data\IDataProperty.cs" />
     <Compile Include="Data\IDataSerializer.cs" />
     <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="General\PriorityQueue.cs" />

@@ -15,7 +15,7 @@ namespace T0yK4T.Tools.Data
     public class DataSerializer<T> : IDataSerializer<T> where T : new()
     {
         private Dictionary<string, PropertyInfo> serializedFields = new Dictionary<string, PropertyInfo>();
-        private Dictionary<string, DataProperty<T>> template = new Dictionary<string, DataProperty<T>>();
+        private Dictionary<string, IDataProperty<T>> template = new Dictionary<string, IDataProperty<T>>();
         private Type handledType = typeof(T);
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public IEnumerable<DataProperty<T>> Serialize(T value)
+        public IEnumerable<IDataProperty<T>> Serialize(T value)
         {
-            List<DataProperty<T>> retVal = new List<DataProperty<T>>();
+            List<IDataProperty<T>> retVal = new List<IDataProperty<T>>();
             foreach (KeyValuePair<string, PropertyInfo> kvp in this.serializedFields)
             {
                 string name = kvp.Key;
@@ -67,10 +67,10 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="fields"></param>
         /// <returns></returns>
-        public T Deserialize(IEnumerable<DataProperty<T>> fields)
+        public T Deserialize(IEnumerable<IDataProperty<T>> fields)
         {
             T instance = new T();
-            foreach (DataProperty<T> df in fields)
+            foreach (IDataProperty<T> df in fields)
                 this.serializedFields[df.PropertyName].SetValue(instance, df.Value, null);
 
             return instance;
@@ -81,7 +81,7 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="val">The value to get a filter for</param>
         /// <returns></returns>
-        public DataProperty<T>[] GetUsableFilter(T val)
+        public IDataProperty<T>[] GetUsableFilter(T val)
         {
             return this.GetUsableFilter(val, null);
             //List<DataProperty<T>> filter = new List<DataProperty<T>>();
@@ -102,9 +102,9 @@ namespace T0yK4T.Tools.Data
         /// <param name="val"></param>
         /// <param name="excludeProperties"></param>
         /// <returns></returns>
-        public DataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties)
+        public IDataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties)
         {
-            List<DataProperty<T>> filter = new List<DataProperty<T>>();
+            List<IDataProperty<T>> filter = new List<IDataProperty<T>>();
             if (excludeProperties == null)
                 excludeProperties = new string[0];
 
@@ -123,9 +123,9 @@ namespace T0yK4T.Tools.Data
         /// Gets the template used when serializing and deserializing data using this <see cref="DataSerializer{T}"/>
         /// </summary>
         /// <returns></returns>
-        public IDictionary<string, DataProperty<T>> GetDataTemplate()
+        public IDictionary<string, IDataProperty<T>> GetDataTemplate()
         {
-            return new Dictionary<string, DataProperty<T>>(this.template);
+            return new Dictionary<string, IDataProperty<T>>(this.template);
         }
 
         /// <summary>
@@ -159,8 +159,8 @@ namespace T0yK4T.Tools.Data
     /// <summary>
     /// A structure used to represent a single property in <see cref="DataSerializer{T}"/>
     /// </summary>
-    /// <typeparam name="T">Used to constrain types</typeparam>
-    public struct DataProperty<T>
+    /// <typeparam name="TOwner">Used to constrain types</typeparam>
+    public struct DataProperty<TOwner> : IDataProperty<TOwner>
     {
         private object value;
         private string name;
@@ -232,11 +232,11 @@ namespace T0yK4T.Tools.Data
         /// Value is set to null
         /// </summary>
         /// <param name="template"></param>
-        public DataProperty(DataProperty<T> template)
+        public DataProperty(IDataProperty<TOwner> template)
         {
             this.value = null;
-            this.name = template.name;
-            this.dataType = template.dataType;
+            this.name = template.PropertyName;
+            this.dataType = template.DataType;
         }
     }
 }

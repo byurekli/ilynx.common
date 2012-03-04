@@ -14,20 +14,20 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="fields"></param>
         /// <returns></returns>
-        T Deserialize(IEnumerable<DataProperty<T>> fields);
+        T Deserialize(IEnumerable<IDataProperty<T>> fields);
 
         /// <summary>
         /// Gets a collection of <see cref="DataProperty{T}"/> that describe the data layout
         /// </summary>
         /// <returns></returns>
-        IDictionary<string, DataProperty<T>> GetDataTemplate();
+        IDictionary<string, IDataProperty<T>> GetDataTemplate();
 
         /// <summary>
         /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> that can be used to search a <see cref="IDataAdapter{T}"/>
         /// </summary>
         /// <param name="val">The value to get a filter from</param>
         /// <returns></returns>
-        DataProperty<T>[] GetUsableFilter(T val);
+        IDataProperty<T>[] GetUsableFilter(T val);
 
         /// <summary>
         /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> objects that can be used to search a <see cref="IDataAdapter{T}"/>
@@ -37,7 +37,7 @@ namespace T0yK4T.Tools.Data
         /// <param name="val"></param>
         /// <param name="excludeProperties"></param>
         /// <returns></returns>
-        DataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties);
+        IDataProperty<T>[] GetUsableFilter(T val, params string[] excludeProperties);
 
         /// <summary>
         /// When implemented in a derrived class, returns a collection of <see cref="DataProperty{T}"/> that can be used to store the specified value
@@ -46,6 +46,6 @@ namespace T0yK4T.Tools.Data
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        IEnumerable<DataProperty<T>> Serialize(T value);
+        IEnumerable<IDataProperty<T>> Serialize(T value);
     }
 }

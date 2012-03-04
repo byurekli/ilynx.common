@@ -10,7 +10,7 @@ namespace T0yK4T.Tools
     /// <summary>
     /// Simple Console Logger - will dump anything to console
     /// </summary>
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger : ILogger, IDisposable
     {
         private Stream os;
         private StreamWriter writer;
@@ -75,5 +75,17 @@ namespace T0yK4T.Tools
                 this.writer = null;
             }
         }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            if (this.writer != null)
+                this.writer.Dispose();
+            if (this.os != null)
+                this.os.Dispose();
+        }
+
+        #endregion
     }
 }

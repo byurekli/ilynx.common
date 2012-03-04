@@ -35,6 +35,8 @@ namespace T0yK4T.Tools.Cryptography
         /// </summary>
         public static readonly Encoding ENCODING = ASCIIEncoding.ASCII;
 
+        private static Skein hasher;
+
         /// <summary>
         /// Returns a SkeinFish.Skein to compute hashes with
         /// </summary>
@@ -42,8 +44,11 @@ namespace T0yK4T.Tools.Cryptography
         {
             get
             {
-                Skein hasher = new Skein((int)KEY_SIZE, (int)KEY_SIZE);
-                hasher.UbiParameters.BlockType = UbiType.Key;
+                if (hasher == null)
+                {
+                    hasher = new Skein((int)KEY_SIZE, (int)KEY_SIZE);
+                    hasher.UbiParameters.BlockType = UbiType.Key;
+                }
                 return hasher;
             }
         }
