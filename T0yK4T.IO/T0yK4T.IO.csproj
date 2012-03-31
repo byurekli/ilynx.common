@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{54DA2E75-527D-435F-9712-C94A9E312ABA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>T0yK4T.IO</RootNamespace>
+    <AssemblyName>T0yK4T.IO</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CopyDirectory.cs" />
+    <Compile Include="CryptoConnection.cs" />
+    <Compile Include="Handshaker.cs" />
+    <Compile Include="LockingSerializer.cs" />
+    <Compile Include="Packet.cs" />
+    <Compile Include="PacketFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CryptoConnection.old" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\protobuf-net\protobuf-net.csproj">
+      <Project>{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}</Project>
+      <Name>protobuf-net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\skeinfish\SkeinFish.csproj">
+      <Project>{447C6CB4-75D4-4E42-96CB-A4ABF2739805}</Project>
+      <Name>SkeinFish</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\T0yK4T.Cryptography\T0yK4T.Cryptography.csproj">
+      <Project>{DFE22FA4-978C-4113-9F0A-F2FDC717A508}</Project>
+      <Name>T0yK4T.Cryptography</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\T0yK4T.Tools\T0yK4T.Tools.csproj">
+      <Project>{1D510E0B-912C-4D24-9446-E96AE74F3C27}</Project>
+      <Name>T0yK4T.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

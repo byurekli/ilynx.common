@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace T0yK4T.Tools.General
+namespace T0yK4T.Tools
 {
     /// <summary>
     /// Does priority queueing

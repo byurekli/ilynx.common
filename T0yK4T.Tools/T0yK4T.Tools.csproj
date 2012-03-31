@@ -110,28 +110,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentBase.cs" />
-    <Compile Include="Configuration\ConfigurableValue.cs" />
     <Compile Include="ConsoleLogger.cs" />
-    <Compile Include="Cryptography\CryptoCommon.cs" />
-    <Compile Include="Cryptography\CryptoStreamWriter.cs" />
-    <Compile Include="Cryptography\EncryptionProvider.cs" />
-    <Compile Include="Cryptography\HashHelper.cs" />
-    <Compile Include="Cryptography\RSAHelper.cs" />
-    <Compile Include="Data\DataSerializer.cs" />
-    <Compile Include="Data\IDataAdapter.cs" />
-    <Compile Include="Data\IDataProperty.cs" />
-    <Compile Include="Data\IDataSerializer.cs" />
     <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="General\PriorityQueue.cs" />
     <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
-    <Compile Include="IO\CryptoConnection.cs" />
-    <Compile Include="Threading\ThreadedWorker.cs" />
-    <Compile Include="IO\CopyDirectory.cs" />
-    <None Include="IO\CryptoConnection.old" />
-    <Compile Include="IO\Handshaker.cs" />
-    <Compile Include="IO\LockingSerializer.cs" />
-    <Compile Include="IO\PacketFactory.cs" />
-    <Compile Include="IO\Packet.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="LoggingType.cs" />

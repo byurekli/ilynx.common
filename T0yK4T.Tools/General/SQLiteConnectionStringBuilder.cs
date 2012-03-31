@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace T0yK4T.Tools.General
+namespace T0yK4T.Tools
 {
 	/// <summary>
 	/// OBSOLETE!

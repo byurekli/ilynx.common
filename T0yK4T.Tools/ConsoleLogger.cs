@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using T0yK4T.Tools.General;
+using T0yK4T.Tools;
 using System.IO;
 
 namespace T0yK4T.Tools
