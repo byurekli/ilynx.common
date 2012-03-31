@@ -5,7 +5,7 @@ using System.Text;
 using System.Configuration;
 using System.Net;
 
-namespace T0yK4T.Tools.Configuration
+namespace T0yK4T.Configuration
 {
     /// <summary>
     /// Simple helper class that contains a <see cref="System.Configuration.Configuration"/> object for the entry assembly
