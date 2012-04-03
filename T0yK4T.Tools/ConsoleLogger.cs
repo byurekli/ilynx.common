@@ -78,6 +78,9 @@ namespace T0yK4T.Tools
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Disposes the logger
+        /// </summary>
         public void Dispose()
         {
             if (this.writer != null)

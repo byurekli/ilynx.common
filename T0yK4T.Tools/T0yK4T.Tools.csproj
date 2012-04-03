@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="ComponentBase.cs" />
     <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="General\PriorityQueue.cs" />
     <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
@@ -118,16 +119,7 @@
     <Compile Include="IValidatable.cs" />
     <Compile Include="LoggingType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\protobuf-net\protobuf-net.csproj">
-      <Project>{2A9344F0-9E8B-416F-A604-C975F2E7BE5B}</Project>
-      <Name>protobuf-net</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\skeinfish\SkeinFish.csproj">
-      <Project>{447C6CB4-75D4-4E42-96CB-A4ABF2739805}</Project>
-      <Name>SkeinFish</Name>
-    </ProjectReference>
+    <Compile Include="PropertyChangedEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
