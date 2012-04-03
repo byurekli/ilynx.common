@@ -32,7 +32,7 @@ namespace T0yK4T.Threading
         /// <summary>
         /// This event is fired if any exceptions are caught during execution
         /// </summary>
-        public event GenericEventHandler<ThreadedWorker<TArgs, TCompletedArgs>> WorkFailed;
+        public event GenericEventHandler<ThreadedWorker<TArgs, TCompletedArgs>, Exception> WorkFailed;
         
         /// <summary>
         /// This event is fired when the worker is aborted
@@ -62,7 +62,7 @@ namespace T0yK4T.Threading
         public void Execute(TArgs args)
         {
             if (this.worker != null && !this.completed)
-                throw new NotSupportedException("This worker has already been started and cannot be started again");
+                throw new NotSupportedException("This worker has already been started and cannot be started again until it has completed, failed or has been aborted");
             else if (this.worker != null && this.completed)
             {
                 this.Abort();
@@ -103,10 +103,10 @@ namespace T0yK4T.Threading
         /// <summary>
         /// Used to invoke the <see cref="WorkFailed"/> event
         /// </summary>
-        protected virtual void OnFailed()
+        protected virtual void OnFailed(Exception e)
         {
             if (this.WorkFailed != null)
-                this.WorkFailed.BeginInvoke(this, new AsyncCallback(iar => this.WorkFailed.EndInvoke(iar)), null);
+                this.WorkFailed.BeginInvoke(this, e, new AsyncCallback(iar => this.WorkFailed.EndInvoke(iar)), null);
         }
 
         private void DoWork(object args)
@@ -115,11 +115,11 @@ namespace T0yK4T.Threading
             {
                 this.OnStarted();
                 this.result = this.DoWork((TArgs)args);
-                this.completed = true;
+                this.completed = true; 
                 this.OnCompleted(this.result);
             }
-            catch (ThreadAbortException) { }
-            catch { throw; }
+            catch (ThreadAbortException) { this.OnAborted(); this.completed = true; }
+            catch (Exception e) { this.OnFailed(e); this.completed = true; }
         }
 
         /// <summary>
