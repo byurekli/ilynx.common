@@ -1,0 +1,22 @@
+﻿<Application x:Class="Hasherer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:w="clr-namespace:T0yK4T.WPFTools;assembly=T0yK4T.WPFTools"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="s_bgCol" Color="#FF232323" />
+        <SolidColorBrush x:Key="s_fgCol" Color="#FFA0A0A0" />
+        <Style TargetType="{x:Type ListBox}" x:Key="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
+            <Setter Property="Background" Value="{DynamicResource s_bgCol}" />
+            <Setter Property="Foreground" Value="{DynamicResource s_fgCol}" />
+        </Style>
+        <Style TargetType="{x:Type w:SimpleLoggingTextBox}" x:Key="{x:Type w:SimpleLoggingTextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Background" Value="{DynamicResource s_bgCol}" />
+            <Setter Property="Foreground" Value="{DynamicResource s_fgCol}" />
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{DynamicResource s_fgCol}" />
+            <Setter Property="Foreground" Value="{DynamicResource s_bgCol}" />
+        </Style>
+    </Application.Resources>
+</Application>

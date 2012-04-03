@@ -22,15 +22,9 @@ namespace T0yK4T.Tools
 		protected virtual ILogger Logger { get; set; }
 
         /// <summary>
-        /// Initializes the logger of a new instance of <see cref="ComponentBase"/>
-        /// </summary>
-        /// <param name="logger">The logger to use</param>
-        public ComponentBase(ILogger logger) { this.Logger = logger; }
-
-        /// <summary>
         /// Empty constructor
         /// </summary>
-        public ComponentBase() { }
+        public ComponentBase() { this.Logger = RuntimeCommon.MainLogger; }
 
         #region Logging Methods
 

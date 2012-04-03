@@ -17,26 +17,26 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\debug\</OutputPath>
+    <OutputPath>..\bin\debug\Lib\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\debug\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\debug\Lib\T0yK4T.Tools.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\release\Any CPU\Tools\</OutputPath>
+    <OutputPath>..\bin\release\Any CPU\Lib\Tools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\release\Any CPU\Tools\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\release\Any CPU\Lib\Tools\T0yK4T.Tools.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\debug\</OutputPath>
+    <OutputPath>..\bin\debug\Lib\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>..\bin\debug\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\debug\Lib\T0yK4T.Tools.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisLogFile>..\bin\T0yK4T.Tools.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -50,9 +50,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\bin\release\x64\Tools\</OutputPath>
+    <OutputPath>..\bin\release\x64\Lib\Tools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\release\x64\Tools\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\release\x64\Lib\Tools\T0yK4T.Tools.XML</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -66,9 +66,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\debug\</OutputPath>
+    <OutputPath>..\bin\debug\Lib\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>..\bin\debug\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\debug\Lib\T0yK4T.Tools.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisLogFile>..\bin\T0yK4T.Tools.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -82,9 +82,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\bin\release\x86\Tools\</OutputPath>
+    <OutputPath>..\bin\release\x86\Lib\Tools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\release\x86\Tools\T0yK4T.Tools.XML</DocumentationFile>
+    <DocumentationFile>..\bin\release\x86\Lib\Tools\T0yK4T.Tools.XML</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -109,18 +109,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyLoader.cs" />
     <Compile Include="ComponentBase.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="Delegates.cs" />
-    <Compile Include="Delegates\Delegates.cs" />
-    <Compile Include="General\PriorityQueue.cs" />
-    <Compile Include="General\SQLiteConnectionStringBuilder.cs" />
+    <Compile Include="LoggingProxy.cs" />
+    <Compile Include="PriorityQueue.cs" />
+    <Compile Include="RuntimeCommon.cs" />
+    <Compile Include="SQLiteConnectionStringBuilder.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="LoggingType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyChangedEventArgs.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
