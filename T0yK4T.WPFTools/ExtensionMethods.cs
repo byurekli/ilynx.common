@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using System.Windows;
 using System;
 using System.Threading;
+using System.Windows.Media;
 namespace T0yK4T.WPFTools
 {
     public static class ExtensionMethods
@@ -35,6 +36,25 @@ namespace T0yK4T.WPFTools
                 Thread.Sleep(0);
 
             return (T)val;
+        }
+
+        public static T FindVisualChild<T>(this DependencyObject obj) where T : DependencyObject
+        {
+            T ret = null;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); ++i)
+            {
+                DependencyObject c = VisualTreeHelper.GetChild(obj, i);
+                if (c != null)
+                {
+                    if (c is T)
+                        ret = (T)c;
+                    else
+                        ret = c.FindVisualChild<T>();
+                    if (ret != null)
+                        break;
+                }
+            }
+            return ret;
         }
     }
 }

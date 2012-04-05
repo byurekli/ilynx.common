@@ -33,7 +33,7 @@ namespace T0yK4T.Configuration
     /// <typeparam name="TValue"></typeparam>
     public class ConfigurableValue<TValue>
     {
-        private string name;
+        private string key;
         private TValue value;
         private IValueConverter<TValue> converter;
 
@@ -42,18 +42,18 @@ namespace T0yK4T.Configuration
         /// <para/>
         /// configuration manager (using the specified <see cref="IValueConverter{TValue}"/> to convert the retrieved string to a <typeparamref name="TValue"/> type
         /// </summary>
-        /// <param name="name">The name of the value to look for (Key)</param>
+        /// <param name="key">The key of the value to look for</param>
         /// <param name="converter">The <see cref="IValueConverter{TValue}"/> to use for string to <typeparamref name="TValue"/> conversion</param>
         /// <param name="defaultValue">The default value to use if the value could not be retrieved from the configuration file</param>
-        public ConfigurableValue(string name, IValueConverter<TValue> converter, TValue defaultValue)
+        public ConfigurableValue(string key, IValueConverter<TValue> converter, TValue defaultValue)
         {
-            this.name = name;
+            this.key = key;
             this.converter = converter;
             try
             {
-                if (Config.Configuration.AppSettings.Settings.AllKeys.Contains(name))
+                if (Config.Configuration.AppSettings.Settings.AllKeys.Contains(key))
                 {
-                    string sVal = Config.Configuration.AppSettings.Settings[this.name].Value;
+                    string sVal = Config.Configuration.AppSettings.Settings[this.key].Value;
                     this.value = converter.Convert(sVal);
                 }
                 else
@@ -71,10 +71,10 @@ namespace T0yK4T.Configuration
         public void Store()
         {
             
-            if (!Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.name))
-                Config.Configuration.AppSettings.Settings.Add(this.name, this.converter.ToString(this.value));
+            if (!Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.key))
+                Config.Configuration.AppSettings.Settings.Add(this.key, this.converter.ToString(this.value));
             else
-                Config.Configuration.AppSettings.Settings[this.name].Value = this.converter.ToString(this.value);
+                Config.Configuration.AppSettings.Settings[this.key].Value = this.converter.ToString(this.value);
             try { Config.Configuration.Save(ConfigurationSaveMode.Modified); }
             catch { }
         }
@@ -87,7 +87,7 @@ namespace T0yK4T.Configuration
         {
             try
             {
-                string sVal = Config.Configuration.AppSettings.Settings[this.name].Value;
+                string sVal = Config.Configuration.AppSettings.Settings[this.key].Value;
                 this.value = this.converter.Convert(sVal);
             }
             catch { return false; }
@@ -106,11 +106,17 @@ namespace T0yK4T.Configuration
         /// <summary>
         /// Gets or Sets the name of this <see cref="ConfigurableValue{TValue}"/>
         /// </summary>
-        public string Name
+        public string Key
         {
-            get { return this.name; }
-            set { this.name = value; }
+            get { return this.key; }
+            set { this.key = value; }
         }
+
+        //public string Name
+        //{
+        //    get;
+        //    set;
+        //}
 
         /// <summary>
         /// Simply retrieves the value of the specified <see cref="ConfigurableValue{TValue}"/>
@@ -150,11 +156,11 @@ namespace T0yK4T.Configuration
         {
             get
             {
-                bool exists = Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.name);
+                bool exists = Config.Configuration.AppSettings.Settings.AllKeys.Contains(this.key);
                 if (!exists)
                     return false;
                 else
-                    return Config.Configuration.AppSettings.Settings[this.name].Value == this.converter.ToString(this.value);
+                    return Config.Configuration.AppSettings.Settings[this.key].Value == this.converter.ToString(this.value);
             }
         }
     }

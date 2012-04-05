@@ -33,7 +33,19 @@ namespace T0yK4T.Tools
                 Type[] types = assembly.GetTypes();
                 retVal.AddRange(types.Where(t2 => t2.GetInterfaces()
                     .Any(tInterface => tInterface == typeof(TInterface)))
-                    .Select<Type, TInterface>(tFinal => (TInterface)Activator.CreateInstance(tFinal)));
+                    .Select<Type, TInterface>(tFinal =>
+                    {
+                        base.LogInformation("Attempting to activate {0}", tFinal.FullName);
+                        try
+                        {
+                            return (TInterface)Activator.CreateInstance(tFinal);
+                        }
+                        catch
+                        {
+                            base.LogError("Could not activate {0}", tFinal.FullName);
+                            return default(TInterface);
+                        }
+                    }));
             }
             catch (Exception er) { this.LogException(er, MethodBase.GetCurrentMethod()); }
             return retVal;
@@ -51,7 +63,8 @@ namespace T0yK4T.Tools
             try
             {
                 string[] fNames = Directory.GetFiles(dirname, "*.dll");
-                this.LogInformation("Found {0} files possibly containing Modules", fNames.Length);
+                Type TType = typeof(T);
+                this.LogInformation("Found {0} files possibly containing Modules of Type {1}", fNames.Length, TType.FullName);
                 foreach (string fName in fNames)
                 {
                     try
@@ -60,7 +73,7 @@ namespace T0yK4T.Tools
                             base.LogInformation("Skipping excluded assembly {0}", fName);
                         else
                         {
-                            this.LogInformation("Attempting to load Modules defined in Assembly [{0}]", fName);
+                            this.LogInformation("Attempting to load Modules of type {1} defined in Assembly [{0}]", fName, TType.FullName);
                             instances.AddRange(LoadTypes<T>(Assembly.LoadFrom(fName)));
                         }
                     }

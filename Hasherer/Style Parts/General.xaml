@@ -12,32 +12,53 @@
     <Color x:Key="s_selectedBg">#FF325C74</Color>
     <Color x:Key="s_mouseBg">#FF525C65</Color>
     <Color x:Key="s_highlightCol">#FF517693</Color>
+    <Color x:Key="s_closeCol">#FFC24641</Color>
+    <Color x:Key="s_highlightCloseCol">#FFFF0000</Color>
+    <Color x:Key="s_pushCloseCol">#FFEE0000</Color>
+    <Color x:Key="s_defaultedCol">#FF387C44</Color>
+    <Color x:Key="s_indeterminate">#FFFDD017</Color>
 
     <SolidColorBrush x:Key="BRUSH_border" Color="{StaticResource s_borderCol}"/>
     <SolidColorBrush x:Key="BRUSH_foreground" Color="{StaticResource s_fgCol}"/>
     <SolidColorBrush x:Key="BRUSH_background" Color="{StaticResource s_bgCol}"/>
+    <SolidColorBrush x:Key="BRUSH_mediumBg" Color="{StaticResource s_sbrighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_lightBg" Color="{StaticResource s_brighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_selectedBackground" Color="{StaticResource s_selectedBg}"/>
     <SolidColorBrush x:Key="BRUSH_mouseoverBackground" Color="{StaticResource s_mouseBg}"/>
     <SolidColorBrush x:Key="BRUSH_highlight" Color="{StaticResource s_highlightCol}"/>
+    <SolidColorBrush x:Key="BRUSH_disabled" Color="{StaticResource s_closeCol}"/>
+    <SolidColorBrush x:Key="BRUSH_defaulted" Color="{StaticResource s_defaultedCol}"/>
+    <SolidColorBrush x:Key="BRUSH_indeterminate" Color="{StaticResource s_indeterminate}"/>
 
-    <LinearGradientBrush x:Key="GRADIENT_bgCol" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource s_sbrighterBgCol}" Offset="0"/>
-        <GradientStop Color="{StaticResource s_brighterBgCol}" Offset=".05"/>
-        <GradientStop Color="{StaticResource s_bgCol}" Offset="1"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="GRADIENT_inverseBgCol" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource s_bgCol}" Offset="0"/>
-        <GradientStop Color="{StaticResource s_brighterBgCol}" Offset=".95"/>
-        <GradientStop Color="{StaticResource s_sbrighterBgCol}" Offset="1"/>
-    </LinearGradientBrush>
-    
     <BooleanToVisibilityConverter x:Key="boolToVis"/>
-    
-    <!--<Style TargetType="Control" x:Key="{x:Type FrameworkElement}">
-        <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
-    </Style>-->
+
+    <Storyboard x:Key="itemSelectedAnimation">
+        <ColorAnimation Storyboard.TargetName="PART_Background" Storyboard.TargetProperty="Background.Color" To="{StaticResource s_selectedBg}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="btbgAnim">
+        <ColorAnimation Storyboard.TargetName="PART_Background" Storyboard.TargetProperty="Background.Color" To="{StaticResource s_bgCol}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="backToBackgroundAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_bgCol}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="highlightAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_mouseBg}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="mouseDownAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_selectedBg}" Duration="0:0:0.125"/>
+    </Storyboard>
+    <Storyboard x:Key="focusAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_sbrighterBgCol}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="disabledAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_closeCol}" Duration="0:0:0.125"/>
+    </Storyboard>
+    <Storyboard x:Key="defaultedAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_defaultedCol}" Duration="0:0:0.125"/>
+    </Storyboard>
+    <Storyboard x:Key="indeterminateAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_indeterminate}" Duration="0:0:0.250"/>
+    </Storyboard>
 
     <Style TargetType="{x:Type TextBox}" x:Key="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -95,18 +116,15 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type local:MainWindow}" x:Key="{x:Type local:MainWindow}" BasedOn="{StaticResource {x:Type Window}}">
-        <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
-    </Style>
     <Style TargetType="{x:Type ListView}" x:Key="{x:Type ListView}">
         <Setter Property="Background" Value="Transparent"/>
     </Style>
-    
+
     <Style TargetType="{x:Type Border}" x:Key="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{StaticResource BRUSH_border}"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
     </Style>
-    
+
     <Style TargetType="{x:Type GridSplitter}" x:Key="{x:Type GridSplitter}">
         <Setter Property="BorderBrush" Value="{StaticResource BRUSH_border}"/>
         <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>

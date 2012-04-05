@@ -1,121 +1,66 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style x:Key="MyFocusVisual">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="General.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <!--<Style x:Key="MyFocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Control}">
-                    <Grid Margin="3 2">
-                        <Rectangle Name="r1" StrokeThickness="1" Stroke="Black" StrokeDashArray="2 2"/>
-                        <Border Name="border" Width="{TemplateBinding ActualWidth}" Height="{TemplateBinding ActualHeight}"  CornerRadius="2" BorderThickness="1.5" />
-                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-
-    <!--<Style x:Key="ShadowStyle">
-        <Setter Property="Control.Foreground" Value="LightGray" />
     </Style>-->
 
     <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Margin" Value="2"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource MyFocusVisual}" />
-        <Setter Property="Background" Value="{StaticResource GRADIENT_bgCol}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Name="border" BorderThickness="1" Padding="4,2" BorderBrush="DarkGray" CornerRadius="3" Background="{TemplateBinding Background}">
-                        <Grid>
-                            <!--<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="contentShadow">
-                                <ContentPresenter.RenderTransform>
-                                    <TranslateTransform X="1.0" Y="1.0" />
-                                </ContentPresenter.RenderTransform>
-                            </ContentPresenter>-->
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
-                        </Grid>
+                    <Border Name="PART_Background" BorderThickness="1" Padding="4,2" CornerRadius="3" Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="DefaultStates">
+                                <VisualState Name="Normal" Storyboard="{StaticResource backToBackgroundAnimation}"/>
+                                <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
+                                <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
+                                <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
+                                <VisualState Name="Defaulted" Storyboard="{StaticResource defaultedAnimation}"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF4788c8" />
-                            <Setter Property="Foreground" Value="#FF4788c8" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{StaticResource GRADIENT_inverseBgCol}"/>
-                            <Setter TargetName="content" Property="RenderTransform" >
-                                <Setter.Value>
-                                    <TranslateTransform Y="1.0" />
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger Property="IsDefaulted" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF282828" />
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF282828" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Opacity" Value="0.7" />
-                            <Setter Property="Foreground" Value="Gray" />
-                        </Trigger>
-
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="{x:Type ToggleButton}" TargetType="{x:Type ToggleButton}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Margin" Value="2"/>
-        <!--<Setter Property="FontFamily" Value="{StaticResource UI_Font}"/>-->
         <Setter Property="FontSize" Value="11px"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource MyFocusVisual}" />
-        <Setter Property="Background" Value="{StaticResource GRADIENT_bgCol}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border Name="border" BorderThickness="1" Padding="4,2" BorderBrush="DarkGray" CornerRadius="3" Background="{TemplateBinding Background}">
-                        <Grid>
-                            <!--<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="contentShadow">
-                                <ContentPresenter.RenderTransform>
-                                    <TranslateTransform X="1.0" Y="1.0" />
-                                </ContentPresenter.RenderTransform>
-                            </ContentPresenter>-->
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
-                        </Grid>
+                    <Border Name="PART_Background" BorderThickness="1" CornerRadius="3" Background="{TemplateBinding Background}">
+                        <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="DefaultStates">
+                                <VisualState Name="Normal" Storyboard="{StaticResource backToBackgroundAnimation}"/>
+                                <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
+                                <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
+                                <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
+                                <VisualState Name="Checked" Storyboard="{StaticResource mouseDownAnimation}"/>
+                                <VisualState Name="UnChecked" Storyboard="{StaticResource backToBackgroundAnimation}"/>
+                                <VisualState Name="Indeterminate" Storyboard="{StaticResource indeterminateAnimation}"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF4788c8" />
-                            <Setter Property="Foreground" Value="#FF4788c8" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{StaticResource GRADIENT_inverseBgCol}"/>
-                            <Setter TargetName="content" Property="RenderTransform" >
-                                <Setter.Value>
-                                    <TranslateTransform Y="1.0" />
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="{StaticResource GRADIENT_inverseBgCol}"/>
-                        </Trigger>
-                        <!--<Trigger Property="IsDefaulted" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF282828" />
-                        </Trigger>-->
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FF282828" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Opacity" Value="0.7" />
-                            <Setter Property="Foreground" Value="Gray" />
-                        </Trigger>
-
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

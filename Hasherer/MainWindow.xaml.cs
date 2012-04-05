@@ -26,7 +26,7 @@ namespace Hasherer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : BorderLessWindow
     {
         private ObservableCollection<HashProviderProxy> providers = new ObservableCollection<HashProviderProxy>();
 
@@ -53,10 +53,7 @@ namespace Hasherer
             RuntimeCommon.MainLogger = this.logBox;
             AssemblyLoader loader = new AssemblyLoader();
             foreach (IProviderInstantiator providerInstantiator in loader.LoadDirectory<IProviderInstantiator>(Environment.CurrentDirectory))
-            {
-                foreach (AsyncHashProvider provider in providerInstantiator.Instantiate())
-                    this.providers.Add(new HashProviderProxy(provider) { IsEnabled = providerInstantiator.GetDefaultEnabled(provider) });
-            }
+                this.providers.Add(new HashProviderProxy(providerInstantiator.Instantiate()) { IsEnabled = providerInstantiator.DefaultEnabled });
             this.LoadFile(Process.GetCurrentProcess().MainModule.FileName);
         }
 
@@ -135,7 +132,7 @@ namespace Hasherer
             {
                 ((Timer)sender).AutoReset = false;
                 ((Timer)sender).Stop();
-                return; 
+                return;
             }
             base.Dispatcher.BeginInvoke(new Action<BindableKeyValuePair>(bk => this.InfoCollection.Add(bk)), this.currentInfos[0]);
             this.currentInfos.RemoveAt(0);

@@ -60,7 +60,12 @@ namespace T0yK4T.WPFTools
             {
                 ListBoxItem item = new ListBoxItem { Content = line };
                 this.box.Items.Add(item);
-                this.box.ScrollIntoView(item);
+                ScrollViewer viewer = this.box.FindVisualChild<ScrollViewer>();
+                if (viewer != null)
+                {
+                    viewer.ScrollToBottom();
+                    viewer.ScrollToLeftEnd();
+                }
             }
         }
     }
