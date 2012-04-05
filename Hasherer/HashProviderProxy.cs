@@ -27,6 +27,11 @@ namespace Hasherer
         public static readonly DependencyProperty ResultProperty = DependencyProperty.Register("Result", typeof(string), typeof(HashProviderProxy));
 
         /// <summary>
+        /// The IsEnabled property
+        /// </summary>
+        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register("IsEnabled", typeof(bool), typeof(HashProviderProxy), new PropertyMetadata(true));
+
+        /// <summary>
         /// The internal hash provider that this <see cref="HashProviderProxy"/> wraps
         /// </summary>
         private AsyncHashProvider provider;
@@ -63,8 +68,13 @@ namespace Hasherer
             this.showDots = true;
             this.lastProgress = -1d;
             this.Progress = 0d;
-            try { this.provider.Execute(args); }
-            catch { }
+            if (this.IsEnabled)
+            {
+                try { this.provider.Execute(args); }
+                catch { }
+            }
+            else
+                this.Result = "N/A";
         }
 
         /// <summary>
@@ -110,6 +120,35 @@ namespace Hasherer
         private new bool CheckAccess()
         {
             return base.CheckAccess();
+        }
+
+        /// <summary>
+        /// Overriden to to abort provider if enabled changed to false
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.Property == IsEnabledProperty)
+            {
+                if (!(bool)e.NewValue)
+                    this.provider.Abort();
+            }
+        }
+
+        /// <summary>
+        /// Gets or Sets a value indicating wether or not this hashprovider proxy is enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get { return (bool)base.GetValue(IsEnabledProperty); }
+            set
+            {
+                if (!this.CheckAccess())
+                    base.Dispatcher.Invoke(new Action<bool>(b => this.IsEnabled = b), value);
+                else
+                    base.SetValue(IsEnabledProperty, value);
+            }
         }
 
         /// <summary>

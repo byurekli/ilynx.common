@@ -26,6 +26,15 @@ namespace T0yK4T.Tools
         /// </summary>
         public ComponentBase() { this.Logger = RuntimeCommon.MainLogger; }
 
+        /// <summary>
+        /// Gets or Sets the name of this component
+        /// </summary>
+        protected virtual string ComponentName
+        {
+            get;
+            set;
+        }
+
         #region Logging Methods
 
 		/// <summary>
@@ -86,7 +95,7 @@ namespace T0yK4T.Tools
         public void Log(LoggingType type, string msg)
 		{
             if (this.Logger != null)
-                this.Logger.Log(type, this, msg);
+                this.Logger.Log(type, this, string.Format("{0}{1}", !string.IsNullOrEmpty(this.ComponentName) ? this.ComponentName + ": " : string.Empty, msg));
             else
             {
                 string str = string.Format("{0}: {1}", type.ToString(), msg);

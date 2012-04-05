@@ -16,6 +16,10 @@ using System.Security.Cryptography;
 using T0yK4T.Threading;
 using System.Collections.ObjectModel;
 using T0yK4T.Tools;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using System.Timers;
 
 namespace Hasherer
 {
@@ -32,6 +36,7 @@ namespace Hasherer
         public MainWindow()
         {
             InitializeComponent();
+            this.infoBox.ItemsSource = this.InfoCollection;
             Binding providerBinding = new Binding();
             providerBinding.Source = providers;
             providerBinding.Mode = BindingMode.OneWay;
@@ -47,8 +52,12 @@ namespace Hasherer
             base.OnInitialized(e);
             RuntimeCommon.MainLogger = this.logBox;
             AssemblyLoader loader = new AssemblyLoader();
-            foreach (AsyncHashProvider provider in loader.LoadDirectory<IProviderInstantiator>(Environment.CurrentDirectory).Aggregate<IProviderInstantiator, List<AsyncHashProvider>>(new List<AsyncHashProvider>(), (l, ip) => { l.AddRange(ip.Instantiate()); return l; }))
-                this.providers.Add(new HashProviderProxy(provider));
+            foreach (IProviderInstantiator providerInstantiator in loader.LoadDirectory<IProviderInstantiator>(Environment.CurrentDirectory))
+            {
+                foreach (AsyncHashProvider provider in providerInstantiator.Instantiate())
+                    this.providers.Add(new HashProviderProxy(provider) { IsEnabled = providerInstantiator.GetDefaultEnabled(provider) });
+            }
+            this.LoadFile(Process.GetCurrentProcess().MainModule.FileName);
         }
 
         /// <summary>
@@ -64,19 +73,77 @@ namespace Hasherer
 
         private new bool CheckAccess() { return base.CheckAccess(); }
 
-        private void openButton_Click(object sender, RoutedEventArgs e)
+        private void hashList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            MouseWheelEventArgs args = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            args.RoutedEvent = UIElement.MouseWheelEvent;
+            this.viewer.RaiseEvent(args);
+        }
+
+        private void Open_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Multiselect = false;
             if (dlg.ShowDialog() == true)
+                this.LoadFile(dlg.FileName);
+        }
+
+        private void LoadFile(string fName)
+        {
+            if (!File.Exists(fName))
+                return;
+            HashInputArgs args = new HashInputArgs(fName);
+            this.SetInfo(new FileInfo(fName));
+            foreach (HashProviderProxy proxy in this.providers)
             {
-                HashInputArgs args = new HashInputArgs(dlg.FileName);
-                foreach (HashProviderProxy proxy in this.providers)
-                {
-                    proxy.Abort();
-                    proxy.Start(args);
-                }
+                proxy.Abort();
+                proxy.Start(args);
             }
+        }
+
+        private ObservableCollection<BindableKeyValuePair> infoCollection = new ObservableCollection<BindableKeyValuePair>();
+        public ObservableCollection<BindableKeyValuePair> InfoCollection
+        {
+            get { return this.infoCollection; }
+        }
+
+        private List<BindableKeyValuePair> currentInfos = new List<BindableKeyValuePair>();
+        private void SetInfo(FileInfo info)
+        {
+            this.infoCollection.Clear();
+            this.currentInfos.Clear();
+            this.currentInfos.Add(new BindableKeyValuePair("File", info.Name));
+            this.currentInfos.Add(new BindableKeyValuePair("Size", string.Format("{0:f2} MiB", ((double)info.Length / 1024d) / 1024d)));
+            this.currentInfos.Add(new BindableKeyValuePair("Path", info.FullName));
+            this.currentInfos.Add(new BindableKeyValuePair("Directory", info.Directory));
+            this.currentInfos.Add(new BindableKeyValuePair("Extension", info.Extension));
+            this.currentInfos.Add(new BindableKeyValuePair("Attributes", info.Attributes));
+            this.currentInfos.Add(new BindableKeyValuePair("Creation Time", info.CreationTime));
+            this.currentInfos.Add(new BindableKeyValuePair("Read Only", info.IsReadOnly));
+            this.currentInfos.Add(new BindableKeyValuePair("Last Accessed", info.LastAccessTime));
+            this.currentInfos.Add(new BindableKeyValuePair("Last Write", info.LastWriteTime));
+            Timer t = new Timer(50d);
+            t.AutoReset = true;
+            t.Elapsed += new ElapsedEventHandler(t_Elapsed);
+            t.Start();
+        }
+
+        void t_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (this.currentInfos.Count == 0)
+            {
+                ((Timer)sender).AutoReset = false;
+                ((Timer)sender).Stop();
+                return; 
+            }
+            base.Dispatcher.BeginInvoke(new Action<BindableKeyValuePair>(bk => this.InfoCollection.Add(bk)), this.currentInfos[0]);
+            this.currentInfos.RemoveAt(0);
+        }
+
+        private void cleaLogBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.logBox.Clear();
         }
     }
 }

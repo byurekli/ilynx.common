@@ -10,6 +10,18 @@ namespace Hasherer
         /// When implemented, should return a list of <see cref="AsyncHashProvider"/>s
         /// </summary>
         /// <returns></returns>
-        IEnumerable<AsyncHashProvider> Instantiate();
+        AsyncHashProvider Instantiate();
+
+        /// <summary>
+        /// Gets a value indicating wether or not the provider generated through <see cref="Instantiate()"/> is enabled by default
+        /// </summary>
+        bool DefaultEnabled { get; }
+
+        ///// <summary>
+        ///// Gets a value indicating whether or not the specified provider is enabled by default
+        ///// </summary>
+        ///// <param name="providerName"></param>
+        ///// <returns></returns>
+        //bool GetDefaultEnabled(AsyncHashProvider provider);
     }
 }

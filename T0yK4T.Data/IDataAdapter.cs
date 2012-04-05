@@ -35,14 +35,14 @@ namespace T0yK4T.Data
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        T FindOne(DataProperty<T> property);
+        T FindOne(IDataProperty<T> property);
 
         /// <summary>
         /// Attempts to find a single element in the underlying datastore with the specified <paramref name="properties"/> set
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        T FindOne(params DataProperty<T>[] properties);
+        T FindOne(params IDataProperty<T>[] properties);
 
         /// <summary>
         /// Attempts to update the specified value in the underlying datastore
@@ -55,13 +55,13 @@ namespace T0yK4T.Data
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        IEnumerable<T> Find(DataProperty<T> property);
+        IEnumerable<T> Find(IDataProperty<T> property);
 
         /// <summary>
         /// Deletes all records containing the specified property with it's value
         /// </summary>
         /// <param name="property"></param>
-        void Delete(DataProperty<T> property);
+        void Delete(IDataProperty<T> property);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore using the specified <see cref="DataProperty{T}"/> as a filter
@@ -69,14 +69,14 @@ namespace T0yK4T.Data
         /// <param name="properties"></param>
         /// <param name="op"></param>
         /// <returns></returns>
-        IEnumerable<T> Find(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
+        IEnumerable<T> Find(IEnumerable<IDataProperty<T>> properties, BooleanOperator op);
 
         /// <summary>
         /// Deletes all records in the underlying datasource that match the specified properties, combining them with the specified boolean operator
         /// </summary>
         /// <param name="properties"></param>
         /// <param name="op"></param>
-        void Delete(IEnumerable<DataProperty<T>> properties, BooleanOperator op);
+        void Delete(IEnumerable<IDataProperty<T>> properties, BooleanOperator op);
 
         /// <summary>
         /// Attempts to find instances of <typeparamref name="T"/> in the underlying datastore who's <paramref name="KeyName"/> property match the specified <paramref name="searchPattern"/>

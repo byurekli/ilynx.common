@@ -174,14 +174,5 @@ namespace Hasherer
             inputStream.Close();
             base.OnProgress(100d);
         }
-
-        /// <summary>
-        /// Gets the name of the algorithm currently in use by this <see cref="AsyncHashProvider"/> (Supplied during instantiation)
-        /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
     }
 }

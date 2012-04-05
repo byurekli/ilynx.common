@@ -114,6 +114,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\skeinfish\SkeinFish.csproj">
+      <Project>{447C6CB4-75D4-4E42-96CB-A4ABF2739805}</Project>
+      <Name>SkeinFish</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\T0yK4T.Configuration\T0yK4T.Configuration.csproj">
+      <Project>{F4CBE8EF-FDDB-46E1-BBBB-E081136F33C7}</Project>
+      <Name>T0yK4T.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\T0yK4T.Threading\T0yK4T.Threading.csproj">
       <Project>{E4A9F394-B618-4F50-8D42-5EC04E5A1683}</Project>
       <Name>T0yK4T.Threading</Name>
