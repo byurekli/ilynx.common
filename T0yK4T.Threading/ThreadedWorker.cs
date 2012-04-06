@@ -116,7 +116,7 @@ namespace T0yK4T.Threading
         /// </summary>
         private void OnAborted()
         {
-            base.LogError("Worker aborted at {0}", DateTime.Now);
+            //base.LogError("Worker aborted at {0}", DateTime.Now);
             if (this.WorkAborted != null)
                 this.WorkAborted.BeginInvoke(this, new AsyncCallback(iar => this.WorkAborted.EndInvoke(iar)), null);
         }
@@ -153,7 +153,15 @@ namespace T0yK4T.Threading
         {
             if (this.worker != null)
             {
-                try { this.worker.Abort(); }
+                try {
+                    this.worker.Abort();
+                    this.worker.Join();
+                    //while (this.worker.ThreadState == ThreadState.Background ||
+                    //    this.worker.ThreadState == ThreadState.Running ||
+                    //    this.worker.ThreadState == ThreadState.Suspended ||
+                    //    this.worker.ThreadState == ThreadState.WaitSleepJoin)
+                    //    Thread.Sleep(1);
+                }
                 catch (Exception e) { base.LogException(e, MethodBase.GetCurrentMethod()); }
             }
         }

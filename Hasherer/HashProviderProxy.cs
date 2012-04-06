@@ -142,10 +142,10 @@ namespace Hasherer
             base.OnPropertyChanged(e);
             if (e.Property == IsEnabledProperty)
             {
-                if (!(bool)e.NewValue)
-                    this.provider.Abort();
-                else if (this.currentArgs != null)
-                    this.provider.Execute(this.currentArgs);
+                this.provider.Abort();
+                if ((bool)e.NewValue && this.currentArgs != null)
+                    this.Start(this.currentArgs);
+                    //this.provider.Execute(this.currentArgs);
             }
         }
 
