@@ -35,6 +35,18 @@ namespace T0yK4T.Tools
             set;
         }
 
+        /// <summary>
+        /// Writes a log entry to the default logger (<see cref="RuntimeCommon.MainLogger"/>)
+        /// </summary>
+        /// <param name="type">The type of the log entry</param>
+        /// <param name="sender">The sender</param>
+        /// <param name="format">The string that should be formatted</param>
+        /// <param name="args">The arguments for the string.Format call</param>
+        public static void Log(LoggingType type, object sender, string format, params object[] args)
+        {
+            RuntimeCommon.MainLogger.Log(type, sender, string.Format(format, args));
+        }
+
         #region Logging Methods
 
 		/// <summary>

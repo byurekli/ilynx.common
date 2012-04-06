@@ -40,6 +40,8 @@ namespace T0yK4T.Threading
         /// </summary>
         public event GenericEventHandler<ThreadedWorker<TArgs, TCompletedArgs>> WorkAborted;
 
+        private Action<TCompletedArgs> workCompletedCallback;
+
         private bool completed = false;
         private TCompletedArgs result;
         /// <summary>
@@ -80,6 +82,12 @@ namespace T0yK4T.Threading
             this.worker.Name = this.Name;
             base.LogInformation("Starting worker at {0}", DateTime.Now);
             this.worker.Start(args);
+        }
+
+        public void Execute(TArgs args, Action<TCompletedArgs> workCompletedCallback)
+        {
+            this.workCompletedCallback = workCompletedCallback;
+            this.Execute(args);
         }
 
         /// <summary>
@@ -131,6 +139,8 @@ namespace T0yK4T.Threading
                 this.result = this.DoWork((TArgs)args);
                 this.completed = true;
                 this.OnCompleted(this.result);
+                if (this.workCompletedCallback != null)
+                    this.workCompletedCallback(this.result);
             }
             catch (ThreadAbortException) { this.OnAborted(); this.completed = true; }
             catch (Exception e) { this.OnFailed(e); this.completed = true; }
@@ -162,5 +172,25 @@ namespace T0yK4T.Threading
         /// </summary>
         /// <param name="args">Will contain a <typeparamref name="TArgs"/> object as an object</param>
         protected abstract TCompletedArgs DoWork(TArgs args);
+
+        public static ThreadedWorker<TArgs, TCompletedArgs> Create(Func<TArgs, TCompletedArgs> executeCallback)
+        {
+            return new GenericImplmenetation<TArgs, TCompletedArgs>(executeCallback);
+        }
+
+        private class GenericImplmenetation<T1, T2> : ThreadedWorker<T1, T2>
+        {
+            private Func<T1, T2> executeCallback;
+
+            public GenericImplmenetation(Func<T1, T2> executeCallback)
+            {
+                this.executeCallback = executeCallback;
+            }
+            protected override T2 DoWork(T1 args)
+            {
+                return this.executeCallback(args);
+            }
+        }
+
     }
 }

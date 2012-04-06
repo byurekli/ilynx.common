@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 using T0yK4T.Threading;
+using T0yK4T.Tools;
 
 namespace Hasherer
 {
@@ -144,6 +145,7 @@ namespace Hasherer
                         throw new NotImplementedException("The specified hash mode is not implemented");
                 }
                 this.HashStream(stream, this.algorithm);
+                base.LogInformation("Hash Result: {0}", this.algorithm.Hash.ToString(""));
                 return new HashOutputArgs(this.algorithm.Hash);
             }
             finally
@@ -164,13 +166,11 @@ namespace Hasherer
             int processedChunks = 0;
             while ((read = inputStream.Read(chunk, 0, chunk.Length)) > 0)
             {
-                if (read < chunk.Length)
-                    algorithm.TransformFinalBlock(chunk, 0, read);
-                else
-                    algorithm.TransformBlock(chunk, 0, chunk.Length, chunk, 0);
+                algorithm.TransformBlock(chunk, 0, read, chunk, 0);
                 processedChunks++;
                 base.OnProgress((100d / expectedChunks) * processedChunks);
             }
+            algorithm.TransformFinalBlock(new byte[0], 0, 0);
             inputStream.Close();
             base.OnProgress(100d);
         }

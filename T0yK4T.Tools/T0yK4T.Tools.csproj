@@ -113,6 +113,7 @@
     <Compile Include="ComponentBase.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="LoggingProxy.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="RuntimeCommon.cs" />

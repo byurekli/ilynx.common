@@ -18,10 +18,12 @@ namespace T0yK4T.WPFTools
         /// </summary>
         public static readonly DependencyProperty ToProperty = DependencyProperty.Register("To", typeof(GridLength), typeof(GridLengthAnimation));
 
+        /// <summary>
+        /// The EasingFunction property
+        /// </summary>
         public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Register("EasingFunction", typeof(IEasingFunction), typeof(GridLengthAnimation));
 
         private bool fromSet = false;
-        private bool toSet = false;
 
         /// <summary>
         /// Overridden to figure out which values are set
@@ -32,8 +34,6 @@ namespace T0yK4T.WPFTools
             base.OnPropertyChanged(e);
             if (e.Property == FromProperty)
                 fromSet = true;
-            else if (e.Property == ToProperty)
-                toSet = true;
         }
 
         /// <summary>
@@ -45,6 +45,9 @@ namespace T0yK4T.WPFTools
             set { this.SetValueSafe(FromProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="IEasingFunction"/> to use for this animation
+        /// </summary>
         public IEasingFunction EasingFunction
         {
             get { return this.GetValueSafe<IEasingFunction>(EasingFunctionProperty); }

@@ -132,9 +132,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BorderlessWindow.cs" />
+    <Compile Include="ConfigurableValueProxy.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GenericCommand.cs" />
     <Compile Include="GridLengthAnimation.cs" />
+    <Compile Include="ExtendedBooleanToVisibilityConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -165,6 +167,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\T0yK4T.Configuration\T0yK4T.Configuration.csproj">
+      <Project>{F4CBE8EF-FDDB-46E1-BBBB-E081136F33C7}</Project>
+      <Name>T0yK4T.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\T0yK4T.Tools\T0yK4T.Tools.csproj">
       <Project>{1D510E0B-912C-4D24-9446-E96AE74F3C27}</Project>
       <Name>T0yK4T.Tools</Name>

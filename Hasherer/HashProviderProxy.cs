@@ -4,6 +4,11 @@ using T0yK4T.Tools;
 using T0yK4T.Threading;
 using System;
 using System.Windows.Input;
+using T0yK4T.WPFTools;
+using System.Windows.Controls;
+using Microsoft.Win32;
+using System.IO;
+using T0yK4T.Configuration;
 
 namespace Hasherer
 {
@@ -31,6 +36,10 @@ namespace Hasherer
         /// The IsEnabled property
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register("IsEnabled", typeof(bool), typeof(HashProviderProxy), new PropertyMetadata(true));
+
+        private static readonly ConfigurableStringValue ByteSplitter = new ConfigurableStringValue("ByteSplitter", "-");
+
+        private HashInputArgs currentArgs;
 
         /// <summary>
         /// The internal hash provider that this <see cref="HashProviderProxy"/> wraps
@@ -66,12 +75,13 @@ namespace Hasherer
         /// <param name="args">The <see cref="HashInputArgs"/> to pass to the provider's Execute method</param>
         public void Start(HashInputArgs args)
         {
+            this.currentArgs = args;
             this.showDots = true;
             this.lastProgress = -1d;
             this.Progress = 0d;
             if (this.IsEnabled)
             {
-                try { this.provider.Execute(args); }
+                try { this.provider.Execute(this.currentArgs); }
                 catch { }
             }
             else
@@ -108,7 +118,7 @@ namespace Hasherer
         void provider_WorkCompleted(ThreadedWorker<HashInputArgs, HashOutputArgs> sender, HashOutputArgs val)
         {
             this.showDots = false;
-            this.Result = BitConverter.ToString(val.Hash);
+            this.Result = val.Hash.ToString(ByteSplitter);
             this.lastProgress = -1d;
             this.Progress = 100d;
         }
@@ -134,6 +144,8 @@ namespace Hasherer
             {
                 if (!(bool)e.NewValue)
                     this.provider.Abort();
+                else if (this.currentArgs != null)
+                    this.provider.Execute(this.currentArgs);
             }
         }
 

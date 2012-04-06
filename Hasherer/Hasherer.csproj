@@ -191,6 +191,10 @@
       <Project>{73A39EBC-2060-485F-99C2-7C0EE8F89AC7}</Project>
       <Name>HashererLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\T0yK4T.Configuration\T0yK4T.Configuration.csproj">
+      <Project>{F4CBE8EF-FDDB-46E1-BBBB-E081136F33C7}</Project>
+      <Name>T0yK4T.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\T0yK4T.Threading\T0yK4T.Threading.csproj">
       <Project>{E4A9F394-B618-4F50-8D42-5EC04E5A1683}</Project>
       <Name>T0yK4T.Threading</Name>
@@ -204,7 +208,6 @@
       <Name>T0yK4T.WPFTools</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

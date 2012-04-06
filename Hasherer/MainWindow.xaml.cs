@@ -30,6 +30,36 @@ namespace Hasherer
     public partial class MainWindow : BorderlessWindow
     {
         private ObservableCollection<HashProviderProxy> providers = new ObservableCollection<HashProviderProxy>();
+        private ObservableCollection<HashProviderProxy> Providers
+        {
+            get { return this.providers; }
+        }
+
+        private ObservableCollection<Encoding> encodings = new ObservableCollection<Encoding>();
+        private ObservableCollection<Encoding> Encodings
+        {
+            get { return this.encodings; }
+        }
+
+        /// <summary>
+        /// The open file command
+        /// </summary>
+        public static readonly ICommand OpenFileCommand = new GenericCommand<MainWindow, object>(o =>
+        {
+            o.HideRaw();
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Multiselect = false;
+            if (dlg.ShowDialog() == true)
+                o.LoadFile(dlg.FileName);
+        });
+
+        /// <summary>
+        /// Hides the raw input box
+        /// </summary>
+        public void HideRaw()
+        {
+            this.PART_rawToggle.IsChecked = false;
+        }
 
         /// <summary>
         /// ...
@@ -38,10 +68,12 @@ namespace Hasherer
         {
             InitializeComponent();
             this.infoBox.ItemsSource = this.InfoCollection;
-            Binding providerBinding = new Binding();
-            providerBinding.Source = providers;
-            providerBinding.Mode = BindingMode.OneWay;
-            this.hashList.SetBinding(ListBox.ItemsSourceProperty, providerBinding);
+            this.hashList.ItemsSource = this.Providers;
+            List<Encoding> l = new List<Encoding>(Encoding.GetEncodings().Select<EncodingInfo, Encoding>(ei => Encoding.GetEncoding(ei.CodePage)));
+            l.Sort(new Comparison<Encoding>((e, e2) => string.Compare(e.EncodingName, e2.EncodingName)));
+            this.encodings = new ObservableCollection<Encoding>(l);
+            this.encodingBox.ItemsSource = this.Encodings;
+            this.encodingBox.SelectedIndex = this.encodings.IndexOf(this.encodings.FirstOrDefault(e => e.EncodingName == "Unicode"));
         }
 
         /// <summary>
@@ -79,20 +111,65 @@ namespace Hasherer
             this.viewer.RaiseEvent(args);
         }
 
-        private void Open_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Multiselect = false;
-            if (dlg.ShowDialog() == true)
-                this.LoadFile(dlg.FileName);
-        }
-
-        private void LoadFile(string fName)
+        public void LoadFile(string fName)
         {
             if (!File.Exists(fName))
                 return;
-            HashInputArgs args = new HashInputArgs(fName);
+            this.RestartAll(new HashInputArgs(fName));
             this.SetInfo(new FileInfo(fName));
+        }
+
+        private ThreadedWorker<WorkerArgs, CompletedArgs> encodingWorker = ThreadedWorker<WorkerArgs, CompletedArgs>.Create(w => new CompletedArgs { Raw = w.Encoding.GetBytes(w.Text), Encoding = w.Encoding, Text = w.Text });
+
+        private void LoadText(string text)
+        {
+            Encoding enc;
+            if ((enc = this.encodingBox.SelectedItem as Encoding) != null)
+            {
+                encodingWorker.Abort();
+                encodingWorker.Execute(new WorkerArgs
+                {
+                    Encoding = enc,
+                    Text = text
+                }, new Action<CompletedArgs>(a =>
+                    {
+                        base.Dispatcher.Invoke(new Action<CompletedArgs>(a2 =>
+                        {
+                            this.RestartAll(new HashInputArgs(a2.Raw));
+                            this.SetTextInfo(a2.Encoding, a2.Raw, a2.Text);
+                        }), a);
+                    }));
+            }
+        }
+
+        private struct WorkerArgs
+        {
+            public string Text;
+            public Encoding Encoding;
+        }
+
+        private struct CompletedArgs
+        {
+            public byte[] Raw;
+            public string Text;
+            public Encoding Encoding;
+        }
+
+        private void SetTextInfo(Encoding enc, byte[] textData, string text)
+        {
+            this.infoCollection.Clear();
+            this.currentInfos.Clear();
+            this.currentInfos.Add(new BindableKeyValuePair("Encoding", enc.EncodingName));
+            //this.currentInfos.Add(new BindableKeyValuePair("Text", text));
+            //this.currentInfos.Add(new BindableKeyValuePair("Raw", textData.ToString("-")));
+            Timer t = new Timer(50d);
+            t.AutoReset = true;
+            t.Elapsed += new ElapsedEventHandler(t_Elapsed);
+            t.Start();
+        }
+
+        private void RestartAll(HashInputArgs args)
+        {
             foreach (HashProviderProxy proxy in this.providers)
             {
                 proxy.Abort();
@@ -101,7 +178,7 @@ namespace Hasherer
         }
 
         private ObservableCollection<BindableKeyValuePair> infoCollection = new ObservableCollection<BindableKeyValuePair>();
-        public ObservableCollection<BindableKeyValuePair> InfoCollection
+        private ObservableCollection<BindableKeyValuePair> InfoCollection
         {
             get { return this.infoCollection; }
         }
@@ -122,26 +199,36 @@ namespace Hasherer
             this.currentInfos.Add(new BindableKeyValuePair("Last Accessed", info.LastAccessTime));
             this.currentInfos.Add(new BindableKeyValuePair("Last Write", info.LastWriteTime));
             Timer t = new Timer(50d);
-            t.AutoReset = true;
+            //t.AutoReset = true;
             t.Elapsed += new ElapsedEventHandler(t_Elapsed);
             t.Start();
         }
 
         void t_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (this.currentInfos.Count == 0)
+            base.Dispatcher.Invoke(new Action<Timer>(t =>
             {
-                ((Timer)sender).AutoReset = false;
-                ((Timer)sender).Stop();
-                return;
-            }
-            base.Dispatcher.BeginInvoke(new Action<BindableKeyValuePair>(bk => this.InfoCollection.Add(bk)), this.currentInfos[0]);
-            this.currentInfos.RemoveAt(0);
+                if (this.currentInfos.Count == 0)
+                {
+                    t.Stop();
+                    return;
+                }
+                else
+                {
+                    this.InfoCollection.Add(this.currentInfos[0]); this.currentInfos.RemoveAt(0);
+                    t.Start();
+                }
+            }), (Timer)sender);
         }
 
         private void cleaLogBtn_Click(object sender, RoutedEventArgs e)
         {
             this.logBox.Clear();
+        }
+
+        private void rawOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.LoadText(this.rawBox.Text);
         }
     }
 }

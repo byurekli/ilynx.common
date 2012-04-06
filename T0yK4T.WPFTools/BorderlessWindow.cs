@@ -23,6 +23,9 @@ namespace T0yK4T.WPFTools
         /// The header property
         /// </summary>
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(UIElement), typeof(BorderlessWindow));
+        public static readonly DependencyProperty HeaderBorderThicknessProperty = DependencyProperty.Register("HeaderBorderThickness", typeof(Thickness), typeof(BorderlessWindow));
+        public static readonly DependencyProperty HeaderBorderBrushProperty = DependencyProperty.Register("HeaderBorderBrush", typeof(Brush), typeof(BorderlessWindow));
+        public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(BorderlessWindow));
 
         private Point offset;
         private bool mouseDown = false;
@@ -45,6 +48,9 @@ namespace T0yK4T.WPFTools
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetDoubleClickTime();
 
         private enum ResizeDirection
         {
@@ -87,8 +93,9 @@ namespace T0yK4T.WPFTools
                 maximizeButton.Content = "1";
 
             this.moveGrip = (Rectangle)base.Template.FindName("moveGrip", this);
-            //this.headerElement = (ContentControl)base.Template.FindName("headerControl", this);
         }
+
+        DateTime lastDown = DateTime.Now;
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
@@ -122,6 +129,24 @@ namespace T0yK4T.WPFTools
             }
         }
 
+        public Thickness HeaderBorderThickness
+        {
+            get { return this.GetValueSafe<Thickness>(HeaderBorderThicknessProperty); }
+            set { this.SetValueSafe(HeaderBorderThicknessProperty, value); }
+        }
+
+        public Brush HeaderBorderBrush
+        {
+            get { return this.GetValueSafe<Brush>(HeaderBorderBrushProperty); }
+            set { this.SetValueSafe(HeaderBorderBrushProperty, value); }
+        }
+
+        public Brush HeaderBackground
+        {
+            get { return this.GetValueSafe<Brush>(HeaderBackgroundProperty); }
+            set { this.SetValueSafe(HeaderBackgroundProperty, value); }
+        }
+
         /// <summary>
         /// Gets or Sets the header of this window
         /// </summary>
@@ -145,9 +170,15 @@ namespace T0yK4T.WPFTools
             base.OnPreviewMouseDown(e);
             if (VisualTreeHelper.HitTest(this.moveGrip, e.GetPosition(this.moveGrip)) != null)
             {
-                Mouse.Capture(this);
-                this.mouseDown = true;
-                this.offset = e.GetPosition(this);
+                if (this.WindowState == System.Windows.WindowState.Normal)
+                {
+                    Mouse.Capture(this);
+                    this.mouseDown = true;
+                    this.offset = e.GetPosition(this);
+                }
+                if ((DateTime.Now - lastDown).TotalMilliseconds <= GetDoubleClickTime())
+                    this.WindowState = this.WindowState == System.Windows.WindowState.Maximized ? System.Windows.WindowState.Normal : System.Windows.WindowState.Maximized;
+                lastDown = DateTime.Now;
             }
         }
 

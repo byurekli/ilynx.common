@@ -6,6 +6,8 @@
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="AllowsTransparency" Value="True"/>
         <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="HeaderBorderThickness" Value="0,0,0,1"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BorderlessWindow}">
@@ -32,30 +34,37 @@
                             <Rectangle Grid.Column="1" Grid.Row="0" Fill="#01000000" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="SizeNS" x:Name="Top"/>
                             <Rectangle Grid.Column="1" Grid.Row="2" Fill="#01000000" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="SizeNS" x:Name="Bottom"/>
                             <!--These rectangles need fixing!-->
-                            <Border Grid.Row="1" Grid.Column="1" BorderThickness="3" CornerRadius="1" Background="{TemplateBinding Background}">
+                            <Border Grid.Row="1" Grid.Column="1" CornerRadius="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="24"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="80"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Rectangle x:Name="moveGrip" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{TemplateBinding Background}"/>
-                                    <ContentControl x:Name="headerControl" Content="{TemplateBinding Header}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" />
-                                    <ContentPresenter ContentSource="{TemplateBinding Content}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                    <Grid Grid.Row="0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Button BorderThickness="0" Command="{x:Static local:Commands.MinimizeWindowCommand}" Content="0" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="0"/>
-                                        <Button x:Name="maximizeButton" BorderThickness="0" Command="{x:Static local:Commands.MaximizeBorderlessCommand}" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="1"/>
-                                        <Button BorderThickness="0" Command="{x:Static local:Commands.CloseWindowCommand}" FontFamily="Webdings" Content="r" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="2"/>
-                                    </Grid>
+                                    <Border Grid.Row="0" BorderBrush="{TemplateBinding HeaderBorderBrush}" BorderThickness="{TemplateBinding HeaderBorderThickness}" Background="{TemplateBinding HeaderBackground}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="1"/>
+                                                <ColumnDefinition Width="80"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ContentControl x:Name="headerControl" Content="{TemplateBinding Header}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" />
+                                            <Rectangle x:Name="moveGrip" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{TemplateBinding Background}"/>
+                                            <TextBlock Margin="0,0,8,0" x:Name="titleBlock" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Text="{TemplateBinding Title}" FontWeight="Bold" FontSize="16"/>
+                                            <Border x:Name="splitter" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding HeaderBorderThickness}"/>
+                                            <Grid Grid.Column="3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button BorderThickness="0" Command="{x:Static local:Commands.MinimizeWindowCommand}" Content="0" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="0"/>
+                                                <Button x:Name="maximizeButton" BorderThickness="0" Command="{x:Static local:Commands.MaximizeBorderlessCommand}" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="1"/>
+                                                <Button BorderThickness="0" Command="{x:Static local:Commands.CloseWindowCommand}" FontFamily="Webdings" Content="r" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="2"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                    <ContentPresenter Margin="0" ContentSource="{TemplateBinding Content}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 </Grid>
                             </Border>
                         </Grid>
