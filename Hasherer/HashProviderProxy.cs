@@ -4,6 +4,7 @@ using T0yK4T.Tools;
 using T0yK4T.Threading;
 using System;
 using System.Windows.Input;
+
 namespace Hasherer
 {
     /// <summary>

@@ -3,13 +3,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="General.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Purple" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Orange" />
-    <SolidColorBrush x:Key="DisabledBorderBrush" Color="Crimson" />
-    <SolidColorBrush x:Key="SolidBorderBrush" Color="{StaticResource s_borderCol}" />
-    <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource s_brighterBorderCol}" />
-    <SolidColorBrush x:Key="GlyphBrush" Color="{StaticResource s_fgCol}" />
-    <SolidColorBrush x:Key="LightColorBrush" Color="#FFFF00FF" />
 
     <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
         <Setter Property="Height" Value="1"/>
@@ -26,7 +19,7 @@
     <!-- TopLevelHeader -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}"
                  TargetType="MenuItem">
-        <Border Name="Border">
+        <Border Name="PART_Background">
             <Grid>
                 <ContentPresenter Margin="6,3,6,3" ContentSource="Header" RecognizesAccessKey="True" />
                 <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
@@ -41,10 +34,12 @@
                 <Setter TargetName="Popup" Property="PopupAnimation" Value="None"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter TargetName="Border" Property="Background"
-              Value="{StaticResource BRUSH_lightBg}"/>
-                <Setter TargetName="Border" Property="BorderBrush"
-              Value="Transparent"/>
+                <Trigger.EnterActions>
+                    <BeginStoryboard Name="anim" Storyboard="{StaticResource itemSelectedAnimation}"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="anim"/>
+                </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
@@ -60,10 +55,14 @@
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
-            <Trigger Property="IsHighlighted" Value="true">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BRUSH_lightBg}"/>
-                <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
-            </Trigger>
+            <!--<Trigger Property="IsHighlighted" Value="true">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Name="anim" Storyboard="{StaticResource itemSelectedAnimation}"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="anim"/>
+                </Trigger.ExitActions>
+            </Trigger>-->
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
             </Trigger>
@@ -73,7 +72,7 @@
     <!-- SubmenuItem -->
 
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}" TargetType="MenuItem">
-        <Border Name="Border" >
+        <Border Name="PART_Background" Background="{DynamicResource BRUSH_background}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -101,8 +100,12 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Hidden"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter TargetName="Border" Property="Background"
-              Value="{StaticResource BRUSH_selectedBackground}"/>
+                <Trigger.EnterActions>
+                    <BeginStoryboard Name="anim" Storyboard="{StaticResource itemSelectedAnimation}"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="anim"/>
+                </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
@@ -113,7 +116,7 @@
     <!-- SubmenuHeader -->
 
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}" TargetType="MenuItem">
-        <Border Name="Border" >
+        <Border Name="PART_Background" Background="{DynamicResource BRUSH_background}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -137,8 +140,12 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter TargetName="Border" Property="Background"
-              Value="{StaticResource BRUSH_selectedBackground}"/>
+                <Trigger.EnterActions>
+                    <BeginStoryboard Name="anim" Storyboard="{StaticResource itemSelectedAnimation}"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="anim"/>
+                </Trigger.ExitActions>
             </Trigger>
             <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
                 <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="4"/>
@@ -182,7 +189,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Menu">
-                    <Border BorderThickness="1">
+                    <Border BorderThickness="0">
                         <StackPanel ClipToBounds="True" Orientation="Horizontal" IsItemsHost="True"/>
                     </Border>
                 </ControlTemplate>

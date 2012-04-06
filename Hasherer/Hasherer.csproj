@@ -11,7 +11,8 @@
     <RootNamespace>Hasherer</RootNamespace>
     <AssemblyName>Hasherer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -106,6 +107,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -123,7 +126,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BorderLessWindow.cs" />
     <Compile Include="Style Parts\InternalListBox.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -156,10 +158,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Style Parts\Scrollbars.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Style Parts\Windows.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -201,8 +199,8 @@
       <Project>{1D510E0B-912C-4D24-9446-E96AE74F3C27}</Project>
       <Name>T0yK4T.Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\T0yK4T.WPFTools\T0yK4T.WPFTools.csproj">
-      <Project>{3643A054-9A6E-4EBE-B688-8A591131E6F5}</Project>
+    <ProjectReference Include="..\WpfCustomControlLibrary1\T0yK4T.WPFTools.csproj">
+      <Project>{371D39E3-6CEE-4531-BF94-B8593506906F}</Project>
       <Name>T0yK4T.WPFTools</Name>
     </ProjectReference>
   </ItemGroup>

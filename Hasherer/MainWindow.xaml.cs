@@ -20,13 +20,14 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using System.Timers;
+using T0yK4T.WPFTools;
 
 namespace Hasherer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : BorderLessWindow
+    public partial class MainWindow : BorderlessWindow
     {
         private ObservableCollection<HashProviderProxy> providers = new ObservableCollection<HashProviderProxy>();
 

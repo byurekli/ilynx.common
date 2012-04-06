@@ -20,15 +20,15 @@
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border Name="Border" Margin="1" CornerRadius="2" BorderThickness="1">
                         <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="{StaticResource GlyphBrush}" Data="{Binding Path=Content,RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="ScrollStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
+                                <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
+                                <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BRUSH_selectedBackground}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource BRUSH_disabled}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -42,7 +42,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border Background="Transparent"/>
+                    <Border Background="Transparent">
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -56,17 +57,19 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"/>
+                    <Border CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WeirD">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
+                                <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
+                                <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsDragging" Value="true">
-                <Trigger.EnterActions>
-
-                </Trigger.EnterActions>
-            </Trigger>
-        </Style.Triggers>
     </Style>
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
@@ -82,7 +85,7 @@
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand"/>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="{StaticResource BRUSH_lightBg}" BorderBrush="{StaticResource BRUSH_border}"/>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="{DynamicResource BRUSH_lightBg}" BorderBrush="{DynamicResource BRUSH_border}"/>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand"/>
@@ -105,7 +108,7 @@
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand"/>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1" Background="{StaticResource BRUSH_lightBg}" BorderBrush="{StaticResource BRUSH_border}"/>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1" Background="{DynamicResource BRUSH_lightBg}" BorderBrush="{DynamicResource BRUSH_border}"/>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand"/>

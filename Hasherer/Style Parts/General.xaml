@@ -17,6 +17,7 @@
     <Color x:Key="s_pushCloseCol">#FFEE0000</Color>
     <Color x:Key="s_defaultedCol">#FF387C44</Color>
     <Color x:Key="s_indeterminate">#FFFDD017</Color>
+    <Color x:Key="s_checkMarkCol">#FF43CD80</Color>
 
     <SolidColorBrush x:Key="BRUSH_border" Color="{StaticResource s_borderCol}"/>
     <SolidColorBrush x:Key="BRUSH_foreground" Color="{StaticResource s_fgCol}"/>
@@ -29,6 +30,14 @@
     <SolidColorBrush x:Key="BRUSH_disabled" Color="{StaticResource s_closeCol}"/>
     <SolidColorBrush x:Key="BRUSH_defaulted" Color="{StaticResource s_defaultedCol}"/>
     <SolidColorBrush x:Key="BRUSH_indeterminate" Color="{StaticResource s_indeterminate}"/>
+    <SolidColorBrush x:Key="BRUSH_checkMark" Color="{StaticResource s_checkMarkCol}"/>
+    
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Purple" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Orange" />
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="Crimson" />
+    <SolidColorBrush x:Key="SolidBorderBrush" Color="{StaticResource s_borderCol}" />
+    <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource s_brighterBorderCol}" />
+    <SolidColorBrush x:Key="GlyphBrush" Color="{StaticResource s_fgCol}" />
 
     <BooleanToVisibilityConverter x:Key="boolToVis"/>
 
@@ -58,6 +67,9 @@
     </Storyboard>
     <Storyboard x:Key="indeterminateAnimation">
         <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_indeterminate}" Duration="0:0:0.250"/>
+    </Storyboard>
+    <Storyboard x:Key="lightbgAnimation">
+        <ColorAnimation Storyboard.TargetProperty="Background.Color" To="{StaticResource s_brighterBgCol}" Duration="0:0:0.250"/>
     </Storyboard>
 
     <Style TargetType="{x:Type TextBox}" x:Key="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -109,8 +121,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid MinHeight="14" MinWidth="200">
-                        <Border Name="PART_Track" CornerRadius="2" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" />
-                        <Border Name="PART_Indicator" CornerRadius="2" Background="{StaticResource BRUSH_mouseoverBackground}" BorderBrush="{StaticResource BRUSH_border}" BorderThickness="1" HorizontalAlignment="Left" />
+                        <Border Name="PART_Track" CornerRadius="2" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
+                        <Border Name="PART_Indicator" CornerRadius="2" Margin="1" Background="{DynamicResource BRUSH_mouseoverBackground}" BorderThickness="0" HorizontalAlignment="Left" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

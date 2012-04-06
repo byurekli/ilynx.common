@@ -3,28 +3,21 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="General.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <!--<Style x:Key="MyFocusVisual">
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Control}">
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
 
     <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Margin" Value="2"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Name="PART_Background" BorderThickness="1" Padding="4,2" CornerRadius="3" Background="{TemplateBinding Background}">
+                    <Border Name="PART_Background" BorderThickness="{TemplateBinding BorderThickness}" Padding="4,2" CornerRadius="3" Background="{TemplateBinding Background}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="DefaultStates">
-                                <VisualState Name="Normal" Storyboard="{StaticResource backToBackgroundAnimation}"/>
+                                <VisualState Name="Normal" />
                                 <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
                                 <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
                                 <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
@@ -42,16 +35,17 @@
         <Setter Property="Margin" Value="2"/>
         <Setter Property="FontSize" Value="11px"/>
         <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Background" Value="{StaticResource BRUSH_background}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border Name="PART_Background" BorderThickness="1" CornerRadius="3" Background="{TemplateBinding Background}">
+                    <Border Name="PART_Background" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Background="{TemplateBinding Background}">
                         <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" Name="content"/>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="DefaultStates">
-                                <VisualState Name="Normal" Storyboard="{StaticResource backToBackgroundAnimation}"/>
+                                <VisualState Name="Normal" />
                                 <VisualState Name="MouseOver" Storyboard="{StaticResource highlightAnimation}"/>
                                 <VisualState Name="Pressed" Storyboard="{StaticResource mouseDownAnimation}"/>
                                 <VisualState Name="Disabled" Storyboard="{StaticResource disabledAnimation}"/>
@@ -61,6 +55,108 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type CheckBox}"
+       TargetType="{x:Type CheckBox}">
+        <Setter Property="SnapsToDevicePixels"
+          Value="true" />
+        <Setter Property="OverridesDefaultStyle"
+          Value="true" />
+        <Setter Property="FocusVisualStyle"
+          Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border"
+                                    Width="13"
+                                    Height="13"
+                                    CornerRadius="0"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <TextBlock x:Name="CheckMark" Foreground="{StaticResource BRUSH_checkMark}" Text="a" FontFamily="Webdings" Visibility="Collapsed" />
+                                    <TextBlock x:Name="InderminateMark" Foreground="{DynamicResource BRUSH_indeterminate}" Text="&lt;" FontFamily="Webdings" Visibility="Collapsed" />
+                                    <!--<Path Visibility="Collapsed"
+                                            Width="7"
+                                            Height="7"
+                                            x:Name="CheckMark"
+                                            SnapsToDevicePixels="False"
+                                            StrokeThickness="2"
+                                            Data="M 0 0 L 7 7 M 0 7 L 7 0" Stroke="{DynamicResource GlyphBrush}"/>
+                                    <Path Visibility="Collapsed"
+                                          Width="7"
+                                          Height="7"
+                                          x:Name="InderminateMark"
+                                          SnapsToDevicePixels="False"
+                                          StrokeThickness="2"
+                                          Data="M 0 7 L 7 0" Stroke="{DynamicResource GlyphBrush}"/>-->
+                                </Grid>
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="Background.Color" Duration="0:0:0.250" To="{StaticResource s_highlightCol}" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <!--<ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Panel.Background).
+                      (GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                         Value="{StaticResource s_selectedBg}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.BorderBrush).
+                      (GradientBrush.GradientStops)[0].(GradientStop.Color)">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                         Value="{StaticResource s_borderCol}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.BorderBrush).
+                      (GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                         Value="{StaticResource s_borderCol}" />
+                                        </ColorAnimationUsingKeyFrames>-->
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
+                                                 Storyboard.TargetName="CheckMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{x:Static Visibility.Visible}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked" />
+                                <VisualState x:Name="Indeterminate">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
+                                                 Storyboard.TargetName="InderminateMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{x:Static Visibility.Visible}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            RecognizesAccessKey="True" />
+                    </BulletDecorator>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
