@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 
 namespace HashProvider.Skein
 {
+#pragma warning disable 1591
     /// <summary>
     /// Used to intialize Skein256 provider
     /// </summary>
@@ -44,4 +45,5 @@ namespace HashProvider.Skein
             return new Skein1024();
         }
     }
+#pragma warning restore 1591
 }

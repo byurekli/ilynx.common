@@ -19,7 +19,16 @@ namespace Hasherer
         /// </summary>
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object), typeof(BindableKeyValuePair));
 
+        /// <summary>
+        /// Initialzies a new instance of <see cref="BindableKeyValuePair"/>
+        /// </summary>
         public BindableKeyValuePair() { }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="BindableKeyValuePair"/> and sets it's key and value to the specified values
+        /// </summary>
+        /// <param name="key">The key of the pair</param>
+        /// <param name="value">The value of the pair</param>
         public BindableKeyValuePair(object key, object value)
         {
             this.Key = key;

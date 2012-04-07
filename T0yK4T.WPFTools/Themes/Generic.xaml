@@ -59,7 +59,7 @@
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Button BorderThickness="0" Command="{x:Static local:Commands.MinimizeWindowCommand}" Content="0" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="0"/>
-                                                <Button x:Name="maximizeButton" BorderThickness="0" Command="{x:Static local:Commands.MaximizeBorderlessCommand}" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="1"/>
+                                                <Button x:Name="maximizeButton" BorderThickness="0" Command="{x:Static local:Commands.ToggleMaximizedCommand}" FontFamily="Webdings" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="1"/>
                                                 <Button BorderThickness="0" Command="{x:Static local:Commands.CloseWindowCommand}" FontFamily="Webdings" Content="r" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Grid.Column="2"/>
                                             </Grid>
                                         </Grid>

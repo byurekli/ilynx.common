@@ -17,13 +17,9 @@ namespace Hasherer
         /// </summary>
         bool DefaultEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or Sets the displayname of this <see cref="IProviderInstantiator"/>
+        /// </summary>
         string DisplayName { get; set; }
-
-        ///// <summary>
-        ///// Gets a value indicating whether or not the specified provider is enabled by default
-        ///// </summary>
-        ///// <param name="providerName"></param>
-        ///// <returns></returns>
-        //bool GetDefaultEnabled(AsyncHashProvider provider);
     }
 }

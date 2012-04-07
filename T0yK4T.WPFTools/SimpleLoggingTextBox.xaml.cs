@@ -25,6 +25,9 @@ namespace T0yK4T.WPFTools
             this.box.IsReadOnly = true;
         }
 
+        /// <summary>
+        /// Clears the contents of the text box
+        /// </summary>
         public void Clear()
         {
             if (!this.CheckAccess())

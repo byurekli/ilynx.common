@@ -34,6 +34,15 @@ namespace T0yK4T.Configuration
         //    get { return loadedValues; }
         //}
 
+        /// <summary>
+        /// Attempts to load a <see cref="ConfigurableValue{T}"/> with the specified <paramref name="key"/>
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="ConfigurableValue{T}"/> to load</typeparam>
+        /// <param name="key">The key of the value</param>
+        /// <param name="converter">The converter to use (<see cref="IValueConverter{T}"/>)</param>
+        /// <param name="defaultValue">The default value to assign to the value of the <see cref="ConfigurableValue{T}"/> if it is not found in file</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidCastException">This exception is thrown if a value with the same key has already been loaded, but is not of the specified type <typeparamref name="T"/></exception>
         public static ConfigurableValue<T> GetValue<T>(string key, IValueConverter<T> converter, T defaultValue)
         {
             ConfigurableValue untyped;

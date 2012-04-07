@@ -23,8 +23,20 @@ namespace T0yK4T.WPFTools
         /// The header property
         /// </summary>
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(UIElement), typeof(BorderlessWindow));
+
+        /// <summary>
+        /// The Header Border Thickness property
+        /// </summary>
         public static readonly DependencyProperty HeaderBorderThicknessProperty = DependencyProperty.Register("HeaderBorderThickness", typeof(Thickness), typeof(BorderlessWindow));
+
+        /// <summary>
+        /// The Header Border Brush property
+        /// </summary>
         public static readonly DependencyProperty HeaderBorderBrushProperty = DependencyProperty.Register("HeaderBorderBrush", typeof(Brush), typeof(BorderlessWindow));
+
+        /// <summary>
+        /// The Header Background Property
+        /// </summary>
         public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(BorderlessWindow));
 
         private Point offset;
@@ -97,6 +109,10 @@ namespace T0yK4T.WPFTools
 
         DateTime lastDown = DateTime.Now;
 
+        /// <summary>
+        /// Overridden to change the content of the maximize button when the window changes state
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -129,18 +145,27 @@ namespace T0yK4T.WPFTools
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="Thickness"/> to use for the window's header border
+        /// </summary>
         public Thickness HeaderBorderThickness
         {
             get { return this.GetValueSafe<Thickness>(HeaderBorderThicknessProperty); }
             set { this.SetValueSafe(HeaderBorderThicknessProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="Brush"/> to use for the window's header border
+        /// </summary>
         public Brush HeaderBorderBrush
         {
             get { return this.GetValueSafe<Brush>(HeaderBorderBrushProperty); }
             set { this.SetValueSafe(HeaderBorderBrushProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="Thickness"/> to use for the window's header background
+        /// </summary>
         public Brush HeaderBackground
         {
             get { return this.GetValueSafe<Brush>(HeaderBackgroundProperty); }
@@ -165,6 +190,10 @@ namespace T0yK4T.WPFTools
             base.OnMouseDown(e);
         }
 
+        /// <summary>
+        /// Overridden to initiate window movement
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseDown(e);
@@ -210,10 +239,15 @@ namespace T0yK4T.WPFTools
         }
     }
 
+    /// <summary>
+    /// Contains window commands
+    /// </summary>
     public static class Commands
     {
         /// <summary>
         /// Closes a window
+        /// <para/>
+        /// Requires the parameter to be a window
         /// </summary>
         public static readonly ICommand CloseWindowCommand = new GenericCommand<Window, object>(w =>
         {
@@ -221,13 +255,23 @@ namespace T0yK4T.WPFTools
                 w.Close();
         });
 
+        /// <summary>
+        /// Minimizes a window
+        /// <para/>
+        /// Requires the parameter to be a window
+        /// </summary>
         public static readonly ICommand MinimizeWindowCommand = new GenericCommand<Window, object>(w =>
         {
             if (w != null)
                 w.WindowState = WindowState.Minimized;
         });
 
-        public static readonly ICommand MaximizeBorderlessCommand = new GenericCommand<Window, object>(w =>
+        /// <summary>
+        /// Toggles between Maximized and Normal window state of a window
+        /// <para/>
+        /// Requires the parameter to be a window
+        /// </summary>
+        public static readonly ICommand ToggleMaximizedCommand = new GenericCommand<Window, object>(w =>
         {
             if (w != null)
             {

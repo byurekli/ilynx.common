@@ -6,11 +6,23 @@ using System;
 
 namespace HashererLib
 {
+    /// <summary>
+    /// Base class from which Provider Instantiators can derrive
+    /// </summary>
     public abstract class InstantiatorBase : IProviderInstantiator
     {
         private ConfigurableValue<string> name;
         private ConfigurableValue<bool> isEnabled;
 
+        /// <summary>
+        /// Initializes a new <see cref="InstantiatorBase"/> and sets the DisplayName and DefaultEnabled properties to the specified values
+        /// <para/>
+        /// Note that the DisplayName and DefaultEnabled properties are infact <see cref="ConfigurableValue{T}"/>s,
+        /// <para/>
+        /// only if either of the values is not stored in the configuration will it's value be set to the default value specified in this constructor
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="defEnabled"></param>
         protected InstantiatorBase(string name, bool defEnabled)
         {
             if (string.IsNullOrEmpty(name))
@@ -19,11 +31,19 @@ namespace HashererLib
             this.isEnabled = Config.GetValue<bool>(string.Format("{0}DefaultEnabled", name), new BooleanConverter(), defEnabled);
         }
 
+        /// <summary>
+        /// Gets a new <see cref="AsyncHashProvider"/>
+        /// </summary>
+        /// <returns></returns>
         public AsyncHashProvider Instantiate()
         {
             return new AsyncHashProvider(this.GetAlgorithm(), this.DisplayName);
         }
 
+        /// <summary>
+        /// When overriden, should return the <see cref="HashAlgorithm"/> to use for the <see cref="AsyncHashProvider"/>
+        /// </summary>
+        /// <returns></returns>
         protected abstract HashAlgorithm GetAlgorithm();
 
         /// <summary>
@@ -59,8 +79,8 @@ namespace HashererLib
             }
         }
     }
-    /// <summary>
-    /// </summary>
+
+#pragma warning disable 1591
     public class Crc32Instantiator : InstantiatorBase
     {
         public Crc32Instantiator()
@@ -102,37 +122,5 @@ namespace HashererLib
             return SHA256.Create();
         }
     }
-
-    public struct TestStruct : IProviderInstantiator
-    {
-        public AsyncHashProvider Instantiate()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool DefaultEnabled
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string DisplayName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-    }
-
+#pragma warning restore 1591
 }

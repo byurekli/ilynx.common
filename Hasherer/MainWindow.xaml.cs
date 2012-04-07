@@ -111,6 +111,10 @@ namespace Hasherer
             this.viewer.RaiseEvent(args);
         }
 
+        /// <summary>
+        /// Loads the file located at the specified path if it exists
+        /// </summary>
+        /// <param name="fName"></param>
         public void LoadFile(string fName)
         {
             if (!File.Exists(fName))

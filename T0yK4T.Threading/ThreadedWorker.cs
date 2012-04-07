@@ -84,6 +84,11 @@ namespace T0yK4T.Threading
             this.worker.Start(args);
         }
 
+        /// <summary>
+        /// Executes this worker and calls the <paramref name="workCompletedCallback"/> method when it completes
+        /// </summary>
+        /// <param name="args">The argument to pass to the worker</param>
+        /// <param name="workCompletedCallback">The <see cref="Action{TCompletedArgs}"/> to call when work is complete</param>
         public void Execute(TArgs args, Action<TCompletedArgs> workCompletedCallback)
         {
             this.workCompletedCallback = workCompletedCallback;
@@ -181,6 +186,13 @@ namespace T0yK4T.Threading
         /// <param name="args">Will contain a <typeparamref name="TArgs"/> object as an object</param>
         protected abstract TCompletedArgs DoWork(TArgs args);
 
+        /// <summary>
+        /// Creates a "generic" implementation of a <see cref="ThreadedWorker{TArgs, TCompletedArgs}"/>
+        /// <para/>
+        /// that executes the specified <see cref="Func{TArgs, TCompletedArgs}"/> in the worker thread
+        /// </summary>
+        /// <param name="executeCallback">The <see cref="Func{TArgs, TCompletedArgs}"/> to execute</param>
+        /// <returns></returns>
         public static ThreadedWorker<TArgs, TCompletedArgs> Create(Func<TArgs, TCompletedArgs> executeCallback)
         {
             return new GenericImplmenetation<TArgs, TCompletedArgs>(executeCallback);

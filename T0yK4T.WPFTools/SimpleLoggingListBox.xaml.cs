@@ -28,6 +28,9 @@ namespace T0yK4T.WPFTools
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Clears the contents of the listbox
+        /// </summary>
         public void Clear()
         {
             if (!this.CheckAccess())
