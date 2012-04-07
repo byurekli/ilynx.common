@@ -1,7 +1,6 @@
-﻿using Hasherer;
-using T0yK4T.Configuration;
+﻿using T0yK4T.Configuration;
 using SkeinFish;
-using HashererLib;
+using Hasherer;
 using System.Security.Cryptography;
 
 namespace HashProvider.Skein

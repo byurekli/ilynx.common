@@ -107,9 +107,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="crc32.cs" />
-    <Compile Include="DefaultProviders.cs" />
     <Compile Include="HashProvider.cs" />
+    <Compile Include="InstantiatorBase.cs" />
     <Compile Include="IProviderInstantiator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

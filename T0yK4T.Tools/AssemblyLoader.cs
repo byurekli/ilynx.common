@@ -32,7 +32,14 @@ namespace T0yK4T.Tools
             {
                 Type[] types = assembly.GetTypes();
                 retVal.AddRange(types.Where(t2 => t2.GetInterfaces()
-                    .Any(tInterface => tInterface == typeof(TInterface))).Where(t => !t.IsAbstract && !t.IsInterface)
+                    .Any(tInterface => tInterface.FullName == typeof(TInterface).FullName)).Where(t =>
+                    {
+                        if (t.IsAbstract)
+                            base.LogInformation("Skipping Abstract type {0}", t.FullName);
+                        else if (t.IsInterface)
+                            base.LogInformation("Skipping Interface {0}", t.FullName);
+                        return !t.IsAbstract && !t.IsInterface;
+                    })
                     .Select<Type, TInterface>(tFinal =>
                     {
                         base.LogInformation("Attempting to activate {0}", tFinal.FullName);

@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Timers;
 using T0yK4T.WPFTools;
+using T0yK4T.Configuration;
 
 namespace Hasherer
 {
@@ -29,6 +30,7 @@ namespace Hasherer
     /// </summary>
     public partial class MainWindow : BorderlessWindow
     {
+        private static readonly ConfigurableValue<string> providerRelPath = Config.GetValue<string>("ProviderRelPath", new StringConverter(), @"\Providers");
         private ObservableCollection<HashProviderProxy> providers = new ObservableCollection<HashProviderProxy>();
         private ObservableCollection<HashProviderProxy> Providers
         {
@@ -66,7 +68,22 @@ namespace Hasherer
         /// </summary>
         public MainWindow()
         {
+            RuntimeCommon.MainLogger = this.logBox;
+            string pluginDir = Environment.CurrentDirectory + providerRelPath;
+            string libPath = System.IO.Path.Combine(pluginDir, "HashererLib.dll");
+            if (File.Exists(libPath))
+            {
+                ComponentBase.Log(LoggingType.Warning, this, "Deleting HashererLib.dll from Provider directory, the file should not be present in that directory as it would prevent loading Providers");
+                File.Delete(libPath);
+            }
+            AssemblyLoader loader = new AssemblyLoader();
+            List<IProviderInstantiator> insts = new List<IProviderInstantiator>(loader.LoadDirectory<IProviderInstantiator>(Environment.CurrentDirectory + providerRelPath));
+            insts.Sort(new Comparison<IProviderInstantiator>((i1, i2) => string.Compare(i1.DisplayName, i2.DisplayName)));
+            foreach (IProviderInstantiator providerInstantiator in insts)
+                this.providers.Add(new HashProviderProxy(providerInstantiator.Instantiate()) { IsEnabled = providerInstantiator.DefaultEnabled });
+
             InitializeComponent();
+
             this.infoBox.ItemsSource = this.InfoCollection;
             this.hashList.ItemsSource = this.Providers;
             List<Encoding> l = new List<Encoding>(Encoding.GetEncodings().Select<EncodingInfo, Encoding>(ei => Encoding.GetEncoding(ei.CodePage)));
@@ -83,10 +100,6 @@ namespace Hasherer
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            RuntimeCommon.MainLogger = this.logBox;
-            AssemblyLoader loader = new AssemblyLoader();
-            foreach (IProviderInstantiator providerInstantiator in loader.LoadDirectory<IProviderInstantiator>(Environment.CurrentDirectory))
-                this.providers.Add(new HashProviderProxy(providerInstantiator.Instantiate()) { IsEnabled = providerInstantiator.DefaultEnabled });
             this.LoadFile(Process.GetCurrentProcess().MainModule.FileName);
         }
 
