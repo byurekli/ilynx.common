@@ -17,13 +17,11 @@ namespace T0yK4T.Configuration
         /// Initializes a new instance of <see cref="ConfigurableValue"/> and sets it's key property to the specified value
         /// </summary>
         /// <param name="key"></param>
-        public ConfigurableValue(string key)
+        internal ConfigurableValue(string key)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException("key");
             this.Key = key;
-            try { Config.LoadedValues.Add(this.Key, this); }
-            catch (ArgumentException) { throw; }
         }
 
         /// <summary>
@@ -52,6 +50,9 @@ namespace T0yK4T.Configuration
         /// </summary>
         public abstract bool IsStored { get; }
 
+        /// <summary>
+        /// This event is fired whenever the value of this <see cref="ConfigurableValue"/> has changed
+        /// </summary>
         public abstract event EventHandler ValueChanged;
     }
 
@@ -72,7 +73,7 @@ namespace T0yK4T.Configuration
         /// <param name="key">The key of the value to look for</param>
         /// <param name="converter">The <see cref="IValueConverter{TValue}"/> to use for string to <typeparamref name="T"/> conversion</param>
         /// <param name="defaultValue">The default value to use if the value could not be retrieved from the configuration file</param>
-        public ConfigurableValue(string key, IValueConverter<T> converter, T defaultValue)
+        internal ConfigurableValue(string key, IValueConverter<T> converter, T defaultValue)
             : base(key)
         {
             this.converter = converter;
@@ -201,20 +202,9 @@ namespace T0yK4T.Configuration
                 this.ValueChanged(this, new EventArgs());
         }
 
-        public override event EventHandler ValueChanged;
-    }
-
-    /// <summary>
-    /// Wrapper for <see cref="ConfigurableValue{T}"/> with T as string and the converter set to a new instance of <see cref="StringConverter"/>
-    /// </summary>
-    public class ConfigurableStringValue : ConfigurableValue<string>
-    {
         /// <summary>
-        /// Initializes a new instance of <see cref="ConfigurableStringValue"/>
+        /// Fired whenever the value part of this <see cref="ConfigurableValue{T}"/> has changed
         /// </summary>
-        /// <param name="name">The name of the key for the value</param>
-        /// <param name="defaultValue">The default value (if no value was found in the configuration file)</param>
-        public ConfigurableStringValue(string name, string defaultValue)
-            : base(name, new StringConverter(), defaultValue) { }
+        public override event EventHandler ValueChanged;
     }
 }

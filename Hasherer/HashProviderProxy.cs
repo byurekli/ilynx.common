@@ -37,7 +37,7 @@ namespace Hasherer
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register("IsEnabled", typeof(bool), typeof(HashProviderProxy), new PropertyMetadata(true));
 
-        private static readonly ConfigurableStringValue ByteSplitter = new ConfigurableStringValue("ByteSplitter", "-");
+        private static ConfigurableValue<string> ByteSplitter = Config.GetValue<string>("ByteSplitter", new StringConverter(), "-");
 
         private HashInputArgs currentArgs;
 

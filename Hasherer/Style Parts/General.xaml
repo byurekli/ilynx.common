@@ -22,6 +22,11 @@
     <SolidColorBrush x:Key="BRUSH_border" Color="{StaticResource s_borderCol}"/>
     <SolidColorBrush x:Key="BRUSH_foreground" Color="{StaticResource s_fgCol}"/>
     <SolidColorBrush x:Key="BRUSH_background" Color="{StaticResource s_bgCol}"/>
+    <!--<LinearGradientBrush x:Key="BRUSH_background">
+        <GradientStop Offset="0" Color="{StaticResource s_bgCol}"/>
+        <GradientStop Offset="0.9" Color="{StaticResource s_brighterBgCol}"/>
+        <GradientStop Offset="1" Color="{StaticResource s_sbrighterBgCol}"/>
+    </LinearGradientBrush>-->
     <SolidColorBrush x:Key="BRUSH_mediumBg" Color="{StaticResource s_sbrighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_lightBg" Color="{StaticResource s_brighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_selectedBackground" Color="{StaticResource s_selectedBg}"/>

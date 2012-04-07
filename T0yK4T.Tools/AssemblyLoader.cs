@@ -32,7 +32,7 @@ namespace T0yK4T.Tools
             {
                 Type[] types = assembly.GetTypes();
                 retVal.AddRange(types.Where(t2 => t2.GetInterfaces()
-                    .Any(tInterface => tInterface == typeof(TInterface)))
+                    .Any(tInterface => tInterface == typeof(TInterface))).Where(t => !t.IsAbstract && !t.IsInterface)
                     .Select<Type, TInterface>(tFinal =>
                     {
                         base.LogInformation("Attempting to activate {0}", tFinal.FullName);
@@ -45,7 +45,8 @@ namespace T0yK4T.Tools
                             base.LogError("Could not activate {0}", tFinal.FullName);
                             return default(TInterface);
                         }
-                    }));
+                    })
+                    .Where(f => !object.ReferenceEquals(f, default(TInterface))));
             }
             catch (Exception er) { this.LogException(er, MethodBase.GetCurrentMethod()); }
             return retVal;

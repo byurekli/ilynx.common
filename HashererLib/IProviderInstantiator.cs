@@ -15,7 +15,9 @@ namespace Hasherer
         /// <summary>
         /// Gets a value indicating wether or not the provider generated through <see cref="Instantiate()"/> is enabled by default
         /// </summary>
-        bool DefaultEnabled { get; }
+        bool DefaultEnabled { get; set; }
+
+        string DisplayName { get; set; }
 
         ///// <summary>
         ///// Gets a value indicating whether or not the specified provider is enabled by default

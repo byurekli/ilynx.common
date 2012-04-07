@@ -75,8 +75,11 @@
                     </h:InternalListBox>
                 </ScrollViewer>
                 <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{DynamicResource BRUSH_border}"/>
-                <ToggleButton IsEnabled="True" x:Name="PART_rawToggle" Content="Raw" Grid.Row="2" HorizontalAlignment="Left" Width="64"/>
-                <Button Grid.Row="2" x:Name="openButton" Content="..." Visibility="{Binding ElementName=PART_rawToggle, Path=IsChecked, Converter={StaticResource ibtvc}}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="48" BorderThickness="1" Command="{x:Static h:MainWindow.OpenFileCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=h:MainWindow, Mode=FindAncestor}}">
+                <ToggleButton Grid.Row="2" IsEnabled="True" HorizontalAlignment="Left" x:Name="PART_rawToggle" Content="Raw" Width="64" Margin="2"/>
+                <Button Grid.Row="2" Margin="70,2,2,2" VerticalAlignment="Stretch" HorizontalAlignment="Left" x:Name="openButton" Content="File" Width="64" BorderThickness="1" 
+                            Visibility="{Binding ElementName=PART_rawToggle, Path=IsChecked, Converter={StaticResource ibtvc}}"
+                            Command="{x:Static h:MainWindow.OpenFileCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=h:MainWindow, Mode=FindAncestor}}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                             <Style.Triggers>
@@ -87,7 +90,8 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button Grid.Row="2" x:Name="rawOkButton" Content="Ok" Visibility="{Binding ElementName=PART_rawToggle, Path=IsChecked, Converter={StaticResource boolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="48" BorderThickness="1" Click="rawOkButton_Click">
+                <Button Grid.Row="2" Margin="70,2,2,2" x:Name="rawOkButton" HorizontalAlignment="Left" VerticalAlignment="Stretch" Content="Ok" Width="64" BorderThickness="1" Click="rawOkButton_Click"
+                            Visibility="{Binding ElementName=PART_rawToggle, Path=IsChecked, Converter={StaticResource boolToVis}}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                             <Style.Triggers>
@@ -158,7 +162,7 @@
                         </RowDefinition.Style>
                     </RowDefinition>
                 </Grid.RowDefinitions>
-                <h:InternalListBox x:Name="infoBox" HorizontalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0" ItemTemplate="{StaticResource {x:Type h:BindableKeyValuePair}}"/>
+                <h:InternalListBox x:Name="infoBox" Margin="2,0" HorizontalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0" ItemTemplate="{StaticResource {x:Type h:BindableKeyValuePair}}"/>
                 <Rectangle Grid.Row="1" Fill="{DynamicResource BRUSH_border}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 <ToggleButton x:Name="PART_LogVisBtn" Content="Log" Grid.Row="2" Width="64" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="2" IsChecked="False"/>
                 <Button x:Name="cleaLogBtn" Content="Clear" Grid.Row="2" HorizontalAlignment="Right" Width="64" VerticalAlignment="Stretch" Margin="2" Visibility="{Binding ElementName=PART_LogVisBtn, Path=IsChecked, Converter={StaticResource boolToVis}}" Click="cleaLogBtn_Click"/>
