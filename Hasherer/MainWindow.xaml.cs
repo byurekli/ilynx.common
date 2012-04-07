@@ -68,6 +68,16 @@ namespace Hasherer
         /// </summary>
         public MainWindow()
         {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// Overridden to load hash providers!
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
             RuntimeCommon.MainLogger = this.logBox;
             string pluginDir = Environment.CurrentDirectory + providerRelPath;
             string libPath = System.IO.Path.Combine(pluginDir, "HashererLib.dll");
@@ -82,24 +92,13 @@ namespace Hasherer
             foreach (IProviderInstantiator providerInstantiator in insts)
                 this.providers.Add(new HashProviderProxy(providerInstantiator.Instantiate()) { IsEnabled = providerInstantiator.DefaultEnabled });
 
-            InitializeComponent();
-
             this.infoBox.ItemsSource = this.InfoCollection;
             this.hashList.ItemsSource = this.Providers;
             List<Encoding> l = new List<Encoding>(Encoding.GetEncodings().Select<EncodingInfo, Encoding>(ei => Encoding.GetEncoding(ei.CodePage)));
-            l.Sort(new Comparison<Encoding>((e, e2) => string.Compare(e.EncodingName, e2.EncodingName)));
+            l.Sort(new Comparison<Encoding>((enc, e2) => string.Compare(enc.EncodingName, e2.EncodingName)));
             this.encodings = new ObservableCollection<Encoding>(l);
             this.encodingBox.ItemsSource = this.Encodings;
-            this.encodingBox.SelectedIndex = this.encodings.IndexOf(this.encodings.FirstOrDefault(e => e.EncodingName == "Unicode"));
-        }
-
-        /// <summary>
-        /// Overridden to load hash providers!
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
+            this.encodingBox.SelectedIndex = this.encodings.IndexOf(this.encodings.FirstOrDefault(enc => enc.EncodingName == "Unicode"));
             this.LoadFile(Process.GetCurrentProcess().MainModule.FileName);
         }
 
