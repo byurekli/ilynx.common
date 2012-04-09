@@ -156,28 +156,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Style Parts\InternalListBox.cs" />
-    <Resource Include="..\Theme Resources\Buttons.xaml">
-      <Link>Style Parts\Buttons.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="..\Theme Resources\General.xaml">
-      <Link>Style Parts\General.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="..\Theme Resources\Lists.xaml">
-      <Link>Style Parts\Lists.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="..\Theme Resources\Menu.xaml">
-      <Link>Style Parts\Menu.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="..\Theme Resources\Scrollbars.xaml">
-      <Link>Style Parts\Scrollbars.xaml</Link>
+    <Resource Include="..\Theme Resources\FlatTheme.xaml">
+      <Link>Style Parts\FlatTheme.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>

@@ -56,11 +56,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Hasherer.x86", "Hasherer.x8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Theme Resources", "Theme Resources", "{77143E77-D222-45EA-8CEE-F072EA293534}"
 	ProjectSection(SolutionItems) = preProject
-		Theme Resources\Buttons.xaml = Theme Resources\Buttons.xaml
-		Theme Resources\General.xaml = Theme Resources\General.xaml
-		Theme Resources\Lists.xaml = Theme Resources\Lists.xaml
-		Theme Resources\Menu.xaml = Theme Resources\Menu.xaml
-		Theme Resources\Scrollbars.xaml = Theme Resources\Scrollbars.xaml
+		Theme Resources\FlatTheme.xaml = Theme Resources\FlatTheme.xaml
 	EndProjectSection
 EndProject
 Global
