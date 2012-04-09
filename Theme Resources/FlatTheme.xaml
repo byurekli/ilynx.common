@@ -19,11 +19,6 @@
     <SolidColorBrush x:Key="BRUSH_border" Color="{StaticResource s_borderCol}"/>
     <SolidColorBrush x:Key="BRUSH_foreground" Color="{StaticResource s_fgCol}"/>
     <SolidColorBrush x:Key="BRUSH_background" Color="{StaticResource s_bgCol}"/>
-    <!--<LinearGradientBrush x:Key="BRUSH_background">
-        <GradientStop Offset="0" Color="{StaticResource s_bgCol}"/>
-        <GradientStop Offset="0.9" Color="{StaticResource s_brighterBgCol}"/>
-        <GradientStop Offset="1" Color="{StaticResource s_sbrighterBgCol}"/>
-    </LinearGradientBrush>-->
     <SolidColorBrush x:Key="BRUSH_mediumBg" Color="{StaticResource s_sbrighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_lightBg" Color="{StaticResource s_brighterBgCol}"/>
     <SolidColorBrush x:Key="BRUSH_selectedBackground" Color="{StaticResource s_selectedBg}"/>
@@ -766,6 +761,35 @@
                         <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Minimum="0.0" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=VerticalOffset, Mode=OneWay}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" AutomationProperties.AutomationId="VerticalScrollBar"/>
                         <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" CanContentScroll="{TemplateBinding CanContentScroll}"/>
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type TabControl}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Background" Value="{DynamicResource BRUSH_background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BRUSH_border}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid KeyboardNavigation.TabNavigation="Local">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TabPanel Name="HeaderPanel" Grid.Row="0" Panel.ZIndex="1" Margin="0,0,4,-1" IsItemsHost="True" KeyboardNavigation.TabIndex="1" Background="Transparent" />
+                        <Border Name="Border" Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="1" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2">
+                            <ContentPresenter Name="PART_SelectedContentHost" Margin="4" ContentSource="SelectedContent" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource BRUSH_disabled}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource BRUSH_border}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
