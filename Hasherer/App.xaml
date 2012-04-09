@@ -5,10 +5,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Style Parts\Menu.xaml"/>
-                <ResourceDictionary Source="Style Parts\Buttons.xaml"/>
-                <ResourceDictionary Source="Style Parts\Lists.xaml"/>
-                <ResourceDictionary Source="Style Parts\Scrollbars.xaml"/>
+                <ResourceDictionary Source="Style Parts/Menu.xaml"/>
+                <ResourceDictionary Source="Style Parts/Buttons.xaml"/>
+                <ResourceDictionary Source="Style Parts/Lists.xaml"/>
+                <ResourceDictionary Source="Style Parts/Scrollbars.xaml"/>
+                <ResourceDictionary Source="Style Parts/Templates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
