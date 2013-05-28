@@ -19,7 +19,7 @@ namespace iLynx.Common.WPF
         /// The header size property
         /// </summary>
         public static readonly DependencyProperty HeaderSizeProperty =
-            DependencyProperty.Register("HeaderSize", typeof(GridLength), typeof(BorderlessWindow), new PropertyMetadata(default(GridLength)));
+            DependencyProperty.Register("HeaderSize", typeof(GridLength), typeof(BorderlessWindow), new PropertyMetadata(new GridLength(24d), OnHeadersizeChanged));
 
         /// <summary>
         /// Gets or sets the size of the header.
@@ -81,8 +81,8 @@ namespace iLynx.Common.WPF
         public static readonly DependencyProperty ToggleCollapsedCommandProperty =
             DependencyProperty.Register("ToggleCollapsedCommand", typeof(ICommand), typeof(BorderlessWindow), new PropertyMetadata(new DelegateCommand<BorderlessWindow>(OnToggleCollapsed)));
 
-        private double storedHeight;
-        private double storedWidth;
+        //private double storedHeight;
+        //private double storedWidth;
 
         /// <summary>
         /// Called when [toggle collapsed].
@@ -91,20 +91,29 @@ namespace iLynx.Common.WPF
         private static void OnToggleCollapsed(BorderlessWindow window)
         {
             window.IsCollapsed = !window.IsCollapsed;
-            if (window.IsCollapsed)
-            {
-                window.storedHeight = window.Height;
-                window.storedWidth = window.Width;
-                window.Height = window.CollapsedHeight;
-                window.Width = window.CollapsedWidth;
-                window.OnCollapsed();
-            }
-            else
-            {
-                window.Height = window.storedHeight;
-                window.Width = window.storedWidth;
-                window.OnExpanded();
-            }
+        }
+
+        private static void OnHeadersizeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var win = dependencyObject as BorderlessWindow;
+            if (null == win) return;
+            if (win.IsCollapsed && Math.Abs(win.Height - win.HeaderSize.Value) >= double.Epsilon)
+                win.Height = win.HeaderSize.Value;
+        }
+
+        private double storedHeight;
+
+        protected virtual void Expand()
+        {
+            Height = storedHeight;
+            OnExpanded();
+        }
+
+        protected virtual void Collapse()
+        {
+            storedHeight = ActualHeight;
+            Height = HeaderSize.Value;
+            OnCollapsed();
         }
 
         /// <summary>
@@ -162,7 +171,19 @@ namespace iLynx.Common.WPF
         /// The is collapsed property
         /// </summary>
         public static readonly DependencyProperty IsCollapsedProperty =
-            DependencyProperty.Register("IsCollapsed", typeof(bool), typeof(BorderlessWindow), new PropertyMetadata(default(bool)));
+            DependencyProperty.Register("IsCollapsed", typeof(bool), typeof(BorderlessWindow), new PropertyMetadata(default(bool), OnIsCollapsedChanged));
+
+        private static void OnIsCollapsedChanged(DependencyObject dependencyObject,
+                                                    DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var win = dependencyObject as BorderlessWindow;
+            if (null == win) return;
+            var newValue = (bool)dependencyPropertyChangedEventArgs.NewValue;
+            if (newValue)
+                win.Collapse();
+            else
+                win.Expand();
+        }
 
         /// <summary>
         /// The collapsed header property
@@ -174,7 +195,7 @@ namespace iLynx.Common.WPF
         /// The collapsed height property
         /// </summary>
         public static readonly DependencyProperty CollapsedHeightProperty =
-            DependencyProperty.Register("CollapsedHeight", typeof(double), typeof(BorderlessWindow), new PropertyMetadata(64d));
+            DependencyProperty.Register("CollapsedHeight", typeof(double), typeof(BorderlessWindow), new PropertyMetadata(24d));
 
         /// <summary>
         /// The collapsed width property
@@ -478,7 +499,7 @@ namespace iLynx.Common.WPF
             borderlessWindow.WindowState = WindowState.Minimized;
         }
 
-        private FrameworkElement contentHost;
+        //private FrameworkElement contentHost;
 
         /// <summary>
         /// When overridden in a derived class, is invoked whenever application code or internal processes call <see cref="M:System.Windows.FrameworkElement.ApplyTemplate" />.
@@ -486,7 +507,7 @@ namespace iLynx.Common.WPF
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            contentHost = Template.FindName("PART_Content", this) as FrameworkElement;
+            //contentHost = Template.FindName("PART_Content", this) as FrameworkElement;
             maximizeButton = Template.FindName("maximizeButton", this) as Button;
             if (null != maximizeButton)
                 maximizeButton.Content = "1";
@@ -515,16 +536,43 @@ namespace iLynx.Common.WPF
 
         private bool isMoving;
 
+        private DateTime lastDown = DateTime.MinValue;
+        private bool isClicking;
         private void HeaderRectOnPreviewMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
+            HandleHeaderMaximizeClick();
             isMoving = true;
             DragMove();
+        }
+
+        private void HandleHeaderMaximizeClick()
+        {
+            if (IsCollapsed) return;
+            if (DateTime.MinValue == lastDown)
+                lastDown = DateTime.Now;
+
+
+            var deltaClick = DateTime.Now - lastDown;
+            if (deltaClick.TotalMilliseconds <= GetDoubleClickTime() && isClicking)
+            {
+                isClicking = false;
+                OnToggleMaximized(this);
+                lastDown = DateTime.MinValue;
+                return;
+            }
+            lastDown = DateTime.Now;
+            isClicking = true;   
         }
 
         private WindowState lastState;
 
         protected override void OnStateChanged(EventArgs e)
         {
+            if (IsCollapsed)
+            {
+                WindowState = WindowState.Normal;
+                return;
+            }
             base.OnStateChanged(e);
             if (WindowState == WindowState.Maximized && lastState != WindowState.Maximized)
             {
@@ -595,7 +643,7 @@ namespace iLynx.Common.WPF
 
         private void MainBorderOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            if (isMoving)
+            if (isMoving || IsCollapsed)
             {
                 isMoving = false;
                 return;
@@ -617,6 +665,7 @@ namespace iLynx.Common.WPF
 
         private void MainBorderOnPreviewMouseMove(object sender, MouseEventArgs mouseEventArgs)
         {
+            if (IsCollapsed) return;
             if (ResizeDirection.None == resizeDirection)
             {
                 if (previousDirection != ResizeDirection.None)

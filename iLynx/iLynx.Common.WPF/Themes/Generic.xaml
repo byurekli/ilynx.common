@@ -1073,47 +1073,33 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type wpf:BorderlessWindow}">
-        <Setter Property="Background" Value="{StaticResource BrushBackground}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BrushBorder}" />
-        <Setter Property="HeaderBorderThickness" Value="0,0,0,4" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="HeaderSize" Value="32" />
-        <Setter Property="TitleFontSize" Value="18" />
-        <Setter Property="TitleFontWeight" Value="Bold" />
-        <Setter Property="TitleFontFamily" Value="Verdana" />
-        <Setter Property="IsCollapsible" Value="False" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type wpf:BorderlessWindow}">
-                    <Border x:Name="PART_Main"
+    <ControlTemplate x:Key="ExpandedBorderlessWindow" TargetType="{x:Type wpf:BorderlessWindow}">
+        <Border x:Name="PART_Main"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             BorderBrush="{TemplateBinding BorderBrush}">
-                        <Grid Background="{TemplateBinding Background}">
-                            <Grid Grid.Row="1" Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="{TemplateBinding HeaderSize}" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Border BorderBrush="{TemplateBinding BorderBrush}"
+            <Grid Background="{TemplateBinding Background}">
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="{TemplateBinding HeaderSize}" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding HeaderBorderThickness}">
-                                    <Grid Grid.Row="0" x:Name="PART_HeaderButtons">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <Rectangle IsHitTestVisible="True" Grid.ColumnSpan="2"
+                        <Grid Grid.Row="0" x:Name="PART_HeaderButtons">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle IsHitTestVisible="True" Grid.ColumnSpan="2"
                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                    Fill="Transparent" x:Name="DragGrip" />
-                                        <ContentPresenter Content="{TemplateBinding Header}"
+                            <ContentPresenter Content="{TemplateBinding Header}"
                                                           Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource InvBoolToVis}}" />
-                                        <ContentPresenter Content="{TemplateBinding CollapsedHeader}"
-                                                          Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource BoolToVis}}" />
-                                        <TextBlock
+                            <TextBlock
                                             Grid.Column="1"
                                             HorizontalAlignment="Right"
                                             FontFamily="{TemplateBinding TitleFontFamily}"
@@ -1124,81 +1110,194 @@
                                             Text="{TemplateBinding Title}"
                                             VerticalAlignment="Center"
                                             IsHitTestVisible="False" />
-                                        <Button x:Name="PART_Expander" HorizontalContentAlignment="Stretch"
+                            <Button x:Name="PART_Expander" HorizontalContentAlignment="Stretch"
                                                 VerticalContentAlignment="Stretch" Grid.Column="2"
                                                 Command="{TemplateBinding ToggleCollapsedCommand}"
                                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                 Visibility="{TemplateBinding IsCollapsible, Converter={StaticResource BoolToVis}}"
                                                 Background="Transparent"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}">
-                                            <Border Background="{DynamicResource ToggleCollapsedBrush}"
+                                <Border Background="{DynamicResource ToggleCollapsedBrush}"
                                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                     Margin="2">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Style.Triggers>
-                                                            <DataTrigger
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger
                                                                 Binding="{Binding IsCollapsed, RelativeSource={RelativeSource TemplatedParent}}"
                                                                 Value="True">
-                                                                <Setter Property="Background"
+                                                    <Setter Property="Background"
                                                                         Value="{DynamicResource ToggleExpandedBrush}" />
-                                                            </DataTrigger>
-                                                            <DataTrigger
+                                                </DataTrigger>
+                                                <DataTrigger
                                                                 Binding="{Binding IsCollapsed, RelativeSource={RelativeSource TemplatedParent}}"
                                                                 Value="False">
-                                                                <Setter Property="Background"
+                                                    <Setter Property="Background"
                                                                         Value="{DynamicResource ToggleCollapsedBrush}" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                            </Border>
-                                        </Button>
-                                        <Button Style="{DynamicResource AutoScalingButton}"
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </Button>
+                            <Button Style="{DynamicResource AutoScalingButton}"
                                                 Grid.Column="3" Content="0" FontFamily="Webdings"
                                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                 Command="{TemplateBinding MinimizeCommand}"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}" />
-                                        <Button Style="{DynamicResource AutoScalingButton}"
+                            <Button Style="{DynamicResource AutoScalingButton}"
                                                 Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource InvBoolToVis}}"
                                                 Grid.Column="4"
                                                 x:Name="maximizeButton" FontFamily="Webdings"
                                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                 Command="{TemplateBinding ToggleMaximizedCommand}"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}" />
-                                        <Button Grid.Column="5" Content="r" FontFamily="Webdings"
+                            <Button Grid.Column="5" Content="r" FontFamily="Webdings"
                                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                 Command="{TemplateBinding CloseCommand}"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}">
-                                            <Button.Style>
-                                                <Style TargetType="{x:Type Button}"
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}"
                                                        BasedOn="{StaticResource AutoScalingButton}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger
+                                        <Style.Triggers>
+                                            <DataTrigger
                                                             Binding="{Binding IsCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type wpf:BorderlessWindow}}}">
-                                                            <Setter Property="Margin" Value="0,0,4,0"></Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Row="1">
-                                    <ContentPresenter x:Name="PART_Content"
-                                                      Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource InvBoolToVis}}" />
-                                </Border>
-                            </Grid>
+                                                <Setter Property="Margin" Value="0,0,4,0"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </Grid>
                     </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+                    <Border Grid.Row="1">
+                        <ContentPresenter x:Name="PART_Content"
+                                                      Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource InvBoolToVis}}" />
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <ControlTemplate x:Key="CollapsedBorderlessWindow" TargetType="{x:Type wpf:BorderlessWindow}">
+        <Border x:Name="PART_Main"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+            <Grid Background="{TemplateBinding Background}">
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="{TemplateBinding HeaderSize}" />
+                    </Grid.RowDefinitions>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding HeaderBorderThickness}">
+                        <Grid Grid.Row="0" x:Name="PART_HeaderButtons">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle IsHitTestVisible="True" Grid.ColumnSpan="2"
+                                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                   Fill="Transparent" x:Name="DragGrip" />
+                            <ContentPresenter Content="{TemplateBinding CollapsedHeader}"/>
+                            <TextBlock
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            FontFamily="{TemplateBinding TitleFontFamily}"
+                                            FontStretch="{TemplateBinding TitleFontStretch}"
+                                            FontSize="{TemplateBinding TitleFontSize}"
+                                            FontWeight="{TemplateBinding TitleFontWeight}"
+                                            FontStyle="{TemplateBinding TitleFontStyle}"
+                                            Text="{TemplateBinding Title}"
+                                            VerticalAlignment="Center"
+                                            IsHitTestVisible="False" />
+                            <Button x:Name="PART_Expander" HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch" Grid.Column="2"
+                                                Command="{TemplateBinding ToggleCollapsedCommand}"
+                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                Visibility="{TemplateBinding IsCollapsible, Converter={StaticResource BoolToVis}}"
+                                                Background="Transparent"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}">
+                                <Border Background="{DynamicResource ToggleCollapsedBrush}"
+                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                    Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger
+                                                                Binding="{Binding IsCollapsed, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                Value="True">
+                                                    <Setter Property="Background"
+                                                                        Value="{DynamicResource ToggleExpandedBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                                Binding="{Binding IsCollapsed, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                Value="False">
+                                                    <Setter Property="Background"
+                                                                        Value="{DynamicResource ToggleCollapsedBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </Button>
+                            <Button Style="{DynamicResource AutoScalingButton}"
+                                                Grid.Column="3" Content="0" FontFamily="Webdings"
+                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                Command="{TemplateBinding MinimizeCommand}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}" />
+                            <Button Style="{DynamicResource AutoScalingButton}"
+                                                Visibility="{TemplateBinding IsCollapsed, Converter={StaticResource InvBoolToVis}}"
+                                                Grid.Column="4"
+                                                x:Name="maximizeButton" FontFamily="Webdings"
+                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                Command="{TemplateBinding ToggleMaximizedCommand}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}" />
+                            <Button Grid.Column="5" Content="r" FontFamily="Webdings"
+                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                Command="{TemplateBinding CloseCommand}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=wpf:BorderlessWindow}}">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}"
+                                                       BasedOn="{StaticResource AutoScalingButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                            Binding="{Binding IsCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type wpf:BorderlessWindow}}}">
+                                                <Setter Property="Margin" Value="0,0,4,0"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsCollapsed" Value="True">
+                <Setter TargetName="PART_Main" Property="Height" Value="{Binding CollapsedHeight}"/>
+                <Setter TargetName="PART_Main" Property="Width" Value="{Binding CollapsedWidth}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <Style TargetType="{x:Type wpf:BorderlessWindow}">
+        <Setter Property="Background" Value="{StaticResource BrushBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBorder}" />
+        <Setter Property="HeaderBorderThickness" Value="0,0,0,4" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="TitleFontSize" Value="18" />
+        <Setter Property="TitleFontWeight" Value="Bold" />
+        <Setter Property="TitleFontFamily" Value="Verdana" />
+        <Setter Property="IsCollapsible" Value="False" />
         <Style.Triggers>
             <Trigger Property="IsCollapsed" Value="True">
-                <Setter Property="Height" Value="{Binding CollapsedHeight, RelativeSource={RelativeSource Self}}" />
-                <Setter Property="Width" Value="{Binding CollapsedWidth, RelativeSource={RelativeSource Self}}" />
-                <Setter Property="HeaderSize" Value="{Binding CollapsedHeight, RelativeSource={RelativeSource Self}}"></Setter>
+                <Setter Property="Template" Value="{StaticResource CollapsedBorderlessWindow}"/>
+            </Trigger>
+            <Trigger Property="IsCollapsed" Value="False">
+                <Setter Property="Template" Value="{StaticResource ExpandedBorderlessWindow}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
