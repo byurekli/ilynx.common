@@ -77,6 +77,7 @@
     <Compile Include="BooleanOperator.cs" />
     <Compile Include="Collections\AsynchronousEnumerableWrapper.cs" />
     <Compile Include="Collections\ExtensionMethods.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="ComponentBase.cs" />
     <Compile Include="Configuration\ExeConfig.cs" />
     <Compile Include="Configuration\ExeConfigValue.cs" />

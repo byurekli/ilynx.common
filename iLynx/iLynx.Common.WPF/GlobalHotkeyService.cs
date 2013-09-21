@@ -49,6 +49,7 @@ namespace iLynx.Common.WPF
                 HotKey hotKey;
                 if (registeredHotkeys.TryGetValue((int)wParam, out hotKey))
                     hotKey.Call();
+                handled = false;
             }
             return IntPtr.Zero;
         }
