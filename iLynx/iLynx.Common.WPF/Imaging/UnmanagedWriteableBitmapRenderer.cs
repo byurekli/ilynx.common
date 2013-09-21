@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using iLynx.Common.Threading;
@@ -14,6 +15,8 @@ namespace iLynx.Common.WPF.Imaging
     /// </summary>
     public class UnmanagedBitmapRenderer : RendererBase
     {
+        private readonly IDispatcher dispatcher;
+
         /// <summary>
         /// Used for rendering, the backBuffer parameter will be a pointer to the writeablebitmap's backbuffer.
         /// </summary>
@@ -32,10 +35,12 @@ namespace iLynx.Common.WPF.Imaging
         /// <param name="pixelWidth">Width of the pixel.</param>
         /// <param name="pixelHeight">Height of the pixel.</param>
         /// <param name="stride">The stride.</param>
-        public UnmanagedBitmapRenderer(IThreadManager threadManager, int pixelWidth, int pixelHeight, int stride)
+        public UnmanagedBitmapRenderer(IThreadManager threadManager, IDispatcher dispatcher, int pixelWidth, int pixelHeight, int stride)
             : base(threadManager)
         {
             threadManager.Guard("threadManager");
+            dispatcher.Guard("dispatcher");
+            this.dispatcher = dispatcher;
             proxy = new RenderProxy(pixelHeight, pixelWidth, stride);
         }
 
@@ -46,32 +51,37 @@ namespace iLynx.Common.WPF.Imaging
         {
             lock (proxy)
             {
-                var ptr = Marshal.AllocHGlobal(proxy.Height * proxy.BackBufferStride);
-                try
-                {
-                    // Clear first pass regardless of ClearEachPass (Otherwise we'd risk giving out an image filled with random data).
-                    NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
-                    var src = CreateSource(ptr);
-                    while (Render)
-                    {
-                        Thread.CurrentThread.Join(RenderInterval);
-                        var cnt = renderCallbacks.Count;
-                        if (ClearEachPass)
-                            NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
-                        while (cnt-- > 0)
-                            renderCallbacks.Values[cnt](ptr, proxy.Width, proxy.Height,
-                                                        proxy.BackBufferStride);
-                        GC.Collect(GC.GetGeneration(src) + 1);
-                        src = CreateSource(ptr);
-                        OnSourceCreated(src);
-                    }
+                var src = CreateWriteable();
+                var ptr = IntPtr.Zero;
+                dispatcher.Invoke(() => ptr = src.BackBuffer);
+                while (ptr == IntPtr.Zero) Thread.CurrentThread.Join(1);
+                var dirty = new Int32Rect(0, 0, proxy.Width, proxy.Height);
 
-                }
-                finally
+                // Clear first pass regardless of ClearEachPass (Otherwise we'd risk giving out an image filled with random data).
+                NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
+                OnSourceCreated(src);
+                while (Render)
                 {
-                    Marshal.FreeHGlobal(ptr);
+                    Thread.CurrentThread.Join(RenderInterval);
+                    var cnt = renderCallbacks.Count;
+                    dispatcher.Invoke(src.Lock);
+                    if (ClearEachPass)
+                        NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
+                    while (cnt-- > 0)
+                        renderCallbacks.Values[cnt](ptr, proxy.Width, proxy.Height,
+                                                    proxy.BackBufferStride);
+                    dispatcher.Invoke(() => src.AddDirtyRect(dirty));
+                    dispatcher.Invoke(src.Unlock);
                 }
             }
+        }
+
+        private WriteableBitmap CreateWriteable()
+        {
+            WriteableBitmap src = null;
+            dispatcher.Invoke(() => { src = new WriteableBitmap(proxy.Width, proxy.Height, 96, 96, PixelFormats.Pbgra32, null); });
+            while (null == src) Thread.CurrentThread.Join(1);
+            return src;
         }
 
         private BitmapSource CreateSource(IntPtr ptr)
@@ -83,7 +93,7 @@ namespace iLynx.Common.WPF.Imaging
         private void OnSourceCreated(BitmapSource source)
         {
             if (null == SourceCreated) return;
-            source.Freeze();
+            //source.Freeze();
             SourceCreated(source);
         }
 
