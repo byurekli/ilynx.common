@@ -129,7 +129,10 @@ namespace iLynx.Common.Serialization
                 try
                 {
                     var value = serializer.ReadFrom(source);
-                    member.SetValue(target, value);
+                    if (value is NullType)
+                        member.SetValue(target, null);
+                    else
+                        member.SetValue(target, value);
                 }
                 catch (Exception e)
                 {
