@@ -53,7 +53,9 @@ namespace iLynx.Common.Serialization
                                                                                              { typeof(char), new Primitives.CharSerializer() },
                                                                                              { typeof(string), new Primitives.StringSerializer() },
                                                                                              { typeof(Guid), new Primitives.GuidSerializer() },
-                                                                                             { typeof(bool), new Primitives.BooleanSerializer() }
+                                                                                             { typeof(bool), new Primitives.BooleanSerializer() },
+                                                                                             { typeof(TimeSpan), new Primitives.TimeSpanSerializer() },
+                                                                                             { typeof(DateTime), new Primitives.DateTimeSerializer() },
                                                                                          };
 
         private static readonly Dictionary<Type, object> ObjectSerializers = new Dictionary<Type, object>();
@@ -725,6 +727,67 @@ namespace iLynx.Common.Serialization
                 Buffer.BlockCopy(buffer, 0, result, 0, sizeof(char));
                 return result[0];
             }
+        }
+
+        public class TimeSpanSerializer : ITypeSerializer
+        {
+            #region Implementation of ITypeSerializer
+
+            /// <summary>
+            /// Serializes the specified item.
+            /// </summary>
+            /// <param name="item">The item.</param>
+            /// <param name="target">The target.</param>
+            public void WriteTo(object item,
+                                Stream target)
+            {
+                target.Write(Serializer.SingletonBitConverter.GetBytes(((TimeSpan)item).Ticks), 0, sizeof(long));
+            }
+
+            /// <summary>
+            /// Deserializes the specified source.
+            /// </summary>
+            /// <param name="source">The source.</param>
+            /// <returns></returns>
+            public object ReadFrom(Stream source)
+            {
+                var result = new byte[sizeof (long)];
+                source.Read(result, 0, result.Length);
+                return TimeSpan.FromTicks(Serializer.SingletonBitConverter.ToInt64(result));
+            }
+
+            #endregion
+        }
+
+        public class DateTimeSerializer : ITypeSerializer
+        {
+            #region Implementation of ITypeSerializer
+
+            /// <summary>
+            /// Serializes the specified item.
+            /// </summary>
+            /// <param name="item">The item.</param>
+            /// <param name="target">The target.</param>
+            public void WriteTo(object item,
+                                Stream target)
+            {
+                target.Write(Serializer.SingletonBitConverter.GetBytes(((DateTime)item).Ticks), 0, sizeof(long));
+            }
+
+            /// <summary>
+            /// Deserializes the specified source.
+            /// </summary>
+            /// <param name="source">The source.</param>
+            /// <returns></returns>
+            public object ReadFrom(Stream source)
+            {
+                var result = new byte[sizeof(long)];
+                source.Read(result, 0, result.Length);
+                return new DateTime(Serializer.SingletonBitConverter.ToInt64(result));
+            }
+
+
+            #endregion
         }
     }
 }
