@@ -86,6 +86,8 @@
     <Compile Include="Configuration\IValueConverter.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="Pixels\IPalette.cs" />
+    <Compile Include="Pixels\LinearGradientPalette.cs" />
     <Compile Include="Serialization\BigEndianBitConverter.cs" />
     <Compile Include="Serialization\Endianness.cs" />
     <Compile Include="Serialization\IBitConverter.cs" />
