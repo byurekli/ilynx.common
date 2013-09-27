@@ -223,6 +223,22 @@ namespace iLynx.Common
         }
 
         /// <summary>
+        /// Transforms the specified arr.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TK">The type of the K.</typeparam>
+        /// <param name="arr">The arr.</param>
+        /// <param name="func">The func.</param>
+        /// <returns></returns>
+        public static TK[] Transform<T, TK>(this T[] arr, Func<T, TK> func)
+        {
+            var res = new TK[arr.Length];
+            for (var i = 0; i < arr.Length; ++i)
+                res[i] = func(arr[i]);
+            return res;
+        }
+
+        /// <summary>
         /// Normalizes the specified arr.
         /// </summary>
         /// <param name="arr">The arr.</param>

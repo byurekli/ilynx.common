@@ -32,6 +32,7 @@ namespace iLynx.Common.WPF.Imaging
         /// Initializes a new instance of the <see cref="UnmanagedBitmapRenderer" /> class.
         /// </summary>
         /// <param name="threadManager">The thread manager.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="pixelWidth">Width of the pixel.</param>
         /// <param name="pixelHeight">Height of the pixel.</param>
         /// <param name="stride">The stride.</param>
@@ -70,8 +71,11 @@ namespace iLynx.Common.WPF.Imaging
                     while (cnt-- > 0)
                         renderCallbacks.Values[cnt](ptr, proxy.Width, proxy.Height,
                                                     proxy.BackBufferStride);
-                    dispatcher.Invoke(() => src.AddDirtyRect(dirty));
-                    dispatcher.Invoke(src.Unlock);
+                    dispatcher.Invoke(() =>
+                    {
+                        src.AddDirtyRect(dirty);
+                        src.Unlock();
+                    });
                 }
             }
         }

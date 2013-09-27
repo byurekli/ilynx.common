@@ -81,8 +81,20 @@ namespace iLynx.Common.WPF
         public static readonly DependencyProperty ToggleCollapsedCommandProperty =
             DependencyProperty.Register("ToggleCollapsedCommand", typeof(ICommand), typeof(BorderlessWindow), new PropertyMetadata(new DelegateCommand<BorderlessWindow>(OnToggleCollapsed)));
 
-        //private double storedHeight;
-        //private double storedWidth;
+        public event EventHandler ResizeBegin;
+        public event EventHandler ResizeEnd;
+
+        private void OnResizeBegin()
+        {
+            if (null != ResizeBegin)
+                ResizeBegin(this, EventArgs.Empty);
+        }
+
+        private void OnResizeEnd()
+        {
+            if (null != ResizeEnd)
+                ResizeEnd(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Called when [toggle collapsed].
@@ -94,20 +106,20 @@ namespace iLynx.Common.WPF
         }
 
         private static void OnHeadersizeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
+            {
             var win = dependencyObject as BorderlessWindow;
             if (null == win) return;
             if (win.IsCollapsed && Math.Abs(win.Height - win.HeaderSize.Value) >= double.Epsilon)
                 win.Height = win.HeaderSize.Value;
-        }
+            }
 
         private double storedHeight;
 
         protected virtual void Expand()
-        {
+            {
             Height = storedHeight;
             OnExpanded();
-        }
+            }
 
         protected virtual void Collapse()
         {
@@ -636,9 +648,12 @@ namespace iLynx.Common.WPF
 
         private void MainBorderOnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
+            var oldDirection = resizeDirection;
             resizeDirection = ResizeDirection.None;
             SetCursor(resizeDirection);
             mainBorder.ReleaseMouseCapture();
+            if (ResizeDirection.None == oldDirection) return;
+            OnResizeEnd();
         }
 
         private void MainBorderOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -651,6 +666,7 @@ namespace iLynx.Common.WPF
             var point = mouseButtonEventArgs.GetPosition(mainBorder);
             var direction = GetDirection(point);
             if (direction == ResizeDirection.None) return;
+            OnResizeBegin();
             mainBorder.CaptureMouse();
             SetStartBounds();
             resizeDirection = direction;
