@@ -106,20 +106,20 @@ namespace iLynx.Common.WPF
         }
 
         private static void OnHeadersizeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-            {
+        {
             var win = dependencyObject as BorderlessWindow;
             if (null == win) return;
             if (win.IsCollapsed && Math.Abs(win.Height - win.HeaderSize.Value) >= double.Epsilon)
                 win.Height = win.HeaderSize.Value;
-            }
+        }
 
         private double storedHeight;
 
         protected virtual void Expand()
-            {
+        {
             Height = storedHeight;
             OnExpanded();
-            }
+        }
 
         protected virtual void Collapse()
         {
@@ -519,7 +519,6 @@ namespace iLynx.Common.WPF
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            //contentHost = Template.FindName("PART_Content", this) as FrameworkElement;
             maximizeButton = Template.FindName("maximizeButton", this) as Button;
             if (null != maximizeButton)
                 maximizeButton.Content = "1";
@@ -573,7 +572,7 @@ namespace iLynx.Common.WPF
                 return;
             }
             lastDown = DateTime.Now;
-            isClicking = true;   
+            isClicking = true;
         }
 
         private WindowState lastState;
