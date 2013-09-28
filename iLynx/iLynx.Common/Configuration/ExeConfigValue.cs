@@ -338,8 +338,9 @@ namespace iLynx.Common.Configuration
         public ExeConfigValue(string key, T defaultValue, string category = null)
             : base(key, defaultValue, category)
         {
-            if (Equals(default(T), Value))
-                Value = defaultValue;
+            if (!Equals(default(T), Value)) return;
+            Value = defaultValue;
+            Store();
         }
 
         /// <summary>
