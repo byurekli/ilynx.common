@@ -238,6 +238,17 @@ namespace iLynx.Common
             return res;
         }
 
+        public static T[] Slice<T>(this T[] arr,
+                                   int offset,
+                                   int length)
+        {
+            if (offset + length > arr.Length) throw new ArgumentOutOfRangeException("length");
+            var result = new T[length];
+            for (var i = offset; i < offset + length; ++i)
+                result[i - offset] = arr[i];
+            return result;
+        }
+
         /// <summary>
         /// Normalizes the specified arr.
         /// </summary>
