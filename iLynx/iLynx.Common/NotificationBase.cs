@@ -34,7 +34,7 @@ namespace iLynx.Common
     /// <summary>
     /// NotificationBase
     /// </summary>
-    public abstract class NotificationBase : ComponentBase, INotifyPropertyChanged
+    public abstract class NotificationBase : ComponentBase, INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationBase" /> class.
@@ -74,5 +74,17 @@ namespace iLynx.Common
             if (null != PropertyChanged)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #region Implementation of IDisposable
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public virtual void Dispose()
+        {
+
+        }
+
+        #endregion
     }
 }
