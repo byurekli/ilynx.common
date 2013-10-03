@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System;
 using System.Threading;
 using System.Windows.Media;
@@ -74,6 +75,38 @@ namespace iLynx.Common.WPF
                     break;
             }
             return ret;
+        }
+
+        /// <summary>
+        /// Finds the visual parent.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        /// <returns></returns>
+        public static T FindVisualParent<T>(this DependencyObject obj) where T : DependencyObject
+        {
+            var ret = VisualTreeHelper.GetParent(obj);
+            if (null == ret) return null;
+            if (!(ret is T))
+                return FindVisualParent<T>(ret);
+            return (T) ret;
+        }
+
+        /// <summary>
+        /// Enumerates the parents.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateParents<T>(this DependencyObject obj) where T : DependencyObject
+        {
+            var p = VisualTreeHelper.GetParent(obj);
+            while (null != p)
+            {
+                if (p is T)
+                    yield return (T)p;
+                p = VisualTreeHelper.GetParent(p);
+            }
         }
     }
 }

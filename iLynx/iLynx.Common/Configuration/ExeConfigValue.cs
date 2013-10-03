@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -244,8 +243,9 @@ namespace iLynx.Common.Configuration
             get { return value; }
             set
             {
+                var old = this.value;
                 this.value = value;
-                OnValueChanged();
+                OnValueChanged(old, this.value);
             }
         }
 
@@ -310,16 +310,16 @@ namespace iLynx.Common.Configuration
         /// <summary>
         /// Called when [value changed].
         /// </summary>
-        private void OnValueChanged()
+        protected virtual void OnValueChanged(object oldValue, object newValue)
         {
             if (ValueChanged != null)
-                ValueChanged(this, new EventArgs());
+                ValueChanged(this, new ValueChangedEventArgs<object>(oldValue, newValue));
         }
 
         /// <summary>
         ///     Fired whenever the value part of this <see cref="ExeConfigValue{T}" /> has changed
         /// </summary>
-        public event EventHandler ValueChanged;
+        public event EventHandler<ValueChangedEventArgs<object>>  ValueChanged;
     }
 
     /// <summary>
@@ -372,26 +372,8 @@ namespace iLynx.Common.Configuration
             set
             {
                 if (Equals(base.Value, value)) return;
-                var old = Value;
                 base.Value = value;
-                OnValueChanged(old, value);
             }
         }
-
-        /// <summary>
-        /// Called when [value changed].
-        /// </summary>
-        /// <param name="oldValue">The old value.</param>
-        /// <param name="newValue">The new value.</param>
-        private void OnValueChanged(T oldValue, T newValue)
-        {
-            if (null == ValueChanged) return;
-            ValueChanged(this, new ValueChangedEventArgs<T>(oldValue, newValue));
-        }
-
-        /// <summary>
-        /// Occurs when [value changed].
-        /// </summary>
-        public new event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
     }
 }

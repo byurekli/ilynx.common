@@ -111,6 +111,22 @@ namespace iLynx.Common.WPF
             registeredHotkeys.Remove(hotkey.Id);
         }
 
+        /// <summary>
+        /// Res the register hotkey.
+        /// </summary>
+        /// <param name="oldDescriptor">The old descriptor.</param>
+        /// <param name="newDescriptor">The new descriptor.</param>
+        /// <param name="callback">The callback.</param>
+        public void ReRegisterHotkey(HotkeyDescriptor oldDescriptor,
+                                     HotkeyDescriptor newDescriptor,
+                                     Action callback)
+        {
+            if (null != oldDescriptor)
+                UnregisterHotkey(oldDescriptor, callback);
+            if (null != newDescriptor)
+                RegisterHotkey(newDescriptor, callback);
+        }
+
         private void HookHotkey(HotKey hotkey, int id)
         {
             RegisterHotKey(source.Handle, id, (int)hotkey.Modifiers, KeyInterop.VirtualKeyFromKey(hotkey.Key));

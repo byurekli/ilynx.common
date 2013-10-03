@@ -33,7 +33,7 @@ namespace iLynx.Common.Configuration
         /// <summary>
         ///     This event is fired whenever the value of this <see cref="IConfigurableValue" /> has changed
         /// </summary>
-        event EventHandler ValueChanged;
+        event EventHandler<ValueChangedEventArgs<object>> ValueChanged;
 
         /// <summary>
         /// Gets or sets the category.
@@ -57,9 +57,5 @@ namespace iLynx.Common.Configuration
         /// The value.
         /// </value>
         new T Value { get; set; }
-        /// <summary>
-        /// Occurs when [value changed].
-        /// </summary>
-        new event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
     }
 }

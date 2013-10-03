@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,9 +21,9 @@ namespace iLynx.Common.WPF.Imaging
         /// Used for rendering, the backBuffer parameter will be a pointer to the writeablebitmap's backbuffer.
         /// </summary>
         /// <param name="backBuffer">The back buffer.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
+        /// <param name="width">The width of the backbuffer.</param>
+        /// <param name="height">The height of the backbuffer.</param>
+        /// <param name="stride">The stride (row length in bytes) of the backbuffer.</param>
         public delegate void RenderCallback(IntPtr backBuffer, int width, int height, int stride);
         private readonly SortedList<int, RenderCallback> renderCallbacks = new SortedList<int, RenderCallback>();
         private readonly IRenderProxy proxy;
@@ -65,17 +65,25 @@ namespace iLynx.Common.WPF.Imaging
                 {
                     Thread.CurrentThread.Join(RenderInterval);
                     var cnt = renderCallbacks.Count;
-                    dispatcher.Invoke(src.Lock);
+                    try { dispatcher.Invoke(src.Lock); }
+                    catch (TaskCanceledException) { return; }
                     if (ClearEachPass)
                         NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
                     while (cnt-- > 0)
                         renderCallbacks.Values[cnt](ptr, proxy.Width, proxy.Height,
                                                     proxy.BackBufferStride);
-                    dispatcher.Invoke(() =>
+                    try
                     {
-                        src.AddDirtyRect(dirty);
-                        src.Unlock();
-                    });
+                        dispatcher.Invoke(() =>
+                            {
+                                src.AddDirtyRect(dirty);
+                                src.Unlock();
+                            });
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
                 }
             }
         }
@@ -86,12 +94,6 @@ namespace iLynx.Common.WPF.Imaging
             dispatcher.Invoke(() => { src = new WriteableBitmap(proxy.Width, proxy.Height, 96, 96, PixelFormats.Pbgra32, null); });
             while (null == src) Thread.CurrentThread.Join(1);
             return src;
-        }
-
-        private BitmapSource CreateSource(IntPtr ptr)
-        {
-            return BitmapSource.Create(proxy.Width, proxy.Height, 96, 96, PixelFormats.Pbgra32, null, ptr,
-                                        proxy.Height * proxy.BackBufferStride, proxy.BackBufferStride);
         }
 
         private void OnSourceCreated(BitmapSource source)
