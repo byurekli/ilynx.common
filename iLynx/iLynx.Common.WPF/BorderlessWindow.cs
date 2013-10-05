@@ -84,13 +84,13 @@ namespace iLynx.Common.WPF
         public event EventHandler ResizeBegin;
         public event EventHandler ResizeEnd;
 
-        private void OnResizeBegin()
+        protected virtual void OnResizeBegin()
         {
             if (null != ResizeBegin)
                 ResizeBegin(this, EventArgs.Empty);
         }
 
-        private void OnResizeEnd()
+        protected virtual void OnResizeEnd()
         {
             if (null != ResizeEnd)
                 ResizeEnd(this, EventArgs.Empty);

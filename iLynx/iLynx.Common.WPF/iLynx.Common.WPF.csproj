@@ -83,6 +83,7 @@
     <Compile Include="IDispatcher.cs" />
     <Compile Include="IGlobalHotkeyService.cs" />
     <Compile Include="Imaging\CompositionTargetRenderer.cs" />
+    <Compile Include="Imaging\Extensions.cs" />
     <Compile Include="Imaging\IBitmapRenderer.cs" />
     <Compile Include="Imaging\IRenderer.cs" />
     <Compile Include="Imaging\IWriteableBitmapWrapper.cs" />

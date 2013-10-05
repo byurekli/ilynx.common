@@ -409,7 +409,7 @@
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="Border"
+                                        <ColorAnimation Storyboard.TargetName="PART_Background"
                                                         Storyboard.TargetProperty="Background.Color"
                                                         Duration="0:0:0.250" To="{StaticResource SHighlightCol}" />
                                     </Storyboard>

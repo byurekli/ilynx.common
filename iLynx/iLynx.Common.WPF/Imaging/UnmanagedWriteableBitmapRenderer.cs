@@ -33,6 +33,10 @@ namespace iLynx.Common.WPF.Imaging
             threadManager.Guard("threadManager");
             dispatcher.Guard("dispatcher");
             this.dispatcher = dispatcher;
+            if (0 >= pixelWidth)
+                pixelWidth = 1;
+            if (0 >= pixelHeight)
+                pixelHeight = 1;
             proxy = new RenderProxy(pixelHeight, pixelWidth, pixelWidth * 4);
         }
 
@@ -65,12 +69,12 @@ namespace iLynx.Common.WPF.Imaging
                                                     proxy.BackBufferStride);
                     try
                     {
-                        dispatcher.Invoke(() =>
-                            {
-                                src.AddDirtyRect(dirty);
-                                src.Unlock();
-                            });
-                    }
+                    dispatcher.Invoke(() =>
+                    {
+                        src.AddDirtyRect(dirty);
+                        src.Unlock();
+                    });
+                }
                     catch (TaskCanceledException)
                     {
                         return;
