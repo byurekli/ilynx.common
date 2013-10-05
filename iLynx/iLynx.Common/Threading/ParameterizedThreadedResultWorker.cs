@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using iLynx.Common.Threading.Unmanaged;
 
 namespace iLynx.Common.Threading
@@ -18,7 +19,8 @@ namespace iLynx.Common.Threading
         /// </summary>
         /// <param name="target">The target.</param>
         /// <param name="logger">The logger.</param>
-        public ParameterizedThreadedResultWorker(Func<TArgs, TResult> target, ILogger logger) : base(logger)
+        /// <param name="apartmentState">State of the apartment.</param>
+        public ParameterizedThreadedResultWorker(Func<TArgs, TResult> target, ILogger logger, ApartmentState apartmentState = ApartmentState.MTA) : base(logger, apartmentState)
         {
             target.Guard("target");
             this.target = target;

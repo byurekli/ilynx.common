@@ -13,18 +13,10 @@ namespace iLynx.Common.WPF.Imaging
     /// <summary>
     /// WriteableBitmapRenderer
     /// </summary>
-    public class UnmanagedBitmapRenderer : RendererBase
+    public class UnmanagedBitmapRenderer : RendererBase, IBitmapRenderer
     {
         private readonly IDispatcher dispatcher;
 
-        /// <summary>
-        /// Used for rendering, the backBuffer parameter will be a pointer to the writeablebitmap's backbuffer.
-        /// </summary>
-        /// <param name="backBuffer">The back buffer.</param>
-        /// <param name="width">The width of the backbuffer.</param>
-        /// <param name="height">The height of the backbuffer.</param>
-        /// <param name="stride">The stride (row length in bytes) of the backbuffer.</param>
-        public delegate void RenderCallback(IntPtr backBuffer, int width, int height, int stride);
         private readonly SortedList<int, RenderCallback> renderCallbacks = new SortedList<int, RenderCallback>();
         private readonly IRenderProxy proxy;
 
@@ -35,14 +27,13 @@ namespace iLynx.Common.WPF.Imaging
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="pixelWidth">Width of the pixel.</param>
         /// <param name="pixelHeight">Height of the pixel.</param>
-        /// <param name="stride">The stride.</param>
-        public UnmanagedBitmapRenderer(IThreadManager threadManager, IDispatcher dispatcher, int pixelWidth, int pixelHeight, int stride)
+        public UnmanagedBitmapRenderer(IThreadManager threadManager, IDispatcher dispatcher, int pixelWidth, int pixelHeight)
             : base(threadManager)
         {
             threadManager.Guard("threadManager");
             dispatcher.Guard("dispatcher");
             this.dispatcher = dispatcher;
-            proxy = new RenderProxy(pixelHeight, pixelWidth, stride);
+            proxy = new RenderProxy(pixelHeight, pixelWidth, pixelWidth * 4);
         }
 
         /// <summary>

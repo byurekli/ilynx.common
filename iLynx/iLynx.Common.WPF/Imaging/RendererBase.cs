@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using iLynx.Common.Threading;
 using iLynx.Common.Threading.Unmanaged;
 
@@ -7,7 +8,7 @@ namespace iLynx.Common.WPF.Imaging
     /// <summary>
     /// ManagedWriteableBitmapRendererBase
     /// </summary>
-    public abstract class RendererBase
+    public abstract class RendererBase : IRenderer
     {
         private readonly IThreadManager threadManager;
         private IWorker renderWorker;
@@ -63,11 +64,11 @@ namespace iLynx.Common.WPF.Imaging
         /// <summary>
         /// Starts this instance.
         /// </summary>
-        public void Start()
+        public virtual void Start()
         {
             Stop();
             Render = true;
-            renderWorker = threadManager.StartNew(RenderLoop);
+            renderWorker = threadManager.StartNew(RenderLoop, ApartmentState.STA);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace iLynx.Common.WPF.Imaging
         /// <summary>
         /// Stops this instance.
         /// </summary>
-        public void Stop()
+        public virtual void Stop()
         {
             Render = false;
             if (null == renderWorker) return;

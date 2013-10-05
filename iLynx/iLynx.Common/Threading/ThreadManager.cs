@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using iLynx.Common.Threading.Unmanaged;
 
 namespace iLynx.Common.Threading
@@ -25,10 +26,11 @@ namespace iLynx.Common.Threading
         /// Starts the new.
         /// </summary>
         /// <param name="target">The target.</param>
+        /// <param name="apartmentState">State of the apartment.</param>
         /// <returns></returns>
-        public IWorker StartNew(Action target)
+        public IWorker StartNew(Action target, ApartmentState apartmentState = ApartmentState.MTA)
         {
-            var worker = new ThreadedWorker(target, logger);
+            var worker = new ThreadedWorker(target, logger, apartmentState);
             TrackWorker(worker);
             worker.Execute();
             return worker;
@@ -52,10 +54,11 @@ namespace iLynx.Common.Threading
         /// <typeparam name="TArgs">The type of the args.</typeparam>
         /// <param name="target">The target.</param>
         /// <param name="args">The args.</param>
+        /// <param name="apartmentState">State of the apartment.</param>
         /// <returns></returns>
-        public IParameterizedWorker<TArgs> StartNew<TArgs>(Action<TArgs> target, TArgs args)
+        public IParameterizedWorker<TArgs> StartNew<TArgs>(Action<TArgs> target, TArgs args, ApartmentState apartmentState = ApartmentState.MTA)
         {
-            var worker = new ParameterizedThreadedWorker<TArgs>(target, logger);
+            var worker = new ParameterizedThreadedWorker<TArgs>(target, logger, apartmentState);
             TrackWorker(worker);
             worker.Execute(args);
             return worker;
@@ -66,10 +69,11 @@ namespace iLynx.Common.Threading
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="target">The target.</param>
+        /// <param name="apartmentState">State of the apartment.</param>
         /// <returns></returns>
-        public IResultWorker<TResult> StartNew<TResult>(Func<TResult> target)
+        public IResultWorker<TResult> StartNew<TResult>(Func<TResult> target, ApartmentState apartmentState)
         {
-            var worker = new ThreadedResultWorker<TResult>(target, logger);
+            var worker = new ThreadedResultWorker<TResult>(target, logger, apartmentState);
             TrackWorker(worker);
             worker.Execute();
             return worker;
@@ -82,10 +86,11 @@ namespace iLynx.Common.Threading
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="target">The target.</param>
         /// <param name="args">The args.</param>
+        /// <param name="apartmentState">State of the apartment.</param>
         /// <returns></returns>
-        public IParameterizedResultWorker<TArgs, TResult> StartNew<TArgs, TResult>(Func<TArgs, TResult> target, TArgs args)
+        public IParameterizedResultWorker<TArgs, TResult> StartNew<TArgs, TResult>(Func<TArgs, TResult> target, TArgs args, ApartmentState apartmentState = ApartmentState.MTA)
         {
-            var worker = new ParameterizedThreadedResultWorker<TArgs, TResult>(target, logger);
+            var worker = new ParameterizedThreadedResultWorker<TArgs, TResult>(target, logger, apartmentState);
             TrackWorker(worker);
             worker.Execute(args);
             return worker;

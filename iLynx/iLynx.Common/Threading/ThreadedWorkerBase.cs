@@ -10,6 +10,7 @@ namespace iLynx.Common.Threading
     public abstract class ThreadedWorkerBase : IWorker
     {
         private readonly ILogger logger;
+        private readonly ApartmentState apartmentState;
         private readonly Thread thread;
         private bool started;
 
@@ -17,11 +18,14 @@ namespace iLynx.Common.Threading
         /// Initializes a new instance of the <see cref="ThreadedWorkerBase" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        protected ThreadedWorkerBase(ILogger logger)
+        /// <param name="apartmentState"></param>
+        protected ThreadedWorkerBase(ILogger logger, ApartmentState apartmentState = ApartmentState.MTA)
         {
             this.logger = logger;
+            this.apartmentState = apartmentState;
             Id = Guid.NewGuid();
             thread = new Thread(DoExecute);
+            thread.SetApartmentState(apartmentState);
         }
 
         /// <summary>

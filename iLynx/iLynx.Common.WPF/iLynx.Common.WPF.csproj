@@ -82,8 +82,12 @@
     <Compile Include="HotkeyDescriptor.cs" />
     <Compile Include="IDispatcher.cs" />
     <Compile Include="IGlobalHotkeyService.cs" />
+    <Compile Include="Imaging\CompositionTargetRenderer.cs" />
+    <Compile Include="Imaging\IBitmapRenderer.cs" />
+    <Compile Include="Imaging\IRenderer.cs" />
     <Compile Include="Imaging\IWriteableBitmapWrapper.cs" />
     <Compile Include="Imaging\ManagedWriteableBitmapRenderer.cs" />
+    <Compile Include="Imaging\RenderCallback.cs" />
     <Compile Include="Imaging\RendererBase.cs" />
     <Compile Include="Imaging\UnsafeFunctions.cs" />
     <Compile Include="SizeObserver.cs" />
